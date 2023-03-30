@@ -5,9 +5,9 @@
 
 #include "general.h"
 #include "i2c.h"
+#include "additional.h"
 
-
-tU8 measureHumidity(tU8 addr,
+tU8 measureHumidity1(tU8 addr,
                     tU8 *pBuf,
                     tU16 len)
 {
@@ -93,26 +93,30 @@ tU8 measureHumidity(tU8 addr,
     return retCode;
 }
 
-tU8 measureHumidity1(tU8 addr,
+tU8 measureHumidity(tU8 addr,
                     tU8 *pBuf,
                     tU16 len)
 {
     tU8 retCode;
     tU8 command = 0xF5;
-    retCode = i2cInit();
+    retCode = i2cStart();
 
-    i2cWrite(addr << 1, command, 1);
-
-    i2cRead((addr << 1) | 1, pBuf, 2);
-    return 
+    if (retCode == I2C_CODE_OK)
+    {
+        retCode = i2cWrite(addr << 1, command, 1);
+        if (retCode == I2C_CODE_OK)
+        {
+            mdelay(50);
+            retCode = i2cRead((addr << 1) | 1, pBuf, 2);
+        }
+    }
+    return retCode;
 }
 
 tU8 calculateHumidityValue(tU8 *byteArray)
 {
     tU8 intValue = 0;
-
-    tU16 firstMask = ~(1 << 1);
-    firstMask++;
+    tU16 firstMask = ~(1 << 1) | 1;
 
     tU16 readValue = ((byteArray[0] << 8) | byteArray[1]);
     readValue &= firstMask;

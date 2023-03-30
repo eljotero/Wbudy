@@ -5,10 +5,11 @@
 */
 
 #include "lm75.h"
+#include "additional.h"
 
-tS8 measureTemperature(tU8 addr,
-                       tU8 *pBuf,
-                       tU16 len)
+tS8 measureTemperature1(tU8 addr,
+                        tU8 *pBuf,
+                        tU16 len)
 {
     tS8 status;
     tS8 retCode = i2cStart();
@@ -69,6 +70,23 @@ tS8 measureTemperature(tU8 addr,
     }
 
     i2cStop();
+    return retCode;
+}
+
+tS8 measureTemperature(tU8 addr,
+                       tU8 *pBuf,
+                       tU16 len)
+{
+    tU8 retCode;
+    retCode = i2cStart();
+    
+    if (retCode == I2C_CODE_OK) {
+        retCode = i2cWrite(addr, 0x00, 1);
+        if (retCode == I2C_CODE_OK) {
+            mdelay(300);
+            retCode = i2cRead(addr, pBuf, len);
+        }
+    }
     return retCode;
 }
 
