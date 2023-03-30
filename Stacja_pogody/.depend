@@ -1,0 +1,3 @@
+main.o: main.c general.h startup/lpc2xxx.h startup/printf_P.h \
+ startup/config.h startup/consol.h startup/printf_init.h startup/consol.h \
+ startup/config.h irq/irq_handler.h timer.h VIC.h Common_Def.h

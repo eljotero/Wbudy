@@ -1,0 +1,1793 @@
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 1
+
+
+   1              		.cpu arm7tdmi
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 0
+  10              		.eabi_attribute 18, 4
+  11              		.file	"framework.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.comm	pHeapStart,4,4
+  16              		.comm	pHeapEnd,4,4
+  17              		.section	.rodata
+  18              		.align	2
+  19              	.LC0:
+  20 0000 556E6465 		.ascii	"Undefined instruction exception !!!\012Address: 0x\000"
+  20      66696E65 
+  20      6420696E 
+  20      73747275 
+  20      6374696F 
+  21              		.text
+  22              		.align	2
+  23              		.syntax unified
+  24              		.arm
+  25              		.fpu softvfp
+  26              		.type	exceptionHandlerUndef, %function
+  27              	exceptionHandlerUndef:
+  28              	.LFB0:
+  29              		.file 1 "framework.c"
+   1:framework.c   **** /******************************************************************************
+   2:framework.c   ****  *
+   3:framework.c   ****  * Copyright:
+   4:framework.c   ****  *    (C) 2000 - 2005 Embedded Artists AB
+   5:framework.c   ****  *
+   6:framework.c   ****  * Description:
+   7:framework.c   ****  *    Framework for ARM7 processor
+   8:framework.c   ****  *
+   9:framework.c   ****  *****************************************************************************/
+  10:framework.c   **** 
+  11:framework.c   **** /******************************************************************************
+  12:framework.c   ****  * Includes
+  13:framework.c   ****  *****************************************************************************/
+  14:framework.c   **** #include "lpc2xxx.h"                            /* LPC2xxx definitions */
+  15:framework.c   **** #include "config.h"
+  16:framework.c   **** #include "framework.h"
+  17:framework.c   **** #include "consol.h"
+  18:framework.c   **** 
+  19:framework.c   **** /******************************************************************************
+  20:framework.c   ****  * Defines, macros, and typedefs
+  21:framework.c   ****  *****************************************************************************/
+  22:framework.c   **** 
+  23:framework.c   **** 
+  24:framework.c   **** /******************************************************************************
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 2
+
+
+  25:framework.c   ****  * External variables
+  26:framework.c   ****  *****************************************************************************/
+  27:framework.c   **** extern char end asm ("end");  //the symbol "end" is defined by the linker script
+  28:framework.c   **** 
+  29:framework.c   **** 
+  30:framework.c   **** /******************************************************************************
+  31:framework.c   ****  * Public variables
+  32:framework.c   ****  *****************************************************************************/
+  33:framework.c   **** unsigned char *pHeapStart;
+  34:framework.c   **** unsigned char *pHeapEnd;
+  35:framework.c   **** 
+  36:framework.c   **** 
+  37:framework.c   **** /******************************************************************************
+  38:framework.c   ****  * External functions
+  39:framework.c   ****  *****************************************************************************/
+  40:framework.c   **** 
+  41:framework.c   **** 
+  42:framework.c   **** /******************************************************************************
+  43:framework.c   ****  * Public functions
+  44:framework.c   ****  *****************************************************************************/
+  45:framework.c   **** void lowLevelInit(void);
+  46:framework.c   **** void eaInit(void);
+  47:framework.c   **** void exceptionHandlerInit(void);
+  48:framework.c   **** 
+  49:framework.c   **** /******************************************************************************
+  50:framework.c   ****  * Implementation of local functions
+  51:framework.c   ****  *****************************************************************************/
+  52:framework.c   **** 
+  53:framework.c   **** /*****************************************************************************
+  54:framework.c   ****  *
+  55:framework.c   ****  * Description:
+  56:framework.c   ****  *    Default exception handler for undefined instruction.
+  57:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+  58:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+  59:framework.c   ****  *
+  60:framework.c   ****  ****************************************************************************/
+  61:framework.c   **** static void
+  62:framework.c   **** exceptionHandlerUndef(void)
+  63:framework.c   **** {
+  30              		.loc 1 63 0
+  31              		.cfi_startproc
+  32              		@ Function supports interworking.
+  33              		@ args = 0, pretend = 0, frame = 8
+  34              		@ frame_needed = 1, uses_anonymous_args = 0
+  35 0000 00482DE9 		push	{fp, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 11, -8
+  39              		.cfi_offset 14, -4
+  40 0004 04B08DE2 		add	fp, sp, #4
+  41              	.LCFI1:
+  42              		.cfi_def_cfa 11, 4
+  43 0008 10D04DE2 		sub	sp, sp, #16
+  64:framework.c   ****   register unsigned int programCounter asm ("lr");
+  65:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+  44              		.loc 1 65 0
+  45 000c 0E30A0E1 		mov	r3, lr
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 3
+
+
+  46 0010 043043E2 		sub	r3, r3, #4
+  47 0014 08300BE5 		str	r3, [fp, #-8]
+  66:framework.c   **** 
+  67:framework.c   ****   consolSendString("Undefined instruction exception !!!\nAddress: 0x");
+  48              		.loc 1 67 0
+  49 0018 20009FE5 		ldr	r0, .L3
+  50 001c FEFFFFEB 		bl	consolSendString
+  68:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+  51              		.loc 1 68 0
+  52 0020 08301BE5 		ldr	r3, [fp, #-8]
+  53 0024 00308DE5 		str	r3, [sp]
+  54 0028 3030A0E3 		mov	r3, #48
+  55 002c 0020A0E3 		mov	r2, #0
+  56 0030 0810A0E3 		mov	r1, #8
+  57 0034 1000A0E3 		mov	r0, #16
+  58 0038 FEFFFFEB 		bl	consolSendNumber
+  59              	.L2:
+  69:framework.c   ****   while(1)
+  60              		.loc 1 69 0 discriminator 1
+  61 003c FEFFFFEA 		b	.L2
+  62              	.L4:
+  63              		.align	2
+  64              	.L3:
+  65 0040 00000000 		.word	.LC0
+  66              		.cfi_endproc
+  67              	.LFE0:
+  68              		.size	exceptionHandlerUndef, .-exceptionHandlerUndef
+  69              		.section	.rodata
+  70              		.align	2
+  71              	.LC1:
+  72 0030 53574920 		.ascii	"SWI exception !!!\012Address: 0x\000"
+  72      65786365 
+  72      7074696F 
+  72      6E202121 
+  72      210A4164 
+  73              		.text
+  74              		.align	2
+  75              		.syntax unified
+  76              		.arm
+  77              		.fpu softvfp
+  78              		.type	exceptionHandlerSwi, %function
+  79              	exceptionHandlerSwi:
+  80              	.LFB1:
+  70:framework.c   ****     ;
+  71:framework.c   **** }
+  72:framework.c   **** 
+  73:framework.c   **** /*****************************************************************************
+  74:framework.c   ****  *
+  75:framework.c   ****  * Description:
+  76:framework.c   ****  *    Default exception handler for software interrupt.
+  77:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+  78:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+  79:framework.c   ****  *
+  80:framework.c   ****  ****************************************************************************/
+  81:framework.c   **** static void
+  82:framework.c   **** exceptionHandlerSwi(void)
+  83:framework.c   **** {
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 4
+
+
+  81              		.loc 1 83 0
+  82              		.cfi_startproc
+  83              		@ Function supports interworking.
+  84              		@ args = 0, pretend = 0, frame = 8
+  85              		@ frame_needed = 1, uses_anonymous_args = 0
+  86 0044 00482DE9 		push	{fp, lr}
+  87              	.LCFI2:
+  88              		.cfi_def_cfa_offset 8
+  89              		.cfi_offset 11, -8
+  90              		.cfi_offset 14, -4
+  91 0048 04B08DE2 		add	fp, sp, #4
+  92              	.LCFI3:
+  93              		.cfi_def_cfa 11, 4
+  94 004c 10D04DE2 		sub	sp, sp, #16
+  84:framework.c   ****   register unsigned int programCounter asm ("lr");
+  85:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+  95              		.loc 1 85 0
+  96 0050 0E30A0E1 		mov	r3, lr
+  97 0054 043043E2 		sub	r3, r3, #4
+  98 0058 08300BE5 		str	r3, [fp, #-8]
+  86:framework.c   **** 
+  87:framework.c   ****   consolSendString("SWI exception !!!\nAddress: 0x");
+  99              		.loc 1 87 0
+ 100 005c 20009FE5 		ldr	r0, .L7
+ 101 0060 FEFFFFEB 		bl	consolSendString
+  88:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 102              		.loc 1 88 0
+ 103 0064 08301BE5 		ldr	r3, [fp, #-8]
+ 104 0068 00308DE5 		str	r3, [sp]
+ 105 006c 3030A0E3 		mov	r3, #48
+ 106 0070 0020A0E3 		mov	r2, #0
+ 107 0074 0810A0E3 		mov	r1, #8
+ 108 0078 1000A0E3 		mov	r0, #16
+ 109 007c FEFFFFEB 		bl	consolSendNumber
+ 110              	.L6:
+  89:framework.c   ****   while(1)
+ 111              		.loc 1 89 0 discriminator 1
+ 112 0080 FEFFFFEA 		b	.L6
+ 113              	.L8:
+ 114              		.align	2
+ 115              	.L7:
+ 116 0084 30000000 		.word	.LC1
+ 117              		.cfi_endproc
+ 118              	.LFE1:
+ 119              		.size	exceptionHandlerSwi, .-exceptionHandlerSwi
+ 120              		.section	.rodata
+ 121 004e 0000     		.align	2
+ 122              	.LC2:
+ 123 0050 5061626F 		.ascii	"Pabort exception !!!\012Address: 0x\000"
+ 123      72742065 
+ 123      78636570 
+ 123      74696F6E 
+ 123      20212121 
+ 124              		.text
+ 125              		.align	2
+ 126              		.syntax unified
+ 127              		.arm
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 5
+
+
+ 128              		.fpu softvfp
+ 129              		.type	exceptionHandlerPabort, %function
+ 130              	exceptionHandlerPabort:
+ 131              	.LFB2:
+  90:framework.c   ****   {
+  91:framework.c   **** 	  // infinity
+  92:framework.c   ****   }
+  93:framework.c   **** }
+  94:framework.c   **** 
+  95:framework.c   **** /*****************************************************************************
+  96:framework.c   ****  *
+  97:framework.c   ****  * Description:
+  98:framework.c   ****  *    Default exception handler for invalid program fetch.
+  99:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+ 100:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+ 101:framework.c   ****  *
+ 102:framework.c   ****  ****************************************************************************/
+ 103:framework.c   **** static void
+ 104:framework.c   **** exceptionHandlerPabort()
+ 105:framework.c   **** {
+ 132              		.loc 1 105 0
+ 133              		.cfi_startproc
+ 134              		@ Function supports interworking.
+ 135              		@ args = 0, pretend = 0, frame = 8
+ 136              		@ frame_needed = 1, uses_anonymous_args = 0
+ 137 0088 00482DE9 		push	{fp, lr}
+ 138              	.LCFI4:
+ 139              		.cfi_def_cfa_offset 8
+ 140              		.cfi_offset 11, -8
+ 141              		.cfi_offset 14, -4
+ 142 008c 04B08DE2 		add	fp, sp, #4
+ 143              	.LCFI5:
+ 144              		.cfi_def_cfa 11, 4
+ 145 0090 10D04DE2 		sub	sp, sp, #16
+ 106:framework.c   ****   register unsigned int programCounter asm ("lr");
+ 107:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 146              		.loc 1 107 0
+ 147 0094 0E30A0E1 		mov	r3, lr
+ 148 0098 043043E2 		sub	r3, r3, #4
+ 149 009c 08300BE5 		str	r3, [fp, #-8]
+ 108:framework.c   **** 
+ 109:framework.c   ****   consolSendString("Pabort exception !!!\nAddress: 0x");
+ 150              		.loc 1 109 0
+ 151 00a0 20009FE5 		ldr	r0, .L11
+ 152 00a4 FEFFFFEB 		bl	consolSendString
+ 110:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 153              		.loc 1 110 0
+ 154 00a8 08301BE5 		ldr	r3, [fp, #-8]
+ 155 00ac 00308DE5 		str	r3, [sp]
+ 156 00b0 3030A0E3 		mov	r3, #48
+ 157 00b4 0020A0E3 		mov	r2, #0
+ 158 00b8 0810A0E3 		mov	r1, #8
+ 159 00bc 1000A0E3 		mov	r0, #16
+ 160 00c0 FEFFFFEB 		bl	consolSendNumber
+ 161              	.L10:
+ 111:framework.c   ****   while(1)
+ 162              		.loc 1 111 0 discriminator 1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 6
+
+
+ 163 00c4 FEFFFFEA 		b	.L10
+ 164              	.L12:
+ 165              		.align	2
+ 166              	.L11:
+ 167 00c8 50000000 		.word	.LC2
+ 168              		.cfi_endproc
+ 169              	.LFE2:
+ 170              		.size	exceptionHandlerPabort, .-exceptionHandlerPabort
+ 171              		.section	.rodata
+ 172 0071 000000   		.align	2
+ 173              	.LC3:
+ 174 0074 4461626F 		.ascii	"Dabort exception !!!\012Address: 0x\000"
+ 174      72742065 
+ 174      78636570 
+ 174      74696F6E 
+ 174      20212121 
+ 175              		.text
+ 176              		.align	2
+ 177              		.syntax unified
+ 178              		.arm
+ 179              		.fpu softvfp
+ 180              		.type	exceptionHandlerDabort, %function
+ 181              	exceptionHandlerDabort:
+ 182              	.LFB3:
+ 112:framework.c   ****     ;
+ 113:framework.c   **** }
+ 114:framework.c   **** 
+ 115:framework.c   **** /*****************************************************************************
+ 116:framework.c   ****  *
+ 117:framework.c   ****  * Description:
+ 118:framework.c   ****  *    Default exception handler for invalid data access.
+ 119:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+ 120:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+ 121:framework.c   ****  *
+ 122:framework.c   ****  ****************************************************************************/
+ 123:framework.c   **** static void
+ 124:framework.c   **** exceptionHandlerDabort(void)
+ 125:framework.c   **** {
+ 183              		.loc 1 125 0
+ 184              		.cfi_startproc
+ 185              		@ Function supports interworking.
+ 186              		@ args = 0, pretend = 0, frame = 8
+ 187              		@ frame_needed = 1, uses_anonymous_args = 0
+ 188 00cc 00482DE9 		push	{fp, lr}
+ 189              	.LCFI6:
+ 190              		.cfi_def_cfa_offset 8
+ 191              		.cfi_offset 11, -8
+ 192              		.cfi_offset 14, -4
+ 193 00d0 04B08DE2 		add	fp, sp, #4
+ 194              	.LCFI7:
+ 195              		.cfi_def_cfa 11, 4
+ 196 00d4 10D04DE2 		sub	sp, sp, #16
+ 126:framework.c   ****   register unsigned int programCounter asm ("lr");
+ 127:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x08;
+ 197              		.loc 1 127 0
+ 198 00d8 0E30A0E1 		mov	r3, lr
+ 199 00dc 083043E2 		sub	r3, r3, #8
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 7
+
+
+ 200 00e0 08300BE5 		str	r3, [fp, #-8]
+ 128:framework.c   **** 
+ 129:framework.c   ****   consolSendString("Dabort exception !!!\nAddress: 0x");
+ 201              		.loc 1 129 0
+ 202 00e4 20009FE5 		ldr	r0, .L15
+ 203 00e8 FEFFFFEB 		bl	consolSendString
+ 130:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 204              		.loc 1 130 0
+ 205 00ec 08301BE5 		ldr	r3, [fp, #-8]
+ 206 00f0 00308DE5 		str	r3, [sp]
+ 207 00f4 3030A0E3 		mov	r3, #48
+ 208 00f8 0020A0E3 		mov	r2, #0
+ 209 00fc 0810A0E3 		mov	r1, #8
+ 210 0100 1000A0E3 		mov	r0, #16
+ 211 0104 FEFFFFEB 		bl	consolSendNumber
+ 212              	.L14:
+ 131:framework.c   ****   while(1)
+ 213              		.loc 1 131 0 discriminator 1
+ 214 0108 FEFFFFEA 		b	.L14
+ 215              	.L16:
+ 216              		.align	2
+ 217              	.L15:
+ 218 010c 74000000 		.word	.LC3
+ 219              		.cfi_endproc
+ 220              	.LFE3:
+ 221              		.size	exceptionHandlerDabort, .-exceptionHandlerDabort
+ 222              		.section	.rodata
+ 223 0095 000000   		.align	2
+ 224              	.LC4:
+ 225 0098 46495120 		.ascii	"FIQ exception !!!\012Address: 0x\000"
+ 225      65786365 
+ 225      7074696F 
+ 225      6E202121 
+ 225      210A4164 
+ 226              		.text
+ 227              		.align	2
+ 228              		.syntax unified
+ 229              		.arm
+ 230              		.fpu softvfp
+ 231              		.type	exceptionHandlerFiq, %function
+ 232              	exceptionHandlerFiq:
+ 233              	.LFB4:
+ 132:framework.c   ****     ;
+ 133:framework.c   **** }
+ 134:framework.c   **** 
+ 135:framework.c   **** /*****************************************************************************
+ 136:framework.c   ****  *
+ 137:framework.c   ****  * Description:
+ 138:framework.c   ****  *    Default exception handler for fast interrupts.
+ 139:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+ 140:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+ 141:framework.c   ****  *
+ 142:framework.c   ****  ****************************************************************************/
+ 143:framework.c   **** static void
+ 144:framework.c   **** exceptionHandlerFiq(void)
+ 145:framework.c   **** {
+ 234              		.loc 1 145 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 8
+
+
+ 235              		.cfi_startproc
+ 236              		@ Function supports interworking.
+ 237              		@ args = 0, pretend = 0, frame = 8
+ 238              		@ frame_needed = 1, uses_anonymous_args = 0
+ 239 0110 00482DE9 		push	{fp, lr}
+ 240              	.LCFI8:
+ 241              		.cfi_def_cfa_offset 8
+ 242              		.cfi_offset 11, -8
+ 243              		.cfi_offset 14, -4
+ 244 0114 04B08DE2 		add	fp, sp, #4
+ 245              	.LCFI9:
+ 246              		.cfi_def_cfa 11, 4
+ 247 0118 10D04DE2 		sub	sp, sp, #16
+ 146:framework.c   ****   register unsigned int programCounter asm ("lr");
+ 147:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 248              		.loc 1 147 0
+ 249 011c 0E30A0E1 		mov	r3, lr
+ 250 0120 043043E2 		sub	r3, r3, #4
+ 251 0124 08300BE5 		str	r3, [fp, #-8]
+ 148:framework.c   **** 
+ 149:framework.c   ****   consolSendString("FIQ exception !!!\nAddress: 0x");
+ 252              		.loc 1 149 0
+ 253 0128 20009FE5 		ldr	r0, .L19
+ 254 012c FEFFFFEB 		bl	consolSendString
+ 150:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 255              		.loc 1 150 0
+ 256 0130 08301BE5 		ldr	r3, [fp, #-8]
+ 257 0134 00308DE5 		str	r3, [sp]
+ 258 0138 3030A0E3 		mov	r3, #48
+ 259 013c 0020A0E3 		mov	r2, #0
+ 260 0140 0810A0E3 		mov	r1, #8
+ 261 0144 1000A0E3 		mov	r0, #16
+ 262 0148 FEFFFFEB 		bl	consolSendNumber
+ 263              	.L18:
+ 151:framework.c   ****   while(1)
+ 264              		.loc 1 151 0 discriminator 1
+ 265 014c FEFFFFEA 		b	.L18
+ 266              	.L20:
+ 267              		.align	2
+ 268              	.L19:
+ 269 0150 98000000 		.word	.LC4
+ 270              		.cfi_endproc
+ 271              	.LFE4:
+ 272              		.size	exceptionHandlerFiq, .-exceptionHandlerFiq
+ 273              		.align	2
+ 274              		.global	exceptionHandlerInit
+ 275              		.syntax unified
+ 276              		.arm
+ 277              		.fpu softvfp
+ 278              		.type	exceptionHandlerInit, %function
+ 279              	exceptionHandlerInit:
+ 280              	.LFB5:
+ 152:framework.c   ****     ;
+ 153:framework.c   **** }
+ 154:framework.c   **** 
+ 155:framework.c   **** #if (IRQ_HANDLER == 0)
+ 156:framework.c   **** /*****************************************************************************
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 9
+
+
+ 157:framework.c   ****  *
+ 158:framework.c   ****  * Description:
+ 159:framework.c   ****  *    Default exception handler for normal interrupts. This handler should
+ 160:framework.c   ****  *    normally never be used.
+ 161:framework.c   ****  *    Prints information and halt. Observe that code execture in exception
+ 162:framework.c   ****  *    mode (as opposed to supervisor mode, which is the normal execution mode).
+ 163:framework.c   ****  *
+ 164:framework.c   ****  ****************************************************************************/
+ 165:framework.c   **** static void
+ 166:framework.c   **** exceptionHandlerIrq(void)
+ 167:framework.c   **** {
+ 168:framework.c   ****   register unsigned int programCounter asm ("lr");
+ 169:framework.c   ****   unsigned int          value = programCounter - (unsigned int)0x04;
+ 170:framework.c   **** 
+ 171:framework.c   ****   consolSendString("IRQ exception !!!\nAddress: 0x");
+ 172:framework.c   ****   consolSendNumber(16, 8, 0, '0', value); 
+ 173:framework.c   ****   while(1)
+ 174:framework.c   ****     ;
+ 175:framework.c   **** }
+ 176:framework.c   **** #endif
+ 177:framework.c   **** 
+ 178:framework.c   **** /******************************************************************************
+ 179:framework.c   ****  * Implementation of public functions
+ 180:framework.c   ****  *****************************************************************************/
+ 181:framework.c   **** 
+ 182:framework.c   **** /*****************************************************************************
+ 183:framework.c   ****  *
+ 184:framework.c   ****  * Description:
+ 185:framework.c   ****  *    Connect all default exception handlers.
+ 186:framework.c   ****  *    The application can overwrite these handlers with new ones.
+ 187:framework.c   ****  *
+ 188:framework.c   ****  ****************************************************************************/
+ 189:framework.c   **** void
+ 190:framework.c   **** exceptionHandlerInit(void)
+ 191:framework.c   **** {
+ 281              		.loc 1 191 0
+ 282              		.cfi_startproc
+ 283              		@ Function supports interworking.
+ 284              		@ args = 0, pretend = 0, frame = 0
+ 285              		@ frame_needed = 1, uses_anonymous_args = 0
+ 286              		@ link register save eliminated.
+ 287 0154 04B02DE5 		str	fp, [sp, #-4]!
+ 288              	.LCFI10:
+ 289              		.cfi_def_cfa_offset 4
+ 290              		.cfi_offset 11, -4
+ 291 0158 00B08DE2 		add	fp, sp, #0
+ 292              	.LCFI11:
+ 293              		.cfi_def_cfa_register 11
+ 192:framework.c   ****   pISR_UNDEF  = (unsigned int)exceptionHandlerUndef;
+ 294              		.loc 1 192 0
+ 295 015c 9131A0E3 		mov	r3, #1073741860
+ 296 0160 58209FE5 		ldr	r2, .L22
+ 297 0164 002083E5 		str	r2, [r3]
+ 193:framework.c   ****   pISR_SWI    = (unsigned int)exceptionHandlerSwi;
+ 298              		.loc 1 193 0
+ 299 0168 A131A0E3 		mov	r3, #1073741864
+ 300 016c 50209FE5 		ldr	r2, .L22+4
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 10
+
+
+ 301 0170 002083E5 		str	r2, [r3]
+ 194:framework.c   ****   pISR_PABORT = (unsigned int)exceptionHandlerPabort;
+ 302              		.loc 1 194 0
+ 303 0174 B131A0E3 		mov	r3, #1073741868
+ 304 0178 48209FE5 		ldr	r2, .L22+8
+ 305 017c 002083E5 		str	r2, [r3]
+ 195:framework.c   ****   pISR_DABORT = (unsigned int)exceptionHandlerDabort;
+ 306              		.loc 1 195 0
+ 307 0180 C131A0E3 		mov	r3, #1073741872
+ 308 0184 40209FE5 		ldr	r2, .L22+12
+ 309 0188 002083E5 		str	r2, [r3]
+ 196:framework.c   ****   pISR_FIQ    = (unsigned int)exceptionHandlerFiq;
+ 310              		.loc 1 196 0
+ 311 018c E131A0E3 		mov	r3, #1073741880
+ 312 0190 38209FE5 		ldr	r2, .L22+16
+ 313 0194 002083E5 		str	r2, [r3]
+ 197:framework.c   **** 
+ 198:framework.c   **** #if (IRQ_HANDLER == 0)
+ 199:framework.c   ****   pISR_IRQ    = (unsigned int)exceptionHandlerIrq;
+ 200:framework.c   **** #endif
+ 201:framework.c   **** 
+ 202:framework.c   ****   //set heap limits
+ 203:framework.c   ****   pHeapStart = (unsigned char*)&end;
+ 314              		.loc 1 203 0
+ 315 0198 34309FE5 		ldr	r3, .L22+20
+ 316 019c 34209FE5 		ldr	r2, .L22+24
+ 317 01a0 002083E5 		str	r2, [r3]
+ 204:framework.c   ****   pHeapEnd   = (unsigned char*)((STK_SADDR - 1) & 0xfffffffc);
+ 318              		.loc 1 204 0
+ 319 01a4 30309FE5 		ldr	r3, .L22+28
+ 320 01a8 30209FE5 		ldr	r2, .L22+32
+ 321 01ac 002083E5 		str	r2, [r3]
+ 205:framework.c   **** }
+ 322              		.loc 1 205 0
+ 323 01b0 0000A0E1 		nop
+ 324 01b4 00D08BE2 		add	sp, fp, #0
+ 325              	.LCFI12:
+ 326              		.cfi_def_cfa_register 13
+ 327              		@ sp needed
+ 328 01b8 04B09DE4 		ldr	fp, [sp], #4
+ 329              	.LCFI13:
+ 330              		.cfi_restore 11
+ 331              		.cfi_def_cfa_offset 0
+ 332 01bc 1EFF2FE1 		bx	lr
+ 333              	.L23:
+ 334              		.align	2
+ 335              	.L22:
+ 336 01c0 00000000 		.word	exceptionHandlerUndef
+ 337 01c4 00000000 		.word	exceptionHandlerSwi
+ 338 01c8 00000000 		.word	exceptionHandlerPabort
+ 339 01cc 00000000 		.word	exceptionHandlerDabort
+ 340 01d0 00000000 		.word	exceptionHandlerFiq
+ 341 01d4 00000000 		.word	pHeapStart
+ 342 01d8 00000000 		.word	end
+ 343 01dc 00000000 		.word	pHeapEnd
+ 344 01e0 A4740040 		.word	1073771684
+ 345              		.cfi_endproc
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 11
+
+
+ 346              	.LFE5:
+ 347              		.size	exceptionHandlerInit, .-exceptionHandlerInit
+ 348              		.align	2
+ 349              		.global	lowLevelInit
+ 350              		.syntax unified
+ 351              		.arm
+ 352              		.fpu softvfp
+ 353              		.type	lowLevelInit, %function
+ 354              	lowLevelInit:
+ 355              	.LFB6:
+ 206:framework.c   **** 
+ 207:framework.c   **** /*****************************************************************************
+ 208:framework.c   ****  *
+ 209:framework.c   ****  * Description:
+ 210:framework.c   ****  *    Initialize system functions and GPIO
+ 211:framework.c   ****  *
+ 212:framework.c   ****  ****************************************************************************/
+ 213:framework.c   **** void
+ 214:framework.c   **** lowLevelInit(void)
+ 215:framework.c   **** {
+ 356              		.loc 1 215 0
+ 357              		.cfi_startproc
+ 358              		@ Function supports interworking.
+ 359              		@ args = 0, pretend = 0, frame = 0
+ 360              		@ frame_needed = 1, uses_anonymous_args = 0
+ 361              		@ link register save eliminated.
+ 362 01e4 04B02DE5 		str	fp, [sp, #-4]!
+ 363              	.LCFI14:
+ 364              		.cfi_def_cfa_offset 4
+ 365              		.cfi_offset 11, -4
+ 366 01e8 00B08DE2 		add	fp, sp, #0
+ 367              	.LCFI15:
+ 368              		.cfi_def_cfa_register 11
+ 216:framework.c   ****   PINSEL0 = 0x00000000;  
+ 369              		.loc 1 216 0
+ 370 01ec 64319FE5 		ldr	r3, .L25
+ 371 01f0 0020A0E3 		mov	r2, #0
+ 372 01f4 002083E5 		str	r2, [r3]
+ 217:framework.c   ****   PINSEL1 = 0x00000000;  
+ 373              		.loc 1 217 0
+ 374 01f8 5C319FE5 		ldr	r3, .L25+4
+ 375 01fc 0020A0E3 		mov	r2, #0
+ 376 0200 002083E5 		str	r2, [r3]
+ 218:framework.c   **** 
+ 219:framework.c   ****   IOSET = 0x00000000;       //Initialize pins to high level
+ 377              		.loc 1 219 0
+ 378 0204 54319FE5 		ldr	r3, .L25+8
+ 379 0208 0020A0E3 		mov	r2, #0
+ 380 020c 002083E5 		str	r2, [r3]
+ 220:framework.c   ****   IOCLR = 0xffffffff;       //Initialize pins to low level
+ 381              		.loc 1 220 0
+ 382 0210 4C319FE5 		ldr	r3, .L25+12
+ 383 0214 0020E0E3 		mvn	r2, #0
+ 384 0218 002083E5 		str	r2, [r3]
+ 221:framework.c   ****   IODIR = 0x00000000;       //Set pin direction
+ 385              		.loc 1 221 0
+ 386 021c 44319FE5 		ldr	r3, .L25+16
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 12
+
+
+ 387 0220 0020A0E3 		mov	r2, #0
+ 388 0224 002083E5 		str	r2, [r3]
+ 222:framework.c   **** 
+ 223:framework.c   ****   //initialize the MAM (Memory Accelerator Module)
+ 224:framework.c   ****   MAMTIM = MAM_TIMING;       //number of CCLK to read from the FLASH
+ 389              		.loc 1 224 0
+ 390 0228 3C319FE5 		ldr	r3, .L25+20
+ 391 022c 0320A0E3 		mov	r2, #3
+ 392 0230 002083E5 		str	r2, [r3]
+ 225:framework.c   ****   MAMCR  = MAM_SETTING;      //0=disabled, 1=partly enabled (enabled for code prefetch, but not for
+ 393              		.loc 1 225 0
+ 394 0234 34319FE5 		ldr	r3, .L25+24
+ 395 0238 0220A0E3 		mov	r2, #2
+ 396 023c 002083E5 		str	r2, [r3]
+ 226:framework.c   **** 
+ 227:framework.c   ****   //initialize the exception vector mapping
+ 228:framework.c   ****   MAMMAP = MAM_MAP;
+ 397              		.loc 1 228 0
+ 398 0240 2C319FE5 		ldr	r3, .L25+28
+ 399 0244 0120A0E3 		mov	r2, #1
+ 400 0248 002083E5 		str	r2, [r3]
+ 229:framework.c   **** 
+ 230:framework.c   ****   //set the peripheral bus speed, PCLK = CCLK / PBSD
+ 231:framework.c   **** 	VPBDIV = PBSD;
+ 401              		.loc 1 231 0
+ 402 024c 24319FE5 		ldr	r3, .L25+32
+ 403 0250 0120A0E3 		mov	r2, #1
+ 404 0254 002083E5 		str	r2, [r3]
+ 232:framework.c   **** 	
+ 233:framework.c   **** 	//initialize VIC
+ 234:framework.c   ****   VICIntEnClr    = 0xFFFFFFFF;           /* Disable ALL interrupts                             */
+ 405              		.loc 1 234 0
+ 406 0258 1C319FE5 		ldr	r3, .L25+36
+ 407 025c 0020E0E3 		mvn	r2, #0
+ 408 0260 002083E5 		str	r2, [r3]
+ 235:framework.c   ****   VICProtection  = 0;                    /* Setup interrupt controller                         */
+ 409              		.loc 1 235 0
+ 410 0264 14319FE5 		ldr	r3, .L25+40
+ 411 0268 0020A0E3 		mov	r2, #0
+ 412 026c 002083E5 		str	r2, [r3]
+ 236:framework.c   ****   VICDefVectAddr = (unsigned int)0;      /* Direct unvectored IRQs to reset, i.e., address 0x0 */
+ 413              		.loc 1 236 0
+ 414 0270 0C319FE5 		ldr	r3, .L25+44
+ 415 0274 0020A0E3 		mov	r2, #0
+ 416 0278 002083E5 		str	r2, [r3]
+ 237:framework.c   **** 
+ 238:framework.c   ****   VICVectAddr0   = (unsigned int)0;      /* Set the vector address                             */
+ 417              		.loc 1 238 0
+ 418 027c 04319FE5 		ldr	r3, .L25+48
+ 419 0280 0020A0E3 		mov	r2, #0
+ 420 0284 002083E5 		str	r2, [r3]
+ 239:framework.c   ****   VICVectAddr1   = (unsigned int)0;      /* Set the vector address                             */
+ 421              		.loc 1 239 0
+ 422 0288 FC309FE5 		ldr	r3, .L25+52
+ 423 028c 0020A0E3 		mov	r2, #0
+ 424 0290 002083E5 		str	r2, [r3]
+ 240:framework.c   ****   VICVectAddr2   = (unsigned int)0;      /* Set the vector address                             */
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 13
+
+
+ 425              		.loc 1 240 0
+ 426 0294 F4309FE5 		ldr	r3, .L25+56
+ 427 0298 0020A0E3 		mov	r2, #0
+ 428 029c 002083E5 		str	r2, [r3]
+ 241:framework.c   ****   VICVectAddr3   = (unsigned int)0;      /* Set the vector address                             */
+ 429              		.loc 1 241 0
+ 430 02a0 EC309FE5 		ldr	r3, .L25+60
+ 431 02a4 0020A0E3 		mov	r2, #0
+ 432 02a8 002083E5 		str	r2, [r3]
+ 242:framework.c   ****   VICVectAddr4   = (unsigned int)0;      /* Set the vector address                             */
+ 433              		.loc 1 242 0
+ 434 02ac E4309FE5 		ldr	r3, .L25+64
+ 435 02b0 0020A0E3 		mov	r2, #0
+ 436 02b4 002083E5 		str	r2, [r3]
+ 243:framework.c   ****   VICVectAddr5   = (unsigned int)0;      /* Set the vector address                             */
+ 437              		.loc 1 243 0
+ 438 02b8 DC309FE5 		ldr	r3, .L25+68
+ 439 02bc 0020A0E3 		mov	r2, #0
+ 440 02c0 002083E5 		str	r2, [r3]
+ 244:framework.c   ****   VICVectAddr6   = (unsigned int)0;      /* Set the vector address                             */
+ 441              		.loc 1 244 0
+ 442 02c4 D4309FE5 		ldr	r3, .L25+72
+ 443 02c8 0020A0E3 		mov	r2, #0
+ 444 02cc 002083E5 		str	r2, [r3]
+ 245:framework.c   ****   VICVectAddr7   = (unsigned int)0;      /* Set the vector address                             */
+ 445              		.loc 1 245 0
+ 446 02d0 CC309FE5 		ldr	r3, .L25+76
+ 447 02d4 0020A0E3 		mov	r2, #0
+ 448 02d8 002083E5 		str	r2, [r3]
+ 246:framework.c   ****   VICVectAddr8   = (unsigned int)0;      /* Set the vector address                             */
+ 449              		.loc 1 246 0
+ 450 02dc C4309FE5 		ldr	r3, .L25+80
+ 451 02e0 0020A0E3 		mov	r2, #0
+ 452 02e4 002083E5 		str	r2, [r3]
+ 247:framework.c   ****   VICVectAddr9   = (unsigned int)0;      /* Set the vector address                             */
+ 453              		.loc 1 247 0
+ 454 02e8 BC309FE5 		ldr	r3, .L25+84
+ 455 02ec 0020A0E3 		mov	r2, #0
+ 456 02f0 002083E5 		str	r2, [r3]
+ 248:framework.c   ****   VICVectAddr10  = (unsigned int)0;      /* Set the vector address                             */
+ 457              		.loc 1 248 0
+ 458 02f4 B4309FE5 		ldr	r3, .L25+88
+ 459 02f8 0020A0E3 		mov	r2, #0
+ 460 02fc 002083E5 		str	r2, [r3]
+ 249:framework.c   ****   VICVectAddr11  = (unsigned int)0;      /* Set the vector address                             */
+ 461              		.loc 1 249 0
+ 462 0300 AC309FE5 		ldr	r3, .L25+92
+ 463 0304 0020A0E3 		mov	r2, #0
+ 464 0308 002083E5 		str	r2, [r3]
+ 250:framework.c   ****   VICVectAddr12  = (unsigned int)0;      /* Set the vector address                             */
+ 465              		.loc 1 250 0
+ 466 030c A4309FE5 		ldr	r3, .L25+96
+ 467 0310 0020A0E3 		mov	r2, #0
+ 468 0314 002083E5 		str	r2, [r3]
+ 251:framework.c   ****   VICVectAddr13  = (unsigned int)0;      /* Set the vector address                             */
+ 469              		.loc 1 251 0
+ 470 0318 9C309FE5 		ldr	r3, .L25+100
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 14
+
+
+ 471 031c 0020A0E3 		mov	r2, #0
+ 472 0320 002083E5 		str	r2, [r3]
+ 252:framework.c   ****   VICVectAddr14  = (unsigned int)0;      /* Set the vector address                             */
+ 473              		.loc 1 252 0
+ 474 0324 94309FE5 		ldr	r3, .L25+104
+ 475 0328 0020A0E3 		mov	r2, #0
+ 476 032c 002083E5 		str	r2, [r3]
+ 253:framework.c   ****   VICVectAddr15  = (unsigned int)0;      /* Set the vector address                             */
+ 477              		.loc 1 253 0
+ 478 0330 8C309FE5 		ldr	r3, .L25+108
+ 479 0334 0020A0E3 		mov	r2, #0
+ 480 0338 002083E5 		str	r2, [r3]
+ 254:framework.c   **** 	
+ 255:framework.c   ****   //enable interrupts (both IRQ and FIQ) 
+ 256:framework.c   ****   asm volatile ("mrs r3, cpsr       \n\t"                          
+ 481              		.loc 1 256 0
+ 482              		.syntax divided
+ 483              	@ 256 "framework.c" 1
+ 484 033c 00300FE1 		mrs r3, cpsr       
+ 485 0340 C030C3E3 		bic r3, r3, #0xC0  
+ 486 0344 03F029E1 		msr cpsr, r3       
+ 487              		
+ 488              	@ 0 "" 2
+ 257:framework.c   ****                 "bic r3, r3, #0xC0  \n\t"                      
+ 258:framework.c   ****                 "msr cpsr, r3       \n\t"                          
+ 259:framework.c   ****                 :                                       
+ 260:framework.c   ****                 :                                       
+ 261:framework.c   ****                 : "r3" );
+ 262:framework.c   **** }
+ 489              		.loc 1 262 0
+ 490              		.arm
+ 491              		.syntax unified
+ 492 0348 0000A0E1 		nop
+ 493 034c 00D08BE2 		add	sp, fp, #0
+ 494              	.LCFI16:
+ 495              		.cfi_def_cfa_register 13
+ 496              		@ sp needed
+ 497 0350 04B09DE4 		ldr	fp, [sp], #4
+ 498              	.LCFI17:
+ 499              		.cfi_restore 11
+ 500              		.cfi_def_cfa_offset 0
+ 501 0354 1EFF2FE1 		bx	lr
+ 502              	.L26:
+ 503              		.align	2
+ 504              	.L25:
+ 505 0358 00C002E0 		.word	-536690688
+ 506 035c 04C002E0 		.word	-536690684
+ 507 0360 048002E0 		.word	-536707068
+ 508 0364 0C8002E0 		.word	-536707060
+ 509 0368 088002E0 		.word	-536707064
+ 510 036c 04C01FE0 		.word	-534790140
+ 511 0370 00C01FE0 		.word	-534790144
+ 512 0374 40C01FE0 		.word	-534790080
+ 513 0378 00C11FE0 		.word	-534789888
+ 514 037c 14F0FFFF 		.word	-4076
+ 515 0380 20F0FFFF 		.word	-4064
+ 516 0384 34F0FFFF 		.word	-4044
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 15
+
+
+ 517 0388 00F1FFFF 		.word	-3840
+ 518 038c 04F1FFFF 		.word	-3836
+ 519 0390 08F1FFFF 		.word	-3832
+ 520 0394 0CF1FFFF 		.word	-3828
+ 521 0398 10F1FFFF 		.word	-3824
+ 522 039c 14F1FFFF 		.word	-3820
+ 523 03a0 18F1FFFF 		.word	-3816
+ 524 03a4 1CF1FFFF 		.word	-3812
+ 525 03a8 20F1FFFF 		.word	-3808
+ 526 03ac 24F1FFFF 		.word	-3804
+ 527 03b0 28F1FFFF 		.word	-3800
+ 528 03b4 2CF1FFFF 		.word	-3796
+ 529 03b8 30F1FFFF 		.word	-3792
+ 530 03bc 34F1FFFF 		.word	-3788
+ 531 03c0 38F1FFFF 		.word	-3784
+ 532 03c4 3CF1FFFF 		.word	-3780
+ 533              		.cfi_endproc
+ 534              	.LFE6:
+ 535              		.size	lowLevelInit, .-lowLevelInit
+ 536              		.align	2
+ 537              		.global	printf_init
+ 538              		.syntax unified
+ 539              		.arm
+ 540              		.fpu softvfp
+ 541              		.type	printf_init, %function
+ 542              	printf_init:
+ 543              	.LFB7:
+ 263:framework.c   **** 
+ 264:framework.c   **** /*****************************************************************************
+ 265:framework.c   ****  *
+ 266:framework.c   ****  * Description:
+ 267:framework.c   ****  *    Initialize the consol
+ 268:framework.c   ****  *
+ 269:framework.c   ****  ****************************************************************************/
+ 270:framework.c   **** void
+ 271:framework.c   **** printf_init(void)
+ 272:framework.c   **** {
+ 544              		.loc 1 272 0
+ 545              		.cfi_startproc
+ 546              		@ Function supports interworking.
+ 547              		@ args = 0, pretend = 0, frame = 0
+ 548              		@ frame_needed = 1, uses_anonymous_args = 0
+ 549 03c8 00482DE9 		push	{fp, lr}
+ 550              	.LCFI18:
+ 551              		.cfi_def_cfa_offset 8
+ 552              		.cfi_offset 11, -8
+ 553              		.cfi_offset 14, -4
+ 554 03cc 04B08DE2 		add	fp, sp, #4
+ 555              	.LCFI19:
+ 556              		.cfi_def_cfa 11, 4
+ 273:framework.c   ****   //initialize the consol
+ 274:framework.c   ****   consolInit();
+ 557              		.loc 1 274 0
+ 558 03d0 FEFFFFEB 		bl	consolInit
+ 275:framework.c   ****   
+ 276:framework.c   **** #ifdef CONSOL_STARTUP_DELAY
+ 277:framework.c   ****   /*
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 16
+
+
+ 278:framework.c   ****    * setup timer #1 for a short delay
+ 279:framework.c   ****    */
+ 280:framework.c   ****   TIMER1_TCR = 0x02;          //stop and reset timer
+ 559              		.loc 1 280 0
+ 560 03d4 68309FE5 		ldr	r3, .L29
+ 561 03d8 0220A0E3 		mov	r2, #2
+ 562 03dc 002083E5 		str	r2, [r3]
+ 281:framework.c   ****   TIMER1_PR  = 0x00;          //set prescaler to zero
+ 563              		.loc 1 281 0
+ 564 03e0 60309FE5 		ldr	r3, .L29+4
+ 565 03e4 0020A0E3 		mov	r2, #0
+ 566 03e8 002083E5 		str	r2, [r3]
+ 282:framework.c   ****   TIMER1_MR0 = CONSOL_STARTUP_DELAY_LENGTH * ((FOSC * PLL_MUL)/ (1000000 * PBSD));
+ 567              		.loc 1 282 0
+ 568 03ec 58309FE5 		ldr	r3, .L29+8
+ 569 03f0 58209FE5 		ldr	r2, .L29+12
+ 570 03f4 002083E5 		str	r2, [r3]
+ 283:framework.c   ****   TIMER1_IR  = 0xff;          //reset all interrrupt flags
+ 571              		.loc 1 283 0
+ 572 03f8 54309FE5 		ldr	r3, .L29+16
+ 573 03fc FF20A0E3 		mov	r2, #255
+ 574 0400 002083E5 		str	r2, [r3]
+ 284:framework.c   ****   TIMER1_MCR = 0x04;          //stop timer on match
+ 575              		.loc 1 284 0
+ 576 0404 4C309FE5 		ldr	r3, .L29+20
+ 577 0408 0420A0E3 		mov	r2, #4
+ 578 040c 002083E5 		str	r2, [r3]
+ 285:framework.c   ****   TIMER1_TCR = 0x01;          //start timer
+ 579              		.loc 1 285 0
+ 580 0410 2C309FE5 		ldr	r3, .L29
+ 581 0414 0120A0E3 		mov	r2, #1
+ 582 0418 002083E5 		str	r2, [r3]
+ 286:framework.c   ****   
+ 287:framework.c   ****   //wait until delay time has elapsed
+ 288:framework.c   ****   while (TIMER1_TCR & 0x01)
+ 583              		.loc 1 288 0
+ 584 041c 0000A0E1 		nop
+ 585              	.L28:
+ 586              		.loc 1 288 0 is_stmt 0 discriminator 1
+ 587 0420 1C309FE5 		ldr	r3, .L29
+ 588 0424 003093E5 		ldr	r3, [r3]
+ 589 0428 013003E2 		and	r3, r3, #1
+ 590 042c 000053E3 		cmp	r3, #0
+ 591 0430 FAFFFF1A 		bne	.L28
+ 289:framework.c   ****     ;
+ 290:framework.c   **** #endif
+ 291:framework.c   **** }
+ 592              		.loc 1 291 0 is_stmt 1
+ 593 0434 0000A0E1 		nop
+ 594 0438 04D04BE2 		sub	sp, fp, #4
+ 595              	.LCFI20:
+ 596              		.cfi_def_cfa 13, 8
+ 597              		@ sp needed
+ 598 043c 0048BDE8 		pop	{fp, lr}
+ 599              	.LCFI21:
+ 600              		.cfi_restore 14
+ 601              		.cfi_restore 11
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 17
+
+
+ 602              		.cfi_def_cfa_offset 0
+ 603 0440 1EFF2FE1 		bx	lr
+ 604              	.L30:
+ 605              		.align	2
+ 606              	.L29:
+ 607 0444 048000E0 		.word	-536838140
+ 608 0448 0C8000E0 		.word	-536838132
+ 609 044c 188000E0 		.word	-536838120
+ 610 0450 A8160000 		.word	5800
+ 611 0454 008000E0 		.word	-536838144
+ 612 0458 148000E0 		.word	-536838124
+ 613              		.cfi_endproc
+ 614              	.LFE7:
+ 615              		.size	printf_init, .-printf_init
+ 616              	.Letext0:
+ 617              		.file 2 "framework.h"
+ 618              		.section	.debug_info,"",%progbits
+ 619              	.Ldebug_info0:
+ 620 0000 C9010000 		.4byte	0x1c9
+ 621 0004 0200     		.2byte	0x2
+ 622 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 623 000a 04       		.byte	0x4
+ 624 000b 01       		.uleb128 0x1
+ 625 000c D1000000 		.4byte	.LASF15
+ 626 0010 0C       		.byte	0xc
+ 627 0011 57010000 		.4byte	.LASF16
+ 628 0015 40000000 		.4byte	.LASF17
+ 629 0019 00000000 		.4byte	.Ltext0
+ 630 001d 5C040000 		.4byte	.Letext0
+ 631 0021 00000000 		.4byte	.Ldebug_line0
+ 632 0025 02       		.uleb128 0x2
+ 633 0026 0D000000 		.4byte	.LASF0
+ 634 002a 02       		.byte	0x2
+ 635 002b 5C       		.byte	0x5c
+ 636 002c 32000000 		.4byte	0x32
+ 637 0030 01       		.byte	0x1
+ 638 0031 01       		.byte	0x1
+ 639 0032 03       		.uleb128 0x3
+ 640 0033 04       		.byte	0x4
+ 641 0034 38000000 		.4byte	0x38
+ 642 0038 04       		.uleb128 0x4
+ 643 0039 01       		.byte	0x1
+ 644 003a 08       		.byte	0x8
+ 645 003b AE000000 		.4byte	.LASF2
+ 646 003f 02       		.uleb128 0x2
+ 647 0040 49010000 		.4byte	.LASF1
+ 648 0044 02       		.byte	0x2
+ 649 0045 5D       		.byte	0x5d
+ 650 0046 32000000 		.4byte	0x32
+ 651 004a 01       		.byte	0x1
+ 652 004b 01       		.byte	0x1
+ 653 004c 05       		.uleb128 0x5
+ 654 004d 656E6400 		.ascii	"end\000"
+ 655 0051 01       		.byte	0x1
+ 656 0052 1B       		.byte	0x1b
+ 657 0053 656E6400 		.ascii	"end\000"
+ 658 0057 5D000000 		.4byte	0x5d
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 18
+
+
+ 659 005b 01       		.byte	0x1
+ 660 005c 01       		.byte	0x1
+ 661 005d 04       		.uleb128 0x4
+ 662 005e 01       		.byte	0x1
+ 663 005f 08       		.byte	0x8
+ 664 0060 52010000 		.4byte	.LASF3
+ 665 0064 06       		.uleb128 0x6
+ 666 0065 25000000 		.4byte	0x25
+ 667 0069 01       		.byte	0x1
+ 668 006a 21       		.byte	0x21
+ 669 006b 05       		.byte	0x5
+ 670 006c 03       		.byte	0x3
+ 671 006d 00000000 		.4byte	pHeapStart
+ 672 0071 06       		.uleb128 0x6
+ 673 0072 3F000000 		.4byte	0x3f
+ 674 0076 01       		.byte	0x1
+ 675 0077 22       		.byte	0x22
+ 676 0078 05       		.byte	0x5
+ 677 0079 03       		.byte	0x3
+ 678 007a 00000000 		.4byte	pHeapEnd
+ 679 007e 07       		.uleb128 0x7
+ 680 007f 01       		.byte	0x1
+ 681 0080 27000000 		.4byte	.LASF4
+ 682 0084 01       		.byte	0x1
+ 683 0085 0F01     		.2byte	0x10f
+ 684 0087 01       		.byte	0x1
+ 685 0088 C8030000 		.4byte	.LFB7
+ 686 008c 5C040000 		.4byte	.LFE7
+ 687 0090 00000000 		.4byte	.LLST7
+ 688 0094 01       		.byte	0x1
+ 689 0095 08       		.uleb128 0x8
+ 690 0096 01       		.byte	0x1
+ 691 0097 33000000 		.4byte	.LASF5
+ 692 009b 01       		.byte	0x1
+ 693 009c D6       		.byte	0xd6
+ 694 009d 01       		.byte	0x1
+ 695 009e E4010000 		.4byte	.LFB6
+ 696 00a2 C8030000 		.4byte	.LFE6
+ 697 00a6 44000000 		.4byte	.LLST6
+ 698 00aa 01       		.byte	0x1
+ 699 00ab 08       		.uleb128 0x8
+ 700 00ac 01       		.byte	0x1
+ 701 00ad BC000000 		.4byte	.LASF6
+ 702 00b1 01       		.byte	0x1
+ 703 00b2 BE       		.byte	0xbe
+ 704 00b3 01       		.byte	0x1
+ 705 00b4 54010000 		.4byte	.LFB5
+ 706 00b8 E4010000 		.4byte	.LFE5
+ 707 00bc 88000000 		.4byte	.LLST5
+ 708 00c0 01       		.byte	0x1
+ 709 00c1 09       		.uleb128 0x9
+ 710 00c2 7D000000 		.4byte	.LASF10
+ 711 00c6 01       		.byte	0x1
+ 712 00c7 90       		.byte	0x90
+ 713 00c8 01       		.byte	0x1
+ 714 00c9 10010000 		.4byte	.LFB4
+ 715 00cd 54010000 		.4byte	.LFE4
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 19
+
+
+ 716 00d1 CC000000 		.4byte	.LLST4
+ 717 00d5 01       		.byte	0x1
+ 718 00d6 F6000000 		.4byte	0xf6
+ 719 00da 0A       		.uleb128 0xa
+ 720 00db 18000000 		.4byte	.LASF7
+ 721 00df 01       		.byte	0x1
+ 722 00e0 92       		.byte	0x92
+ 723 00e1 F6000000 		.4byte	0xf6
+ 724 00e5 01       		.byte	0x1
+ 725 00e6 5E       		.byte	0x5e
+ 726 00e7 0A       		.uleb128 0xa
+ 727 00e8 91000000 		.4byte	.LASF8
+ 728 00ec 01       		.byte	0x1
+ 729 00ed 93       		.byte	0x93
+ 730 00ee F6000000 		.4byte	0xf6
+ 731 00f2 02       		.byte	0x2
+ 732 00f3 91       		.byte	0x91
+ 733 00f4 74       		.sleb128 -12
+ 734 00f5 00       		.byte	0
+ 735 00f6 04       		.uleb128 0x4
+ 736 00f7 04       		.byte	0x4
+ 737 00f8 07       		.byte	0x7
+ 738 00f9 00000000 		.4byte	.LASF9
+ 739 00fd 09       		.uleb128 0x9
+ 740 00fe 66000000 		.4byte	.LASF11
+ 741 0102 01       		.byte	0x1
+ 742 0103 7C       		.byte	0x7c
+ 743 0104 01       		.byte	0x1
+ 744 0105 CC000000 		.4byte	.LFB3
+ 745 0109 10010000 		.4byte	.LFE3
+ 746 010d F8000000 		.4byte	.LLST3
+ 747 0111 01       		.byte	0x1
+ 748 0112 32010000 		.4byte	0x132
+ 749 0116 0A       		.uleb128 0xa
+ 750 0117 18000000 		.4byte	.LASF7
+ 751 011b 01       		.byte	0x1
+ 752 011c 7E       		.byte	0x7e
+ 753 011d F6000000 		.4byte	0xf6
+ 754 0121 01       		.byte	0x1
+ 755 0122 5E       		.byte	0x5e
+ 756 0123 0A       		.uleb128 0xa
+ 757 0124 91000000 		.4byte	.LASF8
+ 758 0128 01       		.byte	0x1
+ 759 0129 7F       		.byte	0x7f
+ 760 012a F6000000 		.4byte	0xf6
+ 761 012e 02       		.byte	0x2
+ 762 012f 91       		.byte	0x91
+ 763 0130 74       		.sleb128 -12
+ 764 0131 00       		.byte	0
+ 765 0132 0B       		.uleb128 0xb
+ 766 0133 97000000 		.4byte	.LASF13
+ 767 0137 01       		.byte	0x1
+ 768 0138 68       		.byte	0x68
+ 769 0139 88000000 		.4byte	.LFB2
+ 770 013d CC000000 		.4byte	.LFE2
+ 771 0141 24010000 		.4byte	.LLST2
+ 772 0145 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 20
+
+
+ 773 0146 66010000 		.4byte	0x166
+ 774 014a 0A       		.uleb128 0xa
+ 775 014b 18000000 		.4byte	.LASF7
+ 776 014f 01       		.byte	0x1
+ 777 0150 6A       		.byte	0x6a
+ 778 0151 F6000000 		.4byte	0xf6
+ 779 0155 01       		.byte	0x1
+ 780 0156 5E       		.byte	0x5e
+ 781 0157 0A       		.uleb128 0xa
+ 782 0158 91000000 		.4byte	.LASF8
+ 783 015c 01       		.byte	0x1
+ 784 015d 6B       		.byte	0x6b
+ 785 015e F6000000 		.4byte	0xf6
+ 786 0162 02       		.byte	0x2
+ 787 0163 91       		.byte	0x91
+ 788 0164 74       		.sleb128 -12
+ 789 0165 00       		.byte	0
+ 790 0166 09       		.uleb128 0x9
+ 791 0167 79010000 		.4byte	.LASF12
+ 792 016b 01       		.byte	0x1
+ 793 016c 52       		.byte	0x52
+ 794 016d 01       		.byte	0x1
+ 795 016e 44000000 		.4byte	.LFB1
+ 796 0172 88000000 		.4byte	.LFE1
+ 797 0176 50010000 		.4byte	.LLST1
+ 798 017a 01       		.byte	0x1
+ 799 017b 9B010000 		.4byte	0x19b
+ 800 017f 0A       		.uleb128 0xa
+ 801 0180 18000000 		.4byte	.LASF7
+ 802 0184 01       		.byte	0x1
+ 803 0185 54       		.byte	0x54
+ 804 0186 F6000000 		.4byte	0xf6
+ 805 018a 01       		.byte	0x1
+ 806 018b 5E       		.byte	0x5e
+ 807 018c 0A       		.uleb128 0xa
+ 808 018d 91000000 		.4byte	.LASF8
+ 809 0191 01       		.byte	0x1
+ 810 0192 55       		.byte	0x55
+ 811 0193 F6000000 		.4byte	0xf6
+ 812 0197 02       		.byte	0x2
+ 813 0198 91       		.byte	0x91
+ 814 0199 74       		.sleb128 -12
+ 815 019a 00       		.byte	0
+ 816 019b 0C       		.uleb128 0xc
+ 817 019c 63010000 		.4byte	.LASF14
+ 818 01a0 01       		.byte	0x1
+ 819 01a1 3E       		.byte	0x3e
+ 820 01a2 01       		.byte	0x1
+ 821 01a3 00000000 		.4byte	.LFB0
+ 822 01a7 44000000 		.4byte	.LFE0
+ 823 01ab 7C010000 		.4byte	.LLST0
+ 824 01af 01       		.byte	0x1
+ 825 01b0 0A       		.uleb128 0xa
+ 826 01b1 18000000 		.4byte	.LASF7
+ 827 01b5 01       		.byte	0x1
+ 828 01b6 40       		.byte	0x40
+ 829 01b7 F6000000 		.4byte	0xf6
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 21
+
+
+ 830 01bb 01       		.byte	0x1
+ 831 01bc 5E       		.byte	0x5e
+ 832 01bd 0A       		.uleb128 0xa
+ 833 01be 91000000 		.4byte	.LASF8
+ 834 01c2 01       		.byte	0x1
+ 835 01c3 41       		.byte	0x41
+ 836 01c4 F6000000 		.4byte	0xf6
+ 837 01c8 02       		.byte	0x2
+ 838 01c9 91       		.byte	0x91
+ 839 01ca 74       		.sleb128 -12
+ 840 01cb 00       		.byte	0
+ 841 01cc 00       		.byte	0
+ 842              		.section	.debug_abbrev,"",%progbits
+ 843              	.Ldebug_abbrev0:
+ 844 0000 01       		.uleb128 0x1
+ 845 0001 11       		.uleb128 0x11
+ 846 0002 01       		.byte	0x1
+ 847 0003 25       		.uleb128 0x25
+ 848 0004 0E       		.uleb128 0xe
+ 849 0005 13       		.uleb128 0x13
+ 850 0006 0B       		.uleb128 0xb
+ 851 0007 03       		.uleb128 0x3
+ 852 0008 0E       		.uleb128 0xe
+ 853 0009 1B       		.uleb128 0x1b
+ 854 000a 0E       		.uleb128 0xe
+ 855 000b 11       		.uleb128 0x11
+ 856 000c 01       		.uleb128 0x1
+ 857 000d 12       		.uleb128 0x12
+ 858 000e 01       		.uleb128 0x1
+ 859 000f 10       		.uleb128 0x10
+ 860 0010 06       		.uleb128 0x6
+ 861 0011 00       		.byte	0
+ 862 0012 00       		.byte	0
+ 863 0013 02       		.uleb128 0x2
+ 864 0014 34       		.uleb128 0x34
+ 865 0015 00       		.byte	0
+ 866 0016 03       		.uleb128 0x3
+ 867 0017 0E       		.uleb128 0xe
+ 868 0018 3A       		.uleb128 0x3a
+ 869 0019 0B       		.uleb128 0xb
+ 870 001a 3B       		.uleb128 0x3b
+ 871 001b 0B       		.uleb128 0xb
+ 872 001c 49       		.uleb128 0x49
+ 873 001d 13       		.uleb128 0x13
+ 874 001e 3F       		.uleb128 0x3f
+ 875 001f 0C       		.uleb128 0xc
+ 876 0020 3C       		.uleb128 0x3c
+ 877 0021 0C       		.uleb128 0xc
+ 878 0022 00       		.byte	0
+ 879 0023 00       		.byte	0
+ 880 0024 03       		.uleb128 0x3
+ 881 0025 0F       		.uleb128 0xf
+ 882 0026 00       		.byte	0
+ 883 0027 0B       		.uleb128 0xb
+ 884 0028 0B       		.uleb128 0xb
+ 885 0029 49       		.uleb128 0x49
+ 886 002a 13       		.uleb128 0x13
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 22
+
+
+ 887 002b 00       		.byte	0
+ 888 002c 00       		.byte	0
+ 889 002d 04       		.uleb128 0x4
+ 890 002e 24       		.uleb128 0x24
+ 891 002f 00       		.byte	0
+ 892 0030 0B       		.uleb128 0xb
+ 893 0031 0B       		.uleb128 0xb
+ 894 0032 3E       		.uleb128 0x3e
+ 895 0033 0B       		.uleb128 0xb
+ 896 0034 03       		.uleb128 0x3
+ 897 0035 0E       		.uleb128 0xe
+ 898 0036 00       		.byte	0
+ 899 0037 00       		.byte	0
+ 900 0038 05       		.uleb128 0x5
+ 901 0039 34       		.uleb128 0x34
+ 902 003a 00       		.byte	0
+ 903 003b 03       		.uleb128 0x3
+ 904 003c 08       		.uleb128 0x8
+ 905 003d 3A       		.uleb128 0x3a
+ 906 003e 0B       		.uleb128 0xb
+ 907 003f 3B       		.uleb128 0x3b
+ 908 0040 0B       		.uleb128 0xb
+ 909 0041 8740     		.uleb128 0x2007
+ 910 0043 08       		.uleb128 0x8
+ 911 0044 49       		.uleb128 0x49
+ 912 0045 13       		.uleb128 0x13
+ 913 0046 3F       		.uleb128 0x3f
+ 914 0047 0C       		.uleb128 0xc
+ 915 0048 3C       		.uleb128 0x3c
+ 916 0049 0C       		.uleb128 0xc
+ 917 004a 00       		.byte	0
+ 918 004b 00       		.byte	0
+ 919 004c 06       		.uleb128 0x6
+ 920 004d 34       		.uleb128 0x34
+ 921 004e 00       		.byte	0
+ 922 004f 47       		.uleb128 0x47
+ 923 0050 13       		.uleb128 0x13
+ 924 0051 3A       		.uleb128 0x3a
+ 925 0052 0B       		.uleb128 0xb
+ 926 0053 3B       		.uleb128 0x3b
+ 927 0054 0B       		.uleb128 0xb
+ 928 0055 02       		.uleb128 0x2
+ 929 0056 0A       		.uleb128 0xa
+ 930 0057 00       		.byte	0
+ 931 0058 00       		.byte	0
+ 932 0059 07       		.uleb128 0x7
+ 933 005a 2E       		.uleb128 0x2e
+ 934 005b 00       		.byte	0
+ 935 005c 3F       		.uleb128 0x3f
+ 936 005d 0C       		.uleb128 0xc
+ 937 005e 03       		.uleb128 0x3
+ 938 005f 0E       		.uleb128 0xe
+ 939 0060 3A       		.uleb128 0x3a
+ 940 0061 0B       		.uleb128 0xb
+ 941 0062 3B       		.uleb128 0x3b
+ 942 0063 05       		.uleb128 0x5
+ 943 0064 27       		.uleb128 0x27
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 23
+
+
+ 944 0065 0C       		.uleb128 0xc
+ 945 0066 11       		.uleb128 0x11
+ 946 0067 01       		.uleb128 0x1
+ 947 0068 12       		.uleb128 0x12
+ 948 0069 01       		.uleb128 0x1
+ 949 006a 40       		.uleb128 0x40
+ 950 006b 06       		.uleb128 0x6
+ 951 006c 9642     		.uleb128 0x2116
+ 952 006e 0C       		.uleb128 0xc
+ 953 006f 00       		.byte	0
+ 954 0070 00       		.byte	0
+ 955 0071 08       		.uleb128 0x8
+ 956 0072 2E       		.uleb128 0x2e
+ 957 0073 00       		.byte	0
+ 958 0074 3F       		.uleb128 0x3f
+ 959 0075 0C       		.uleb128 0xc
+ 960 0076 03       		.uleb128 0x3
+ 961 0077 0E       		.uleb128 0xe
+ 962 0078 3A       		.uleb128 0x3a
+ 963 0079 0B       		.uleb128 0xb
+ 964 007a 3B       		.uleb128 0x3b
+ 965 007b 0B       		.uleb128 0xb
+ 966 007c 27       		.uleb128 0x27
+ 967 007d 0C       		.uleb128 0xc
+ 968 007e 11       		.uleb128 0x11
+ 969 007f 01       		.uleb128 0x1
+ 970 0080 12       		.uleb128 0x12
+ 971 0081 01       		.uleb128 0x1
+ 972 0082 40       		.uleb128 0x40
+ 973 0083 06       		.uleb128 0x6
+ 974 0084 9742     		.uleb128 0x2117
+ 975 0086 0C       		.uleb128 0xc
+ 976 0087 00       		.byte	0
+ 977 0088 00       		.byte	0
+ 978 0089 09       		.uleb128 0x9
+ 979 008a 2E       		.uleb128 0x2e
+ 980 008b 01       		.byte	0x1
+ 981 008c 03       		.uleb128 0x3
+ 982 008d 0E       		.uleb128 0xe
+ 983 008e 3A       		.uleb128 0x3a
+ 984 008f 0B       		.uleb128 0xb
+ 985 0090 3B       		.uleb128 0x3b
+ 986 0091 0B       		.uleb128 0xb
+ 987 0092 27       		.uleb128 0x27
+ 988 0093 0C       		.uleb128 0xc
+ 989 0094 11       		.uleb128 0x11
+ 990 0095 01       		.uleb128 0x1
+ 991 0096 12       		.uleb128 0x12
+ 992 0097 01       		.uleb128 0x1
+ 993 0098 40       		.uleb128 0x40
+ 994 0099 06       		.uleb128 0x6
+ 995 009a 9642     		.uleb128 0x2116
+ 996 009c 0C       		.uleb128 0xc
+ 997 009d 01       		.uleb128 0x1
+ 998 009e 13       		.uleb128 0x13
+ 999 009f 00       		.byte	0
+ 1000 00a0 00       		.byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 24
+
+
+ 1001 00a1 0A       		.uleb128 0xa
+ 1002 00a2 34       		.uleb128 0x34
+ 1003 00a3 00       		.byte	0
+ 1004 00a4 03       		.uleb128 0x3
+ 1005 00a5 0E       		.uleb128 0xe
+ 1006 00a6 3A       		.uleb128 0x3a
+ 1007 00a7 0B       		.uleb128 0xb
+ 1008 00a8 3B       		.uleb128 0x3b
+ 1009 00a9 0B       		.uleb128 0xb
+ 1010 00aa 49       		.uleb128 0x49
+ 1011 00ab 13       		.uleb128 0x13
+ 1012 00ac 02       		.uleb128 0x2
+ 1013 00ad 0A       		.uleb128 0xa
+ 1014 00ae 00       		.byte	0
+ 1015 00af 00       		.byte	0
+ 1016 00b0 0B       		.uleb128 0xb
+ 1017 00b1 2E       		.uleb128 0x2e
+ 1018 00b2 01       		.byte	0x1
+ 1019 00b3 03       		.uleb128 0x3
+ 1020 00b4 0E       		.uleb128 0xe
+ 1021 00b5 3A       		.uleb128 0x3a
+ 1022 00b6 0B       		.uleb128 0xb
+ 1023 00b7 3B       		.uleb128 0x3b
+ 1024 00b8 0B       		.uleb128 0xb
+ 1025 00b9 11       		.uleb128 0x11
+ 1026 00ba 01       		.uleb128 0x1
+ 1027 00bb 12       		.uleb128 0x12
+ 1028 00bc 01       		.uleb128 0x1
+ 1029 00bd 40       		.uleb128 0x40
+ 1030 00be 06       		.uleb128 0x6
+ 1031 00bf 9642     		.uleb128 0x2116
+ 1032 00c1 0C       		.uleb128 0xc
+ 1033 00c2 01       		.uleb128 0x1
+ 1034 00c3 13       		.uleb128 0x13
+ 1035 00c4 00       		.byte	0
+ 1036 00c5 00       		.byte	0
+ 1037 00c6 0C       		.uleb128 0xc
+ 1038 00c7 2E       		.uleb128 0x2e
+ 1039 00c8 01       		.byte	0x1
+ 1040 00c9 03       		.uleb128 0x3
+ 1041 00ca 0E       		.uleb128 0xe
+ 1042 00cb 3A       		.uleb128 0x3a
+ 1043 00cc 0B       		.uleb128 0xb
+ 1044 00cd 3B       		.uleb128 0x3b
+ 1045 00ce 0B       		.uleb128 0xb
+ 1046 00cf 27       		.uleb128 0x27
+ 1047 00d0 0C       		.uleb128 0xc
+ 1048 00d1 11       		.uleb128 0x11
+ 1049 00d2 01       		.uleb128 0x1
+ 1050 00d3 12       		.uleb128 0x12
+ 1051 00d4 01       		.uleb128 0x1
+ 1052 00d5 40       		.uleb128 0x40
+ 1053 00d6 06       		.uleb128 0x6
+ 1054 00d7 9642     		.uleb128 0x2116
+ 1055 00d9 0C       		.uleb128 0xc
+ 1056 00da 00       		.byte	0
+ 1057 00db 00       		.byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 25
+
+
+ 1058 00dc 00       		.byte	0
+ 1059              		.section	.debug_loc,"",%progbits
+ 1060              	.Ldebug_loc0:
+ 1061              	.LLST7:
+ 1062 0000 C8030000 		.4byte	.LFB7-.Ltext0
+ 1063 0004 CC030000 		.4byte	.LCFI18-.Ltext0
+ 1064 0008 0200     		.2byte	0x2
+ 1065 000a 7D       		.byte	0x7d
+ 1066 000b 00       		.sleb128 0
+ 1067 000c CC030000 		.4byte	.LCFI18-.Ltext0
+ 1068 0010 D0030000 		.4byte	.LCFI19-.Ltext0
+ 1069 0014 0200     		.2byte	0x2
+ 1070 0016 7D       		.byte	0x7d
+ 1071 0017 08       		.sleb128 8
+ 1072 0018 D0030000 		.4byte	.LCFI19-.Ltext0
+ 1073 001c 3C040000 		.4byte	.LCFI20-.Ltext0
+ 1074 0020 0200     		.2byte	0x2
+ 1075 0022 7B       		.byte	0x7b
+ 1076 0023 04       		.sleb128 4
+ 1077 0024 3C040000 		.4byte	.LCFI20-.Ltext0
+ 1078 0028 40040000 		.4byte	.LCFI21-.Ltext0
+ 1079 002c 0200     		.2byte	0x2
+ 1080 002e 7D       		.byte	0x7d
+ 1081 002f 08       		.sleb128 8
+ 1082 0030 40040000 		.4byte	.LCFI21-.Ltext0
+ 1083 0034 5C040000 		.4byte	.LFE7-.Ltext0
+ 1084 0038 0200     		.2byte	0x2
+ 1085 003a 7D       		.byte	0x7d
+ 1086 003b 00       		.sleb128 0
+ 1087 003c 00000000 		.4byte	0
+ 1088 0040 00000000 		.4byte	0
+ 1089              	.LLST6:
+ 1090 0044 E4010000 		.4byte	.LFB6-.Ltext0
+ 1091 0048 E8010000 		.4byte	.LCFI14-.Ltext0
+ 1092 004c 0200     		.2byte	0x2
+ 1093 004e 7D       		.byte	0x7d
+ 1094 004f 00       		.sleb128 0
+ 1095 0050 E8010000 		.4byte	.LCFI14-.Ltext0
+ 1096 0054 EC010000 		.4byte	.LCFI15-.Ltext0
+ 1097 0058 0200     		.2byte	0x2
+ 1098 005a 7D       		.byte	0x7d
+ 1099 005b 04       		.sleb128 4
+ 1100 005c EC010000 		.4byte	.LCFI15-.Ltext0
+ 1101 0060 50030000 		.4byte	.LCFI16-.Ltext0
+ 1102 0064 0200     		.2byte	0x2
+ 1103 0066 7B       		.byte	0x7b
+ 1104 0067 04       		.sleb128 4
+ 1105 0068 50030000 		.4byte	.LCFI16-.Ltext0
+ 1106 006c 54030000 		.4byte	.LCFI17-.Ltext0
+ 1107 0070 0200     		.2byte	0x2
+ 1108 0072 7D       		.byte	0x7d
+ 1109 0073 04       		.sleb128 4
+ 1110 0074 54030000 		.4byte	.LCFI17-.Ltext0
+ 1111 0078 C8030000 		.4byte	.LFE6-.Ltext0
+ 1112 007c 0200     		.2byte	0x2
+ 1113 007e 7D       		.byte	0x7d
+ 1114 007f 00       		.sleb128 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 26
+
+
+ 1115 0080 00000000 		.4byte	0
+ 1116 0084 00000000 		.4byte	0
+ 1117              	.LLST5:
+ 1118 0088 54010000 		.4byte	.LFB5-.Ltext0
+ 1119 008c 58010000 		.4byte	.LCFI10-.Ltext0
+ 1120 0090 0200     		.2byte	0x2
+ 1121 0092 7D       		.byte	0x7d
+ 1122 0093 00       		.sleb128 0
+ 1123 0094 58010000 		.4byte	.LCFI10-.Ltext0
+ 1124 0098 5C010000 		.4byte	.LCFI11-.Ltext0
+ 1125 009c 0200     		.2byte	0x2
+ 1126 009e 7D       		.byte	0x7d
+ 1127 009f 04       		.sleb128 4
+ 1128 00a0 5C010000 		.4byte	.LCFI11-.Ltext0
+ 1129 00a4 B8010000 		.4byte	.LCFI12-.Ltext0
+ 1130 00a8 0200     		.2byte	0x2
+ 1131 00aa 7B       		.byte	0x7b
+ 1132 00ab 04       		.sleb128 4
+ 1133 00ac B8010000 		.4byte	.LCFI12-.Ltext0
+ 1134 00b0 BC010000 		.4byte	.LCFI13-.Ltext0
+ 1135 00b4 0200     		.2byte	0x2
+ 1136 00b6 7D       		.byte	0x7d
+ 1137 00b7 04       		.sleb128 4
+ 1138 00b8 BC010000 		.4byte	.LCFI13-.Ltext0
+ 1139 00bc E4010000 		.4byte	.LFE5-.Ltext0
+ 1140 00c0 0200     		.2byte	0x2
+ 1141 00c2 7D       		.byte	0x7d
+ 1142 00c3 00       		.sleb128 0
+ 1143 00c4 00000000 		.4byte	0
+ 1144 00c8 00000000 		.4byte	0
+ 1145              	.LLST4:
+ 1146 00cc 10010000 		.4byte	.LFB4-.Ltext0
+ 1147 00d0 14010000 		.4byte	.LCFI8-.Ltext0
+ 1148 00d4 0200     		.2byte	0x2
+ 1149 00d6 7D       		.byte	0x7d
+ 1150 00d7 00       		.sleb128 0
+ 1151 00d8 14010000 		.4byte	.LCFI8-.Ltext0
+ 1152 00dc 18010000 		.4byte	.LCFI9-.Ltext0
+ 1153 00e0 0200     		.2byte	0x2
+ 1154 00e2 7D       		.byte	0x7d
+ 1155 00e3 08       		.sleb128 8
+ 1156 00e4 18010000 		.4byte	.LCFI9-.Ltext0
+ 1157 00e8 54010000 		.4byte	.LFE4-.Ltext0
+ 1158 00ec 0200     		.2byte	0x2
+ 1159 00ee 7B       		.byte	0x7b
+ 1160 00ef 04       		.sleb128 4
+ 1161 00f0 00000000 		.4byte	0
+ 1162 00f4 00000000 		.4byte	0
+ 1163              	.LLST3:
+ 1164 00f8 CC000000 		.4byte	.LFB3-.Ltext0
+ 1165 00fc D0000000 		.4byte	.LCFI6-.Ltext0
+ 1166 0100 0200     		.2byte	0x2
+ 1167 0102 7D       		.byte	0x7d
+ 1168 0103 00       		.sleb128 0
+ 1169 0104 D0000000 		.4byte	.LCFI6-.Ltext0
+ 1170 0108 D4000000 		.4byte	.LCFI7-.Ltext0
+ 1171 010c 0200     		.2byte	0x2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 27
+
+
+ 1172 010e 7D       		.byte	0x7d
+ 1173 010f 08       		.sleb128 8
+ 1174 0110 D4000000 		.4byte	.LCFI7-.Ltext0
+ 1175 0114 10010000 		.4byte	.LFE3-.Ltext0
+ 1176 0118 0200     		.2byte	0x2
+ 1177 011a 7B       		.byte	0x7b
+ 1178 011b 04       		.sleb128 4
+ 1179 011c 00000000 		.4byte	0
+ 1180 0120 00000000 		.4byte	0
+ 1181              	.LLST2:
+ 1182 0124 88000000 		.4byte	.LFB2-.Ltext0
+ 1183 0128 8C000000 		.4byte	.LCFI4-.Ltext0
+ 1184 012c 0200     		.2byte	0x2
+ 1185 012e 7D       		.byte	0x7d
+ 1186 012f 00       		.sleb128 0
+ 1187 0130 8C000000 		.4byte	.LCFI4-.Ltext0
+ 1188 0134 90000000 		.4byte	.LCFI5-.Ltext0
+ 1189 0138 0200     		.2byte	0x2
+ 1190 013a 7D       		.byte	0x7d
+ 1191 013b 08       		.sleb128 8
+ 1192 013c 90000000 		.4byte	.LCFI5-.Ltext0
+ 1193 0140 CC000000 		.4byte	.LFE2-.Ltext0
+ 1194 0144 0200     		.2byte	0x2
+ 1195 0146 7B       		.byte	0x7b
+ 1196 0147 04       		.sleb128 4
+ 1197 0148 00000000 		.4byte	0
+ 1198 014c 00000000 		.4byte	0
+ 1199              	.LLST1:
+ 1200 0150 44000000 		.4byte	.LFB1-.Ltext0
+ 1201 0154 48000000 		.4byte	.LCFI2-.Ltext0
+ 1202 0158 0200     		.2byte	0x2
+ 1203 015a 7D       		.byte	0x7d
+ 1204 015b 00       		.sleb128 0
+ 1205 015c 48000000 		.4byte	.LCFI2-.Ltext0
+ 1206 0160 4C000000 		.4byte	.LCFI3-.Ltext0
+ 1207 0164 0200     		.2byte	0x2
+ 1208 0166 7D       		.byte	0x7d
+ 1209 0167 08       		.sleb128 8
+ 1210 0168 4C000000 		.4byte	.LCFI3-.Ltext0
+ 1211 016c 88000000 		.4byte	.LFE1-.Ltext0
+ 1212 0170 0200     		.2byte	0x2
+ 1213 0172 7B       		.byte	0x7b
+ 1214 0173 04       		.sleb128 4
+ 1215 0174 00000000 		.4byte	0
+ 1216 0178 00000000 		.4byte	0
+ 1217              	.LLST0:
+ 1218 017c 00000000 		.4byte	.LFB0-.Ltext0
+ 1219 0180 04000000 		.4byte	.LCFI0-.Ltext0
+ 1220 0184 0200     		.2byte	0x2
+ 1221 0186 7D       		.byte	0x7d
+ 1222 0187 00       		.sleb128 0
+ 1223 0188 04000000 		.4byte	.LCFI0-.Ltext0
+ 1224 018c 08000000 		.4byte	.LCFI1-.Ltext0
+ 1225 0190 0200     		.2byte	0x2
+ 1226 0192 7D       		.byte	0x7d
+ 1227 0193 08       		.sleb128 8
+ 1228 0194 08000000 		.4byte	.LCFI1-.Ltext0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 28
+
+
+ 1229 0198 44000000 		.4byte	.LFE0-.Ltext0
+ 1230 019c 0200     		.2byte	0x2
+ 1231 019e 7B       		.byte	0x7b
+ 1232 019f 04       		.sleb128 4
+ 1233 01a0 00000000 		.4byte	0
+ 1234 01a4 00000000 		.4byte	0
+ 1235              		.section	.debug_aranges,"",%progbits
+ 1236 0000 1C000000 		.4byte	0x1c
+ 1237 0004 0200     		.2byte	0x2
+ 1238 0006 00000000 		.4byte	.Ldebug_info0
+ 1239 000a 04       		.byte	0x4
+ 1240 000b 00       		.byte	0
+ 1241 000c 0000     		.2byte	0
+ 1242 000e 0000     		.2byte	0
+ 1243 0010 00000000 		.4byte	.Ltext0
+ 1244 0014 5C040000 		.4byte	.Letext0-.Ltext0
+ 1245 0018 00000000 		.4byte	0
+ 1246 001c 00000000 		.4byte	0
+ 1247              		.section	.debug_line,"",%progbits
+ 1248              	.Ldebug_line0:
+ 1249 0000 BC000000 		.section	.debug_str,"MS",%progbits,1
+ 1249      02003100 
+ 1249      00000201 
+ 1249      FB0E0D00 
+ 1249      01010101 
+ 1250              	.LASF9:
+ 1251 0000 756E7369 		.ascii	"unsigned int\000"
+ 1251      676E6564 
+ 1251      20696E74 
+ 1251      00
+ 1252              	.LASF0:
+ 1253 000d 70486561 		.ascii	"pHeapStart\000"
+ 1253      70537461 
+ 1253      727400
+ 1254              	.LASF7:
+ 1255 0018 70726F67 		.ascii	"programCounter\000"
+ 1255      72616D43 
+ 1255      6F756E74 
+ 1255      657200
+ 1256              	.LASF4:
+ 1257 0027 7072696E 		.ascii	"printf_init\000"
+ 1257      74665F69 
+ 1257      6E697400 
+ 1258              	.LASF5:
+ 1259 0033 6C6F774C 		.ascii	"lowLevelInit\000"
+ 1259      6576656C 
+ 1259      496E6974 
+ 1259      00
+ 1260              	.LASF17:
+ 1261 0040 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\\startup\000"
+ 1261      6D626564 
+ 1261      6465645C 
+ 1261      32313338 
+ 1261      4D696E69 
+ 1262              	.LASF11:
+ 1263 0066 65786365 		.ascii	"exceptionHandlerDabort\000"
+ 1263      7074696F 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 29
+
+
+ 1263      6E48616E 
+ 1263      646C6572 
+ 1263      4461626F 
+ 1264              	.LASF10:
+ 1265 007d 65786365 		.ascii	"exceptionHandlerFiq\000"
+ 1265      7074696F 
+ 1265      6E48616E 
+ 1265      646C6572 
+ 1265      46697100 
+ 1266              	.LASF8:
+ 1267 0091 76616C75 		.ascii	"value\000"
+ 1267      6500
+ 1268              	.LASF13:
+ 1269 0097 65786365 		.ascii	"exceptionHandlerPabort\000"
+ 1269      7074696F 
+ 1269      6E48616E 
+ 1269      646C6572 
+ 1269      5061626F 
+ 1270              	.LASF2:
+ 1271 00ae 756E7369 		.ascii	"unsigned char\000"
+ 1271      676E6564 
+ 1271      20636861 
+ 1271      7200
+ 1272              	.LASF6:
+ 1273 00bc 65786365 		.ascii	"exceptionHandlerInit\000"
+ 1273      7074696F 
+ 1273      6E48616E 
+ 1273      646C6572 
+ 1273      496E6974 
+ 1274              	.LASF15:
+ 1275 00d1 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
+ 1275      43313120 
+ 1275      372E332E 
+ 1275      31203230 
+ 1275      31383036 
+ 1276 0104 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb-interw"
+ 1276      20726576 
+ 1276      6973696F 
+ 1276      6E203236 
+ 1276      31393037 
+ 1277 0137 6F726B20 		.ascii	"ork -gdwarf-2 -O0\000"
+ 1277      2D676477 
+ 1277      6172662D 
+ 1277      32202D4F 
+ 1277      3000
+ 1278              	.LASF1:
+ 1279 0149 70486561 		.ascii	"pHeapEnd\000"
+ 1279      70456E64 
+ 1279      00
+ 1280              	.LASF3:
+ 1281 0152 63686172 		.ascii	"char\000"
+ 1281      00
+ 1282              	.LASF16:
+ 1283 0157 6672616D 		.ascii	"framework.c\000"
+ 1283      65776F72 
+ 1283      6B2E6300 
+ 1284              	.LASF14:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 30
+
+
+ 1285 0163 65786365 		.ascii	"exceptionHandlerUndef\000"
+ 1285      7074696F 
+ 1285      6E48616E 
+ 1285      646C6572 
+ 1285      556E6465 
+ 1286              	.LASF12:
+ 1287 0179 65786365 		.ascii	"exceptionHandlerSwi\000"
+ 1287      7074696F 
+ 1287      6E48616E 
+ 1287      646C6572 
+ 1287      53776900 
+ 1288              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s 			page 31
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 framework.c
+                            *COM*:00000004 pHeapStart
+                            *COM*:00000004 pHeapEnd
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:18     .rodata:00000000 $d
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:22     .text:00000000 $a
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:27     .text:00000000 exceptionHandlerUndef
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:65     .text:00000040 $d
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:74     .text:00000044 $a
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:79     .text:00000044 exceptionHandlerSwi
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:116    .text:00000084 $d
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:125    .text:00000088 $a
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:130    .text:00000088 exceptionHandlerPabort
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:167    .text:000000c8 $d
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:176    .text:000000cc $a
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:181    .text:000000cc exceptionHandlerDabort
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:218    .text:0000010c $d
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:227    .text:00000110 $a
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:232    .text:00000110 exceptionHandlerFiq
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:269    .text:00000150 $d
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:273    .text:00000154 $a
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:279    .text:00000154 exceptionHandlerInit
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:336    .text:000001c0 $d
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:348    .text:000001e4 $a
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:354    .text:000001e4 lowLevelInit
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:505    .text:00000358 $d
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:536    .text:000003c8 $a
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:542    .text:000003c8 printf_init
+C:\Users\embedded\AppData\Local\Temp\ccaxbgi3.s:607    .text:00000444 $d
+
+UNDEFINED SYMBOLS
+consolSendString
+consolSendNumber
+end
+consolInit

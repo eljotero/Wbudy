@@ -1,0 +1,3369 @@
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 1
+
+
+   1              		.code	16
+   2              		.file	"i2c.c"
+   3              		.section	.debug_abbrev,"",%progbits
+   4              	.Ldebug_abbrev0:
+   5              		.section	.debug_info,"",%progbits
+   6              	.Ldebug_info0:
+   7              		.section	.debug_line,"",%progbits
+   8              	.Ldebug_line0:
+   9 0000 09010000 		.text
+   9      02003300 
+   9      00000201 
+   9      FB0E0D00 
+   9      01010101 
+  10              	.Ltext0:
+  11              		.align	2
+  12              		.global	i2cCheckStatus
+  13              		.code 16
+  14              		.thumb_func
+  15              		.type	i2cCheckStatus, %function
+  16              	i2cCheckStatus:
+  17              	.LFB2:
+  18              		.file 1 "i2c.c"
+   1:i2c.c         **** 
+   2:i2c.c         **** 
+   3:i2c.c         **** 
+   4:i2c.c         **** 
+   5:i2c.c         **** /******************************************************************************
+   6:i2c.c         ****  * Includes
+   7:i2c.c         ****  *****************************************************************************/
+   8:i2c.c         **** 
+   9:i2c.c         **** #include <general.h>
+  10:i2c.c         **** #include "i2c.h"
+  11:i2c.c         **** #include <lpc2xxx.h>
+  12:i2c.c         **** 
+  13:i2c.c         **** /******************************************************************************
+  14:i2c.c         ****  * Defines and typedefs
+  15:i2c.c         ****  *****************************************************************************/
+  16:i2c.c         **** 
+  17:i2c.c         **** #define I2C_CONSET (*((volatile unsigned char *) 0xE001C000))
+  18:i2c.c         **** #define I2C_STAT   (*((volatile unsigned char *) 0xE001C004))
+  19:i2c.c         **** #define I2C_DATA   (*((volatile unsigned char *) 0xE001C008))
+  20:i2c.c         **** #define I2C_ADDR   (*((volatile unsigned char *) 0xE001C00C))
+  21:i2c.c         **** #define I2C_SCLH   (*((volatile unsigned short*) 0xE001C010))
+  22:i2c.c         **** #define I2C_SCLL   (*((volatile unsigned short*) 0xE001C014))
+  23:i2c.c         **** #define I2C_CONCLR (*((volatile unsigned char *) 0xE001C018))
+  24:i2c.c         **** 
+  25:i2c.c         **** 
+  26:i2c.c         **** #define I2C_REG_CONSET      0x00000040 /* Control Set Register         */
+  27:i2c.c         **** #define I2C_REG_CONSET_MASK 0x0000007C /* Used bits                    */
+  28:i2c.c         **** #define I2C_REG_DATA        0x00000000 /* Data register                */
+  29:i2c.c         **** #define I2C_REG_DATA_MASK   0x000000FF /* Used bits                    */
+  30:i2c.c         **** #define I2C_REG_ADDR        0x00000000 /* Slave address register       */
+  31:i2c.c         **** #define I2C_REG_ADDR_MASK   0x000000FF /* Used bits                    */
+  32:i2c.c         **** #define I2C_REG_SCLH        0x00000100 /* SCL Duty Cycle high register */
+  33:i2c.c         **** #define I2C_REG_SCLH_MASK   0x0000FFFF /* Used bits                    */
+  34:i2c.c         **** #define I2C_REG_SCLL        0x00000100 /* SCL Duty Cycle low register  */
+  35:i2c.c         **** #define I2C_REG_SCLL_MASK   0x0000FFFF /* Used bits                    */
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 2
+
+
+  36:i2c.c         **** 
+  37:i2c.c         **** /******************************************************************************
+  38:i2c.c         ****  *
+  39:i2c.c         ****  * Description:
+  40:i2c.c         ****  *    Checks the I2C status.
+  41:i2c.c         ****  *
+  42:i2c.c         ****  *
+  43:i2c.c         ****  *  Returns:
+  44:i2c.c         ****  *      00h Bus error
+  45:i2c.c         ****  *      08h START condition transmitted
+  46:i2c.c         ****  *      10h Repeated START condition transmitted
+  47:i2c.c         ****  *      18h SLA + W transmitted, ACK received
+  48:i2c.c         ****  *      20h SLA + W transmitted, ACK not received
+  49:i2c.c         ****  *      28h Data byte transmitted, ACK received
+  50:i2c.c         ****  *      30h Data byte transmitted, ACK not received
+  51:i2c.c         ****  *      38h Arbitration lost
+  52:i2c.c         ****  *      40h SLA + R transmitted, ACK received
+  53:i2c.c         ****  *      48h SLA + R transmitted, ACK not received
+  54:i2c.c         ****  *      50h Data byte received in master mode, ACK transmitted
+  55:i2c.c         ****  *      58h Data byte received in master mode, ACK not transmitted
+  56:i2c.c         ****  *      60h SLA + W received, ACK transmitted
+  57:i2c.c         ****  *      68h Arbitration lost, SLA + W received, ACK transmitted
+  58:i2c.c         ****  *      70h General call address received, ACK transmitted
+  59:i2c.c         ****  *      78h Arbitration lost, general call addr received, ACK transmitted
+  60:i2c.c         ****  *      80h Data byte received with own SLA, ACK transmitted
+  61:i2c.c         ****  *      88h Data byte received with own SLA, ACK not transmitted
+  62:i2c.c         ****  *      90h Data byte received after general call, ACK transmitted
+  63:i2c.c         ****  *      98h Data byte received after general call, ACK not transmitted
+  64:i2c.c         ****  *      A0h STOP or repeated START condition received in slave mode
+  65:i2c.c         ****  *      A8h SLA + R received, ACK transmitted
+  66:i2c.c         ****  *      B0h Arbitration lost, SLA + R received, ACK transmitted
+  67:i2c.c         ****  *      B8h Data byte transmitted in slave mode, ACK received
+  68:i2c.c         ****  *      C0h Data byte transmitted in slave mode, ACK not received
+  69:i2c.c         ****  *      C8h Last byte transmitted in slave mode, ACK received
+  70:i2c.c         ****  *      F8h No relevant status information, SI=0
+  71:i2c.c         ****  *      FFh Channel error
+  72:i2c.c         ****  *
+  73:i2c.c         ****  *****************************************************************************/
+  74:i2c.c         **** tU8
+  75:i2c.c         **** i2cCheckStatus(void)
+  76:i2c.c         **** {
+  19              		.loc 1 76 0
+  20              		@ lr needed for prologue
+  21              	.L2:
+  77:i2c.c         ****   tU8 status = 0;
+  78:i2c.c         **** 
+  79:i2c.c         ****   /* wait for I2C Status changed */
+  80:i2c.c         ****   while( (I2C_CONSET & 0x08)  == 0)   /* while SI == 0 */
+  22              		.loc 1 80 0
+  23 0000 034B     		ldr	r3, .L7
+  24 0002 1B78     		ldrb	r3, [r3]
+  25 0004 1A07     		lsl	r2, r3, #28
+  26 0006 FBD5     		bpl	.L2
+  81:i2c.c         ****   {
+  82:i2c.c         ****     ;
+  83:i2c.c         ****   }
+  84:i2c.c         **** 
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 3
+
+
+  85:i2c.c         ****   /* Read I2C State */
+  86:i2c.c         ****   status = I2C_STAT;
+  27              		.loc 1 86 0
+  28 0008 024B     		ldr	r3, .L7+4
+  29 000a 1878     		ldrb	r0, [r3]
+  87:i2c.c         **** 
+  88:i2c.c         ****   /* NOTE! SI flag is not cleared here */
+  89:i2c.c         **** 
+  90:i2c.c         ****   return status;
+  91:i2c.c         **** }
+  30              		.loc 1 91 0
+  31              		@ sp needed for prologue
+  32 000c 7047     		bx	lr
+  33              	.L8:
+  34 000e 0000     		.align	2
+  35              	.L7:
+  36 0010 00C001E0 		.word	-536756224
+  37 0014 04C001E0 		.word	-536756220
+  38              	.LFE2:
+  39              		.size	i2cCheckStatus, .-i2cCheckStatus
+  40              		.align	2
+  41              		.global	i2cInit
+  42              		.code 16
+  43              		.thumb_func
+  44              		.type	i2cInit, %function
+  45              	i2cInit:
+  46              	.LFB3:
+  92:i2c.c         **** 
+  93:i2c.c         **** /******************************************************************************
+  94:i2c.c         ****  *
+  95:i2c.c         ****  * Description:
+  96:i2c.c         ****  *    Reset the I2C module.
+  97:i2c.c         ****  *
+  98:i2c.c         ****  *****************************************************************************/
+  99:i2c.c         **** void
+ 100:i2c.c         **** i2cInit(void)
+ 101:i2c.c         **** {
+  47              		.loc 1 101 0
+ 102:i2c.c         ****   PINSEL0  |= 0x50;
+  48              		.loc 1 102 0
+  49 0018 0E49     		ldr	r1, .L11
+  50 001a 0B68     		ldr	r3, [r1]
+  51 001c 5022     		mov	r2, #80
+  52 001e 1343     		orr	r3, r3, r2
+  53 0020 0B60     		str	r3, [r1]
+ 103:i2c.c         **** 
+ 104:i2c.c         ****   /* clear flags */
+ 105:i2c.c         ****   I2C_CONCLR = 0x6c;    
+  54              		.loc 1 105 0
+  55 0022 0D4B     		ldr	r3, .L11+4
+  56 0024 6C22     		mov	r2, #108
+  57 0026 1A70     		strb	r2, [r3]
+ 106:i2c.c         **** 
+ 107:i2c.c         ****   /* reset registers */
+ 108:i2c.c         ****   I2C_SCLL   = ( I2C_SCLL   & ~I2C_REG_SCLL_MASK )   | I2C_REG_SCLL;
+  58              		.loc 1 108 0
+  59 0028 0C4A     		ldr	r2, .L11+8
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 4
+
+
+  60 002a 1388     		ldrh	r3, [r2]
+  61 002c 8023     		mov	r3, #128
+  62 002e 5B00     		lsl	r3, r3, #1
+  63 0030 1380     		strh	r3, [r2]
+ 109:i2c.c         ****   I2C_SCLH   = ( I2C_SCLH   & ~I2C_REG_SCLH_MASK )   | I2C_REG_SCLH;
+  64              		.loc 1 109 0
+  65 0032 043A     		sub	r2, r2, #4
+  66 0034 1188     		ldrh	r1, [r2]
+  67 0036 1380     		strh	r3, [r2]
+ 110:i2c.c         ****   I2C_ADDR   = ( I2C_ADDR   & ~I2C_REG_ADDR_MASK )   | I2C_REG_ADDR;
+  68              		.loc 1 110 0
+  69 0038 043A     		sub	r2, r2, #4
+  70 003a 1378     		ldrb	r3, [r2]
+  71 003c 0023     		mov	r3, #0
+  72 003e 1370     		strb	r3, [r2]
+ 111:i2c.c         ****   I2C_CONSET = ( I2C_CONSET & ~I2C_REG_CONSET_MASK ) | I2C_REG_CONSET;
+  73              		.loc 1 111 0
+  74 0040 0749     		ldr	r1, .L11+12
+  75 0042 0B78     		ldrb	r3, [r1]
+  76 0044 7C22     		mov	r2, #124
+  77 0046 9343     		bic	r3, r3, r2
+  78 0048 4022     		mov	r2, #64
+  79 004a 1343     		orr	r3, r3, r2
+  80 004c 1B06     		lsl	r3, r3, #24
+  81 004e 1B0E     		lsr	r3, r3, #24
+  82              		.loc 1 101 0
+  83              		@ lr needed for prologue
+  84              		.loc 1 111 0
+  85 0050 0B70     		strb	r3, [r1]
+ 112:i2c.c         **** }
+  86              		.loc 1 112 0
+  87              		@ sp needed for prologue
+  88 0052 7047     		bx	lr
+  89              	.L12:
+  90              		.align	2
+  91              	.L11:
+  92 0054 00C002E0 		.word	-536690688
+  93 0058 18C001E0 		.word	-536756200
+  94 005c 14C001E0 		.word	-536756204
+  95 0060 00C001E0 		.word	-536756224
+  96              	.LFE3:
+  97              		.size	i2cInit, .-i2cInit
+  98              		.align	2
+  99              		.global	i2cStart
+ 100              		.code 16
+ 101              		.thumb_func
+ 102              		.type	i2cStart, %function
+ 103              	i2cStart:
+ 104              	.LFB4:
+ 113:i2c.c         **** 
+ 114:i2c.c         **** /******************************************************************************
+ 115:i2c.c         ****  *
+ 116:i2c.c         ****  * Description:
+ 117:i2c.c         ****  *    Generates a start condition on I2C when bus is free.
+ 118:i2c.c         ****  *    Master mode will also automatically be entered.
+ 119:i2c.c         ****  *
+ 120:i2c.c         ****  *    Note: After a stop condition, you may need a bus free time before you 
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 5
+
+
+ 121:i2c.c         ****  *          can generate a new start condition.
+ 122:i2c.c         ****  *
+ 123:i2c.c         ****  * Returns:
+ 124:i2c.c         ****  *    I2C_CODE_OK or I2C status code
+ 125:i2c.c         ****  *
+ 126:i2c.c         ****  *****************************************************************************/
+ 127:i2c.c         **** tS8
+ 128:i2c.c         **** i2cStart(void)
+ 129:i2c.c         **** {
+ 105              		.loc 1 129 0
+ 130:i2c.c         ****   tU8   status  = 0;
+ 131:i2c.c         ****   tS8   retCode = 0;
+ 132:i2c.c         **** 
+ 133:i2c.c         ****   /* issue a start condition */
+ 134:i2c.c         ****   I2C_CONSET |= 0x20; /* STA = 1, set start flag */
+ 106              		.loc 1 134 0
+ 107 0064 0F4B     		ldr	r3, .L29
+ 108 0066 1A78     		ldrb	r2, [r3]
+ 109 0068 2021     		mov	r1, #32
+ 110 006a 0A43     		orr	r2, r2, r1
+ 111 006c 1206     		lsl	r2, r2, #24
+ 112              		.loc 1 129 0
+ 113              		@ lr needed for prologue
+ 114              		.loc 1 134 0
+ 115 006e 120E     		lsr	r2, r2, #24
+ 116              	.L28:
+ 117 0070 1A70     		strb	r2, [r3]
+ 118              	.L27:
+ 119              	.LBB6:
+ 120              	.LBB7:
+ 121              		.loc 1 80 0
+ 122 0072 0C4B     		ldr	r3, .L29
+ 123 0074 1B78     		ldrb	r3, [r3]
+ 124 0076 0822     		mov	r2, #8
+ 125 0078 1342     		tst	r3, r2
+ 126 007a FAD0     		beq	.L27
+ 127              		.loc 1 86 0
+ 128 007c 0A4B     		ldr	r3, .L29+4
+ 129 007e 1B78     		ldrb	r3, [r3]
+ 130              	.LVL0:
+ 131              	.LBE7:
+ 132              	.LBE6:
+ 135:i2c.c         **** 
+ 136:i2c.c         ****   /* wait until START transmitted */
+ 137:i2c.c         ****   while(1)
+ 138:i2c.c         ****   {
+ 139:i2c.c         ****     status = i2cCheckStatus();
+ 140:i2c.c         **** 
+ 141:i2c.c         ****     /* start transmitted */
+ 142:i2c.c         ****     if((status == 0x08) || (status == 0x10))
+ 133              		.loc 1 142 0
+ 134 0080 082B     		cmp	r3, #8
+ 135 0082 07D0     		beq	.L16
+ 136 0084 102B     		cmp	r3, #16
+ 137 0086 05D0     		beq	.L16
+ 143:i2c.c         ****     {
+ 144:i2c.c         ****       retCode = I2C_CODE_OK;
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 6
+
+
+ 145:i2c.c         ****       break;
+ 146:i2c.c         ****     }
+ 147:i2c.c         **** 
+ 148:i2c.c         ****     /* error */
+ 149:i2c.c         ****     else if(status != 0xf8)
+ 138              		.loc 1 149 0
+ 139 0088 F82B     		cmp	r3, #248
+ 140 008a 01D0     		beq	.L19
+ 150:i2c.c         ****     {
+ 151:i2c.c         ****       retCode = (tS8) status;
+ 141              		.loc 1 151 0
+ 142 008c 181C     		mov	r0, r3
+ 143              	.LVL1:
+ 144 008e 02E0     		b	.L21
+ 145              	.LVL2:
+ 146              	.L19:
+ 152:i2c.c         ****       break;
+ 153:i2c.c         ****     }
+ 154:i2c.c         **** 
+ 155:i2c.c         ****     else
+ 156:i2c.c         ****     {
+ 157:i2c.c         ****       /* clear SI flag */
+ 158:i2c.c         ****       I2C_CONCLR = 0x08;
+ 147              		.loc 1 158 0
+ 148 0090 064B     		ldr	r3, .L29+8
+ 149              	.LVL3:
+ 150 0092 EDE7     		b	.L28
+ 151              	.LVL4:
+ 152              	.L16:
+ 159:i2c.c         ****     }    
+ 160:i2c.c         ****   }
+ 153              		.loc 1 160 0
+ 154 0094 0120     		mov	r0, #1
+ 155              	.LVL5:
+ 156              	.L21:
+ 161:i2c.c         **** 
+ 162:i2c.c         ****   /* clear start flag */
+ 163:i2c.c         ****   I2C_CONCLR = 0x20;
+ 157              		.loc 1 163 0
+ 158 0096 054B     		ldr	r3, .L29+8
+ 159              	.LVL6:
+ 160 0098 0006     		lsl	r0, r0, #24
+ 161              	.LVL7:
+ 162 009a 2022     		mov	r2, #32
+ 163 009c 0016     		asr	r0, r0, #24
+ 164 009e 1A70     		strb	r2, [r3]
+ 164:i2c.c         **** 
+ 165:i2c.c         ****   return retCode;
+ 166:i2c.c         **** }
+ 165              		.loc 1 166 0
+ 166              		@ sp needed for prologue
+ 167 00a0 7047     		bx	lr
+ 168              	.L30:
+ 169 00a2 0000     		.align	2
+ 170              	.L29:
+ 171 00a4 00C001E0 		.word	-536756224
+ 172 00a8 04C001E0 		.word	-536756220
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 7
+
+
+ 173 00ac 18C001E0 		.word	-536756200
+ 174              	.LFE4:
+ 175              		.size	i2cStart, .-i2cStart
+ 176              		.align	2
+ 177              		.global	i2cStop
+ 178              		.code 16
+ 179              		.thumb_func
+ 180              		.type	i2cStop, %function
+ 181              	i2cStop:
+ 182              	.LFB6:
+ 167:i2c.c         **** 
+ 168:i2c.c         **** /******************************************************************************
+ 169:i2c.c         ****  *
+ 170:i2c.c         ****  * Description:
+ 171:i2c.c         ****  *    Generates a start condition on I2C when bus is free.
+ 172:i2c.c         ****  *    Master mode will also automatically be entered.
+ 173:i2c.c         ****  *
+ 174:i2c.c         ****  *    Note: After a stop condition, you may need a bus free time before you 
+ 175:i2c.c         ****  *          can generate a new start condition.
+ 176:i2c.c         ****  *
+ 177:i2c.c         ****  * Returns:
+ 178:i2c.c         ****  *    I2C_CODE_OK or I2C status code
+ 179:i2c.c         ****  *
+ 180:i2c.c         ****  *****************************************************************************/
+ 181:i2c.c         **** tS8
+ 182:i2c.c         **** i2cRepeatStart(void)
+ 183:i2c.c         **** {
+ 184:i2c.c         ****   tU8   status  = 0;
+ 185:i2c.c         ****   tS8   retCode = 0;
+ 186:i2c.c         **** 
+ 187:i2c.c         ****   /* issue a start condition */
+ 188:i2c.c         ****   I2C_CONSET |= 0x20; /* STA = 1, set start flag */
+ 189:i2c.c         ****   I2C_CONCLR = 0x08;  /* clear SI flag           */
+ 190:i2c.c         **** 
+ 191:i2c.c         ****   /* wait until START transmitted */
+ 192:i2c.c         ****   while(1)
+ 193:i2c.c         ****   {
+ 194:i2c.c         ****     status = i2cCheckStatus();
+ 195:i2c.c         **** 
+ 196:i2c.c         ****     /* start transmitted */
+ 197:i2c.c         ****     if((status == 0x08) || (status == 0x10))
+ 198:i2c.c         ****     {
+ 199:i2c.c         ****       retCode = I2C_CODE_OK;
+ 200:i2c.c         ****       break;
+ 201:i2c.c         ****     }
+ 202:i2c.c         **** 
+ 203:i2c.c         ****     /* error */
+ 204:i2c.c         ****     else if(status != 0xf8)
+ 205:i2c.c         ****     {
+ 206:i2c.c         ****       retCode = (tS8) status;
+ 207:i2c.c         ****       break;
+ 208:i2c.c         ****     }
+ 209:i2c.c         **** 
+ 210:i2c.c         ****     else
+ 211:i2c.c         ****     {
+ 212:i2c.c         ****       /* clear SI flag */
+ 213:i2c.c         ****       I2C_CONCLR = 0x08;
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 8
+
+
+ 214:i2c.c         ****     }    
+ 215:i2c.c         ****   }
+ 216:i2c.c         **** 
+ 217:i2c.c         ****   /* clear start flag */
+ 218:i2c.c         ****   I2C_CONCLR = 0x20;
+ 219:i2c.c         **** 
+ 220:i2c.c         ****   return retCode;
+ 221:i2c.c         **** }
+ 222:i2c.c         **** 
+ 223:i2c.c         **** /******************************************************************************
+ 224:i2c.c         ****  *
+ 225:i2c.c         ****  * Description:
+ 226:i2c.c         ****  *    Generates a stop condition in master mode or recovers from an error
+ 227:i2c.c         ****  *    condition in slave mode.
+ 228:i2c.c         ****  *
+ 229:i2c.c         ****  *    Note: After this function is run, you may need a bus free time before
+ 230:i2c.c         ****  *          you can generate a new start condition.
+ 231:i2c.c         ****  *
+ 232:i2c.c         ****  * Returns:
+ 233:i2c.c         ****  *    I2C_CODE_OK
+ 234:i2c.c         ****  *
+ 235:i2c.c         ****  *****************************************************************************/
+ 236:i2c.c         **** tS8
+ 237:i2c.c         **** i2cStop(void)
+ 238:i2c.c         **** {
+ 183              		.loc 1 238 0
+ 239:i2c.c         ****   I2C_CONSET |= 0x10; /* STO = 1, set stop flag */ 
+ 184              		.loc 1 239 0
+ 185 00b0 0749     		ldr	r1, .L37
+ 186 00b2 0B78     		ldrb	r3, [r1]
+ 187 00b4 1022     		mov	r2, #16
+ 188 00b6 1343     		orr	r3, r3, r2
+ 189 00b8 1B06     		lsl	r3, r3, #24
+ 190 00ba 1B0E     		lsr	r3, r3, #24
+ 191 00bc 0B70     		strb	r3, [r1]
+ 240:i2c.c         ****   I2C_CONCLR = 0x08;  /* clear SI flag          */ 
+ 192              		.loc 1 240 0
+ 193 00be 054B     		ldr	r3, .L37+4
+ 194 00c0 0822     		mov	r2, #8
+ 195 00c2 1A70     		strb	r2, [r3]
+ 196              		.loc 1 238 0
+ 197              		@ lr needed for prologue
+ 198              	.L32:
+ 241:i2c.c         **** 
+ 242:i2c.c         ****   /* wait for STOP detected (while STO = 1) */
+ 243:i2c.c         ****   while((I2C_CONSET & 0x10) == 0x10 )
+ 199              		.loc 1 243 0
+ 200 00c4 024B     		ldr	r3, .L37
+ 201 00c6 1B78     		ldrb	r3, [r3]
+ 202 00c8 DA06     		lsl	r2, r3, #27
+ 203 00ca FBD4     		bmi	.L32
+ 244:i2c.c         ****   {
+ 245:i2c.c         ****     /* do nothing */
+ 246:i2c.c         ****     ;
+ 247:i2c.c         ****   }
+ 248:i2c.c         **** 
+ 249:i2c.c         ****   return I2C_CODE_OK;
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 9
+
+
+ 250:i2c.c         **** }
+ 204              		.loc 1 250 0
+ 205 00cc 0120     		mov	r0, #1
+ 206              		@ sp needed for prologue
+ 207 00ce 7047     		bx	lr
+ 208              	.L38:
+ 209              		.align	2
+ 210              	.L37:
+ 211 00d0 00C001E0 		.word	-536756224
+ 212 00d4 18C001E0 		.word	-536756200
+ 213              	.LFE6:
+ 214              		.size	i2cStop, .-i2cStop
+ 215              		.align	2
+ 216              		.global	i2cPutChar
+ 217              		.code 16
+ 218              		.thumb_func
+ 219              		.type	i2cPutChar, %function
+ 220              	i2cPutChar:
+ 221              	.LFB7:
+ 251:i2c.c         **** 
+ 252:i2c.c         **** /******************************************************************************
+ 253:i2c.c         ****  *
+ 254:i2c.c         ****  * Description:
+ 255:i2c.c         ****  *    Sends a character on the I2C network
+ 256:i2c.c         ****  *
+ 257:i2c.c         ****  * Params:
+ 258:i2c.c         ****  *    [in] data - the character to send
+ 259:i2c.c         ****  *
+ 260:i2c.c         ****  * Returns:
+ 261:i2c.c         ****  *    I2C_CODE_OK   - successful
+ 262:i2c.c         ****  *    I2C_CODE_BUSY - data register is not ready -> byte was not sent
+ 263:i2c.c         ****  *
+ 264:i2c.c         ****  *****************************************************************************/
+ 265:i2c.c         **** tS8
+ 266:i2c.c         **** i2cPutChar(tU8 data)
+ 267:i2c.c         **** {
+ 222              		.loc 1 267 0
+ 223              	.LVL8:
+ 268:i2c.c         ****   tS8 retCode = 0;
+ 269:i2c.c         **** 
+ 270:i2c.c         ****   /* check if I2C Data register can be accessed */
+ 271:i2c.c         ****   if((I2C_CONSET & 0x08) != 0)  /* if SI = 1 */
+ 224              		.loc 1 271 0
+ 225 00d8 084B     		ldr	r3, .L44
+ 226 00da 1B78     		ldrb	r3, [r3]
+ 227              		.loc 1 267 0
+ 228 00dc 0006     		lsl	r0, r0, #24
+ 229              	.LVL9:
+ 230              		.loc 1 271 0
+ 231 00de 0822     		mov	r2, #8
+ 232              		.loc 1 267 0
+ 233              		@ lr needed for prologue
+ 234              		.loc 1 267 0
+ 235 00e0 000E     		lsr	r0, r0, #24
+ 236              	.LVL10:
+ 237              		.loc 1 271 0
+ 238 00e2 1342     		tst	r3, r2
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 10
+
+
+ 239 00e4 01D1     		bne	.L40
+ 240 00e6 FC20     		mov	r0, #252
+ 241              	.LVL11:
+ 242 00e8 04E0     		b	.L42
+ 243              	.LVL12:
+ 244              	.L40:
+ 272:i2c.c         ****   {
+ 273:i2c.c         ****     /* send data */
+ 274:i2c.c         ****     I2C_DATA   = data;
+ 245              		.loc 1 274 0
+ 246 00ea 054B     		ldr	r3, .L44+4
+ 247 00ec 1870     		strb	r0, [r3]
+ 275:i2c.c         ****     I2C_CONCLR = 0x08; /* clear SI flag */ 
+ 248              		.loc 1 275 0
+ 249 00ee 1033     		add	r3, r3, #16
+ 250 00f0 1A70     		strb	r2, [r3]
+ 251 00f2 0120     		mov	r0, #1
+ 252              	.LVL13:
+ 253              	.L42:
+ 254 00f4 0006     		lsl	r0, r0, #24
+ 255              	.LVL14:
+ 256 00f6 0016     		asr	r0, r0, #24
+ 276:i2c.c         ****     retCode    = I2C_CODE_OK;
+ 277:i2c.c         ****   }
+ 278:i2c.c         ****   else
+ 279:i2c.c         ****   {
+ 280:i2c.c         ****     /* data register not ready */
+ 281:i2c.c         ****     retCode = I2C_CODE_BUSY;
+ 282:i2c.c         ****   }
+ 283:i2c.c         **** 
+ 284:i2c.c         ****   return retCode;
+ 285:i2c.c         **** }
+ 257              		.loc 1 285 0
+ 258              		@ sp needed for prologue
+ 259 00f8 7047     		bx	lr
+ 260              	.L45:
+ 261 00fa 0000     		.align	2
+ 262              	.L44:
+ 263 00fc 00C001E0 		.word	-536756224
+ 264 0100 08C001E0 		.word	-536756216
+ 265              	.LFE7:
+ 266              		.size	i2cPutChar, .-i2cPutChar
+ 267              		.align	2
+ 268              		.global	i2cGetChar
+ 269              		.code 16
+ 270              		.thumb_func
+ 271              		.type	i2cGetChar, %function
+ 272              	i2cGetChar:
+ 273              	.LFB8:
+ 286:i2c.c         **** 
+ 287:i2c.c         **** /******************************************************************************
+ 288:i2c.c         ****  *
+ 289:i2c.c         ****  * Description:
+ 290:i2c.c         ****  *    Read a character. I2C master mode is used.
+ 291:i2c.c         ****  *    This function is also used to prepare if the master shall generate
+ 292:i2c.c         ****  *    acknowledge or not acknowledge.
+ 293:i2c.c         ****  *
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 11
+
+
+ 294:i2c.c         ****  * Params:
+ 295:i2c.c         ****  *    [in]  mode  - I2C_MODE_ACK0 Set ACK=0. Slave sends next byte
+ 296:i2c.c         ****  *                  I2C_MODE_ACK1 Set ACK=1. Slave sends last byte
+ 297:i2c.c         ****  *                  I2C_MODE_READ Read data from data register
+ 298:i2c.c         ****  *    [out] pData - a pointer to where the data shall be saved.
+ 299:i2c.c         ****  *
+ 300:i2c.c         ****  * Returns:
+ 301:i2c.c         ****  *    I2C_CODE_OK    - successful
+ 302:i2c.c         ****  *    I2C_CODE_EMPTY - no data is available
+ 303:i2c.c         ****  *
+ 304:i2c.c         ****  *****************************************************************************/
+ 305:i2c.c         **** tS8
+ 306:i2c.c         **** i2cGetChar(tU8  mode,
+ 307:i2c.c         ****            tU8* pData)
+ 308:i2c.c         **** {
+ 274              		.loc 1 308 0
+ 275              	.LVL15:
+ 276 0104 0006     		lsl	r0, r0, #24
+ 277              	.LVL16:
+ 278 0106 000E     		lsr	r0, r0, #24
+ 279              	.LVL17:
+ 280              		@ lr needed for prologue
+ 309:i2c.c         ****   tS8 retCode = I2C_CODE_OK;
+ 310:i2c.c         **** 
+ 311:i2c.c         ****   if(mode == I2C_MODE_ACK0)
+ 281              		.loc 1 311 0
+ 282 0108 0028     		cmp	r0, #0
+ 283 010a 0AD1     		bne	.L47
+ 312:i2c.c         ****   {
+ 313:i2c.c         ****     /* the operation mode is changed from master transmit to master receive */
+ 314:i2c.c         **** 
+ 315:i2c.c         ****     /* set ACK=0 (informs slave to send next byte) */
+ 316:i2c.c         **** 
+ 317:i2c.c         ****     I2C_CONSET |= 0x04; /* AA=1          */
+ 284              		.loc 1 317 0
+ 285 010c 1049     		ldr	r1, .L58
+ 286              	.LVL18:
+ 287 010e 0B78     		ldrb	r3, [r1]
+ 288 0110 0422     		mov	r2, #4
+ 289 0112 1343     		orr	r3, r3, r2
+ 290 0114 1B06     		lsl	r3, r3, #24
+ 291 0116 1B0E     		lsr	r3, r3, #24
+ 292 0118 0B70     		strb	r3, [r1]
+ 318:i2c.c         ****     I2C_CONCLR = 0x08;  /* clear SI flag */   
+ 293              		.loc 1 318 0
+ 294 011a 0E4B     		ldr	r3, .L58+4
+ 295 011c 0822     		mov	r2, #8
+ 296 011e 1A70     		strb	r2, [r3]
+ 297 0120 12E0     		b	.L57
+ 298              	.LVL19:
+ 299              	.L47:
+ 319:i2c.c         ****   }
+ 320:i2c.c         ****   else if(mode == I2C_MODE_ACK1)
+ 300              		.loc 1 320 0
+ 301 0122 0128     		cmp	r0, #1
+ 302 0124 05D1     		bne	.L50
+ 321:i2c.c         ****   {
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 12
+
+
+ 322:i2c.c         ****     /* set ACK=1 (informs slave to send last byte) */
+ 323:i2c.c         ****     I2C_CONCLR = 0x04;     
+ 303              		.loc 1 323 0
+ 304 0126 0B4B     		ldr	r3, .L58+4
+ 305 0128 0422     		mov	r2, #4
+ 306 012a 1A70     		strb	r2, [r3]
+ 324:i2c.c         ****     I2C_CONCLR = 0x08; /* clear SI flag */ 
+ 307              		.loc 1 324 0
+ 308 012c 0822     		mov	r2, #8
+ 309 012e 1A70     		strb	r2, [r3]
+ 310 0130 0BE0     		b	.L49
+ 311              	.L50:
+ 325:i2c.c         ****   }
+ 326:i2c.c         ****   else if(mode == I2C_MODE_READ)
+ 312              		.loc 1 326 0
+ 313 0132 0228     		cmp	r0, #2
+ 314 0134 08D1     		bne	.L57
+ 327:i2c.c         ****   {
+ 328:i2c.c         ****     /* check if I2C Data register can be accessed */
+ 329:i2c.c         ****     if((I2C_CONSET & 0x08) != 0)  /* SI = 1 */
+ 315              		.loc 1 329 0
+ 316 0136 064B     		ldr	r3, .L58
+ 317 0138 1B78     		ldrb	r3, [r3]
+ 318 013a 1A07     		lsl	r2, r3, #28
+ 319 013c 01D4     		bmi	.L54
+ 320 013e FD20     		mov	r0, #253
+ 321              	.LVL20:
+ 322 0140 03E0     		b	.L49
+ 323              	.LVL21:
+ 324              	.L54:
+ 330:i2c.c         ****     {
+ 331:i2c.c         ****       /* read data  */
+ 332:i2c.c         ****       *pData = (tU8) I2C_DATA;
+ 325              		.loc 1 332 0
+ 326 0142 054B     		ldr	r3, .L58+8
+ 327 0144 1B78     		ldrb	r3, [r3]
+ 328 0146 0B70     		strb	r3, [r1]
+ 329              	.L57:
+ 330 0148 0120     		mov	r0, #1
+ 331              	.LVL22:
+ 332              	.L49:
+ 333              	.LVL23:
+ 334 014a 0006     		lsl	r0, r0, #24
+ 335              	.LVL24:
+ 336 014c 0016     		asr	r0, r0, #24
+ 333:i2c.c         ****     }
+ 334:i2c.c         ****     else
+ 335:i2c.c         ****     {
+ 336:i2c.c         ****       /* No data available */
+ 337:i2c.c         ****       retCode = I2C_CODE_EMPTY;
+ 338:i2c.c         ****     }
+ 339:i2c.c         ****   }
+ 340:i2c.c         **** 
+ 341:i2c.c         ****   return retCode;
+ 342:i2c.c         **** }
+ 337              		.loc 1 342 0
+ 338              		@ sp needed for prologue
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 13
+
+
+ 339 014e 7047     		bx	lr
+ 340              	.L59:
+ 341              		.align	2
+ 342              	.L58:
+ 343 0150 00C001E0 		.word	-536756224
+ 344 0154 18C001E0 		.word	-536756200
+ 345 0158 08C001E0 		.word	-536756216
+ 346              	.LFE8:
+ 347              		.size	i2cGetChar, .-i2cGetChar
+ 348              		.align	2
+ 349              		.global	i2cWaitTransmit
+ 350              		.code 16
+ 351              		.thumb_func
+ 352              		.type	i2cWaitTransmit, %function
+ 353              	i2cWaitTransmit:
+ 354              	.LFB10:
+ 343:i2c.c         **** 
+ 344:i2c.c         **** /******************************************************************************
+ 345:i2c.c         ****  *
+ 346:i2c.c         ****  * Description:
+ 347:i2c.c         ****  *    Sends data on the I2C network
+ 348:i2c.c         ****  *
+ 349:i2c.c         ****  *    Note: After this function is run, you may need a bus free time before a 
+ 350:i2c.c         ****  *          new data transfer can be initiated.
+ 351:i2c.c         ****  *
+ 352:i2c.c         ****  * Params:
+ 353:i2c.c         ****  *    [in] addr  - address
+ 354:i2c.c         ****  *    [in] pData - data to transmit
+ 355:i2c.c         ****  *    [in] len   - number of bytes to transmit
+ 356:i2c.c         ****  *
+ 357:i2c.c         ****  * Returns:
+ 358:i2c.c         ****  *    I2C_CODE_OK    - successful
+ 359:i2c.c         ****  *    I2C_CODE_ERROR - an error occured
+ 360:i2c.c         ****  *
+ 361:i2c.c         ****  *****************************************************************************/
+ 362:i2c.c         **** tS8
+ 363:i2c.c         **** i2cWrite(tU8  addr,
+ 364:i2c.c         ****          tU8* pData,
+ 365:i2c.c         ****          tU16 len)
+ 366:i2c.c         **** {
+ 367:i2c.c         ****   tS8 retCode = 0;
+ 368:i2c.c         ****   tU8 status  = 0;
+ 369:i2c.c         ****   tU8 i       = 0;
+ 370:i2c.c         **** 
+ 371:i2c.c         ****   /* generate Start condition */
+ 372:i2c.c         ****   retCode = i2cStart();
+ 373:i2c.c         **** 
+ 374:i2c.c         ****   /* Transmit address */
+ 375:i2c.c         ****   if(retCode == I2C_CODE_OK)
+ 376:i2c.c         ****   {
+ 377:i2c.c         ****     /* write SLA+W */
+ 378:i2c.c         ****     retCode = i2cPutChar(addr);
+ 379:i2c.c         ****     while(retCode == I2C_CODE_BUSY)
+ 380:i2c.c         ****     {
+ 381:i2c.c         ****       retCode = i2cPutChar(addr);
+ 382:i2c.c         ****     }
+ 383:i2c.c         ****   }
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 14
+
+
+ 384:i2c.c         **** 
+ 385:i2c.c         ****   if(retCode == I2C_CODE_OK)
+ 386:i2c.c         ****   {
+ 387:i2c.c         ****     /* wait until address transmitted and transmit data */
+ 388:i2c.c         ****     for(i = 0; i < len; i++)
+ 389:i2c.c         ****     {
+ 390:i2c.c         ****       /* wait until data transmitted */
+ 391:i2c.c         **** 
+ 392:i2c.c         ****       while(1)
+ 393:i2c.c         ****       {
+ 394:i2c.c         ****         /* get new status */
+ 395:i2c.c         ****         status = i2cCheckStatus();
+ 396:i2c.c         **** 
+ 397:i2c.c         ****         /* 
+ 398:i2c.c         ****          * SLA+W transmitted, ACK received or
+ 399:i2c.c         ****          * data byte transmitted, ACK received
+ 400:i2c.c         ****          */
+ 401:i2c.c         ****         if( (status == 0x18) || (status == 0x28) )
+ 402:i2c.c         ****         {
+ 403:i2c.c         ****           /* Data transmitted and ACK received */
+ 404:i2c.c         **** 
+ 405:i2c.c         ****           /* write data */
+ 406:i2c.c         ****           retCode = i2cPutChar(*pData);
+ 407:i2c.c         ****           while(retCode == I2C_CODE_BUSY)
+ 408:i2c.c         ****           {
+ 409:i2c.c         ****             retCode = i2cPutChar(*pData);
+ 410:i2c.c         ****           }
+ 411:i2c.c         ****           pData++;
+ 412:i2c.c         **** 
+ 413:i2c.c         ****           break;
+ 414:i2c.c         ****         }
+ 415:i2c.c         **** 
+ 416:i2c.c         ****         /* no relevant status information */
+ 417:i2c.c         ****         else if( status != 0xf8 )
+ 418:i2c.c         ****         {
+ 419:i2c.c         ****           /* error */
+ 420:i2c.c         ****           i = len;
+ 421:i2c.c         ****           retCode = I2C_CODE_ERROR;
+ 422:i2c.c         ****           break;
+ 423:i2c.c         ****         }
+ 424:i2c.c         ****       }
+ 425:i2c.c         ****     }
+ 426:i2c.c         ****   }
+ 427:i2c.c         **** 
+ 428:i2c.c         ****   /* wait until data transmitted */
+ 429:i2c.c         ****   while(1)
+ 430:i2c.c         ****   {
+ 431:i2c.c         ****     /* get new status */
+ 432:i2c.c         ****     status = i2cCheckStatus();
+ 433:i2c.c         **** 
+ 434:i2c.c         ****     /* 
+ 435:i2c.c         ****      * SLA+W transmitted, ACK received or
+ 436:i2c.c         ****      * data byte transmitted, ACK received
+ 437:i2c.c         ****      */
+ 438:i2c.c         ****     if( (status == 0x18) || (status == 0x28) )
+ 439:i2c.c         ****     {
+ 440:i2c.c         ****       /* data transmitted and ACK received */
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 15
+
+
+ 441:i2c.c         ****       break;
+ 442:i2c.c         ****     }
+ 443:i2c.c         **** 
+ 444:i2c.c         ****     /* no relevant status information */
+ 445:i2c.c         ****     else if(status != 0xf8 )
+ 446:i2c.c         ****     {
+ 447:i2c.c         ****       /* error */
+ 448:i2c.c         ****       i = len;
+ 449:i2c.c         ****       retCode = I2C_CODE_ERROR;
+ 450:i2c.c         ****       break;
+ 451:i2c.c         ****     }
+ 452:i2c.c         ****   }
+ 453:i2c.c         **** 
+ 454:i2c.c         ****   /* generate Stop condition */
+ 455:i2c.c         ****   i2cStop();
+ 456:i2c.c         **** 
+ 457:i2c.c         ****   return retCode;
+ 458:i2c.c         **** }
+ 459:i2c.c         **** 
+ 460:i2c.c         **** tS8
+ 461:i2c.c         **** i2cWaitTransmit(void)
+ 462:i2c.c         **** {
+ 355              		.loc 1 462 0
+ 356              		@ lr needed for prologue
+ 357              	.LVL25:
+ 358              	.L74:
+ 359              	.LBB8:
+ 360              	.LBB9:
+ 361              		.loc 1 80 0
+ 362 015c 084B     		ldr	r3, .L75
+ 363              	.LVL26:
+ 364 015e 1B78     		ldrb	r3, [r3]
+ 365 0160 1A07     		lsl	r2, r3, #28
+ 366 0162 FBD5     		bpl	.L74
+ 367              		.loc 1 86 0
+ 368 0164 074B     		ldr	r3, .L75+4
+ 369 0166 1B78     		ldrb	r3, [r3]
+ 370              	.LVL27:
+ 371              	.LBE9:
+ 372              	.LBE8:
+ 463:i2c.c         ****   tU8 status = 0;
+ 464:i2c.c         **** 
+ 465:i2c.c         ****   /* wait until data transmitted */
+ 466:i2c.c         ****   while(1)
+ 467:i2c.c         ****   {
+ 468:i2c.c         ****     /* get new status */
+ 469:i2c.c         ****     status = i2cCheckStatus();
+ 470:i2c.c         **** 
+ 471:i2c.c         ****     /* 
+ 472:i2c.c         ****      * SLA+W transmitted, ACK received or
+ 473:i2c.c         ****      * data byte transmitted, ACK received
+ 474:i2c.c         ****      */
+ 475:i2c.c         ****     if( (status == 0x18) || (status == 0x28) )
+ 373              		.loc 1 475 0
+ 374 0168 182B     		cmp	r3, #24
+ 375 016a 06D0     		beq	.L63
+ 376 016c 282B     		cmp	r3, #40
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 16
+
+
+ 377 016e 04D0     		beq	.L63
+ 476:i2c.c         ****     {
+ 477:i2c.c         ****       /* data transmitted and ACK received */
+ 478:i2c.c         ****       return I2C_CODE_OK;
+ 479:i2c.c         ****     }
+ 480:i2c.c         **** 
+ 481:i2c.c         ****     /* no relevant status information */
+ 482:i2c.c         ****     else if(status != 0xf8 )
+ 378              		.loc 1 482 0
+ 379 0170 F82B     		cmp	r3, #248
+ 380 0172 F3D0     		beq	.L74
+ 381 0174 0120     		mov	r0, #1
+ 382 0176 4042     		neg	r0, r0
+ 383 0178 00E0     		b	.L67
+ 384              	.L63:
+ 385 017a 0120     		mov	r0, #1
+ 386              	.L67:
+ 483:i2c.c         ****     {
+ 484:i2c.c         ****       /* error */
+ 485:i2c.c         **** 
+ 486:i2c.c         ****       return I2C_CODE_ERROR;
+ 487:i2c.c         ****     }
+ 488:i2c.c         ****   }
+ 489:i2c.c         **** }
+ 387              		.loc 1 489 0
+ 388              		@ sp needed for prologue
+ 389 017c 7047     		bx	lr
+ 390              	.L76:
+ 391 017e 0000     		.align	2
+ 392              	.L75:
+ 393 0180 00C001E0 		.word	-536756224
+ 394 0184 04C001E0 		.word	-536756220
+ 395              	.LFE10:
+ 396              		.size	i2cWaitTransmit, .-i2cWaitTransmit
+ 397              		.align	2
+ 398              		.global	i2cWriteWithWait
+ 399              		.code 16
+ 400              		.thumb_func
+ 401              		.type	i2cWriteWithWait, %function
+ 402              	i2cWriteWithWait:
+ 403              	.LFB11:
+ 490:i2c.c         **** 
+ 491:i2c.c         **** tS8
+ 492:i2c.c         **** i2cWriteWithWait(tU8 data)
+ 493:i2c.c         **** {
+ 404              		.loc 1 493 0
+ 405 0188 10B5     		push	{r4, lr}
+ 406              	.LCFI0:
+ 407              	.LVL28:
+ 408 018a 0006     		lsl	r0, r0, #24
+ 409              	.LVL29:
+ 410 018c 040E     		lsr	r4, r0, #24
+ 411              	.L79:
+ 494:i2c.c         ****   tS8 retCode = 0;
+ 495:i2c.c         ****   
+ 496:i2c.c         ****   retCode = i2cPutChar(data);
+ 497:i2c.c         ****   while(retCode == I2C_CODE_BUSY)
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 17
+
+
+ 498:i2c.c         ****   {
+ 499:i2c.c         ****     retCode = i2cPutChar(data);
+ 412              		.loc 1 499 0
+ 413 018e 201C     		mov	r0, r4
+ 414 0190 FFF7FEFF 		bl	i2cPutChar
+ 415 0194 0006     		lsl	r0, r0, #24
+ 416 0196 000E     		lsr	r0, r0, #24
+ 417              	.LVL30:
+ 418              		.loc 1 497 0
+ 419 0198 0306     		lsl	r3, r0, #24
+ 420 019a FC28     		cmp	r0, #252
+ 421 019c F7D0     		beq	.L79
+ 500:i2c.c         ****   }
+ 501:i2c.c         **** 
+ 502:i2c.c         ****   if(retCode == I2C_CODE_OK)
+ 422              		.loc 1 502 0
+ 423 019e 1B16     		asr	r3, r3, #24
+ 424 01a0 012B     		cmp	r3, #1
+ 425 01a2 03D1     		bne	.L81
+ 503:i2c.c         ****     retCode = i2cWaitTransmit();
+ 426              		.loc 1 503 0
+ 427 01a4 FFF7FEFF 		bl	i2cWaitTransmit
+ 428              	.LVL31:
+ 429 01a8 0006     		lsl	r0, r0, #24
+ 430 01aa 000E     		lsr	r0, r0, #24
+ 431              	.LVL32:
+ 432              	.L81:
+ 433 01ac 0006     		lsl	r0, r0, #24
+ 434              	.LVL33:
+ 435 01ae 0016     		asr	r0, r0, #24
+ 504:i2c.c         **** 
+ 505:i2c.c         ****   return retCode;
+ 506:i2c.c         **** }
+ 436              		.loc 1 506 0
+ 437              		@ sp needed for prologue
+ 438 01b0 10BC     		pop	{r4}
+ 439 01b2 02BC     		pop	{r1}
+ 440 01b4 0847     		bx	r1
+ 441              	.LFE11:
+ 442              		.size	i2cWriteWithWait, .-i2cWriteWithWait
+ 443 01b6 0000     		.align	2
+ 444              		.global	i2cMyWrite
+ 445              		.code 16
+ 446              		.thumb_func
+ 447              		.type	i2cMyWrite, %function
+ 448              	i2cMyWrite:
+ 449              	.LFB12:
+ 507:i2c.c         **** 
+ 508:i2c.c         **** tS8
+ 509:i2c.c         **** i2cMyWrite(tU8  addr,
+ 510:i2c.c         ****            tU8* pData,
+ 511:i2c.c         ****            tU16 len)
+ 512:i2c.c         **** {
+ 450              		.loc 1 512 0
+ 451 01b8 F0B5     		push	{r4, r5, r6, r7, lr}
+ 452              	.LCFI1:
+ 453              	.LVL34:
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 18
+
+
+ 454              		.loc 1 512 0
+ 455 01ba 0006     		lsl	r0, r0, #24
+ 456              	.LVL35:
+ 457 01bc 1204     		lsl	r2, r2, #16
+ 458              	.LVL36:
+ 459 01be 0F1C     		mov	r7, r1
+ 460 01c0 040E     		lsr	r4, r0, #24
+ 461              	.LVL37:
+ 462 01c2 160C     		lsr	r6, r2, #16
+ 463              	.LVL38:
+ 513:i2c.c         ****   tS8 retCode = 0;
+ 514:i2c.c         ****   tU8 i       = 0;
+ 515:i2c.c         **** 
+ 516:i2c.c         ****   do
+ 517:i2c.c         ****   {
+ 518:i2c.c         ****     /* generate Start condition */
+ 519:i2c.c         ****     retCode = i2cStart();
+ 464              		.loc 1 519 0
+ 465 01c4 FFF7FEFF 		bl	i2cStart
+ 466              	.LVL39:
+ 467 01c8 0006     		lsl	r0, r0, #24
+ 520:i2c.c         ****     if(retCode != I2C_CODE_OK)
+ 468              		.loc 1 520 0
+ 469 01ca 050E     		lsr	r5, r0, #24
+ 470              	.LVL40:
+ 471 01cc 0016     		asr	r0, r0, #24
+ 472 01ce 0128     		cmp	r0, #1
+ 473 01d0 17D1     		bne	.L85
+ 521:i2c.c         ****       break;
+ 522:i2c.c         **** 
+ 523:i2c.c         ****     /* write address */
+ 524:i2c.c         ****     retCode = i2cWriteWithWait(addr);
+ 474              		.loc 1 524 0
+ 475 01d2 201C     		mov	r0, r4
+ 476 01d4 FFF7FEFF 		bl	i2cWriteWithWait
+ 477 01d8 0006     		lsl	r0, r0, #24
+ 525:i2c.c         ****     if(retCode != I2C_CODE_OK)
+ 478              		.loc 1 525 0
+ 479 01da 050E     		lsr	r5, r0, #24
+ 480 01dc 0016     		asr	r0, r0, #24
+ 481 01de 0128     		cmp	r0, #1
+ 482 01e0 0FD1     		bne	.L85
+ 526:i2c.c         ****       break;
+ 483              		.loc 1 526 0
+ 484 01e2 0024     		mov	r4, #0
+ 485              	.LVL41:
+ 486 01e4 09E0     		b	.L88
+ 487              	.L89:
+ 527:i2c.c         **** 
+ 528:i2c.c         ****     for(i = 0; i <len; i++)
+ 529:i2c.c         ****     {
+ 530:i2c.c         ****       retCode = i2cWriteWithWait(*pData);
+ 488              		.loc 1 530 0
+ 489 01e6 E05D     		ldrb	r0, [r4, r7]
+ 490 01e8 FFF7FEFF 		bl	i2cWriteWithWait
+ 531:i2c.c         ****       if(retCode != I2C_CODE_OK)
+ 491              		.loc 1 531 0
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 19
+
+
+ 492 01ec 0006     		lsl	r0, r0, #24
+ 493 01ee 0316     		asr	r3, r0, #24
+ 494              		.loc 1 530 0
+ 495 01f0 0134     		add	r4, r4, #1
+ 496              		.loc 1 531 0
+ 497 01f2 012B     		cmp	r3, #1
+ 498 01f4 01D0     		beq	.L88
+ 499 01f6 050E     		lsr	r5, r0, #24
+ 500 01f8 03E0     		b	.L85
+ 501              	.L88:
+ 502              		.loc 1 528 0
+ 503 01fa 2306     		lsl	r3, r4, #24
+ 504 01fc 1B0E     		lsr	r3, r3, #24
+ 505 01fe B342     		cmp	r3, r6
+ 506 0200 F1D3     		bcc	.L89
+ 507              	.LVL42:
+ 508              	.L85:
+ 532:i2c.c         ****         break;
+ 533:i2c.c         **** 
+ 534:i2c.c         ****       pData++;
+ 535:i2c.c         ****     }
+ 536:i2c.c         **** 
+ 537:i2c.c         ****   } while(0);
+ 538:i2c.c         **** 
+ 539:i2c.c         ****   /* generate Stop condition */
+ 540:i2c.c         ****   i2cStop();
+ 509              		.loc 1 540 0
+ 510 0202 FFF7FEFF 		bl	i2cStop
+ 511 0206 2806     		lsl	r0, r5, #24
+ 512 0208 0016     		asr	r0, r0, #24
+ 541:i2c.c         **** 
+ 542:i2c.c         **** 
+ 543:i2c.c         ****   return retCode;
+ 544:i2c.c         **** }
+ 513              		.loc 1 544 0
+ 514              		@ sp needed for prologue
+ 515              	.LVL43:
+ 516              	.LVL44:
+ 517              	.LVL45:
+ 518              	.LVL46:
+ 519 020a F0BC     		pop	{r4, r5, r6, r7}
+ 520 020c 02BC     		pop	{r1}
+ 521 020e 0847     		bx	r1
+ 522              	.LFE12:
+ 523              		.size	i2cMyWrite, .-i2cMyWrite
+ 524              		.align	2
+ 525              		.global	i2cRepeatStart
+ 526              		.code 16
+ 527              		.thumb_func
+ 528              		.type	i2cRepeatStart, %function
+ 529              	i2cRepeatStart:
+ 530              	.LFB5:
+ 531              		.loc 1 183 0
+ 532              		.loc 1 188 0
+ 533 0210 0F49     		ldr	r1, .L110
+ 534 0212 0B78     		ldrb	r3, [r1]
+ 535 0214 2022     		mov	r2, #32
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 20
+
+
+ 536 0216 1343     		orr	r3, r3, r2
+ 537 0218 1B06     		lsl	r3, r3, #24
+ 538 021a 1B0E     		lsr	r3, r3, #24
+ 539 021c 0B70     		strb	r3, [r1]
+ 540              		.loc 1 183 0
+ 541              		@ lr needed for prologue
+ 542              		.loc 1 189 0
+ 543 021e 0822     		mov	r2, #8
+ 544              	.LVL47:
+ 545              	.L109:
+ 546 0220 0C4B     		ldr	r3, .L110+4
+ 547              	.LVL48:
+ 548 0222 1A70     		strb	r2, [r3]
+ 549              	.L108:
+ 550              	.LBB12:
+ 551              	.LBB13:
+ 552              		.loc 1 80 0
+ 553 0224 0A4B     		ldr	r3, .L110
+ 554 0226 1B78     		ldrb	r3, [r3]
+ 555 0228 0822     		mov	r2, #8
+ 556 022a 1342     		tst	r3, r2
+ 557 022c FAD0     		beq	.L108
+ 558              		.loc 1 86 0
+ 559 022e 0A4B     		ldr	r3, .L110+8
+ 560 0230 1B78     		ldrb	r3, [r3]
+ 561              	.LVL49:
+ 562              	.LBE13:
+ 563              	.LBE12:
+ 564              		.loc 1 197 0
+ 565 0232 082B     		cmp	r3, #8
+ 566 0234 05D0     		beq	.L97
+ 567 0236 102B     		cmp	r3, #16
+ 568 0238 03D0     		beq	.L97
+ 569              		.loc 1 204 0
+ 570 023a F82B     		cmp	r3, #248
+ 571 023c F0D0     		beq	.L109
+ 572              		.loc 1 206 0
+ 573 023e 181C     		mov	r0, r3
+ 574              	.LVL50:
+ 575 0240 00E0     		b	.L102
+ 576              	.LVL51:
+ 577              	.L97:
+ 578              		.loc 1 215 0
+ 579 0242 0120     		mov	r0, #1
+ 580              	.LVL52:
+ 581              	.L102:
+ 582              		.loc 1 218 0
+ 583 0244 034B     		ldr	r3, .L110+4
+ 584              	.LVL53:
+ 585 0246 0006     		lsl	r0, r0, #24
+ 586              	.LVL54:
+ 587 0248 2022     		mov	r2, #32
+ 588 024a 0016     		asr	r0, r0, #24
+ 589 024c 1A70     		strb	r2, [r3]
+ 590              		.loc 1 221 0
+ 591              		@ sp needed for prologue
+ 592 024e 7047     		bx	lr
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 21
+
+
+ 593              	.L111:
+ 594              		.align	2
+ 595              	.L110:
+ 596 0250 00C001E0 		.word	-536756224
+ 597 0254 18C001E0 		.word	-536756200
+ 598 0258 04C001E0 		.word	-536756220
+ 599              	.LFE5:
+ 600              		.size	i2cRepeatStart, .-i2cRepeatStart
+ 601              		.align	2
+ 602              		.global	i2cRead
+ 603              		.code 16
+ 604              		.thumb_func
+ 605              		.type	i2cRead, %function
+ 606              	i2cRead:
+ 607              	.LFB13:
+ 545:i2c.c         **** 
+ 546:i2c.c         **** 
+ 547:i2c.c         **** /******************************************************************************
+ 548:i2c.c         ****  *
+ 549:i2c.c         ****  * Description:
+ 550:i2c.c         ****  *    Read a specified number of bytes from the I2C network.
+ 551:i2c.c         ****  *
+ 552:i2c.c         ****  *    Note: After this function is run, you may need a bus free time before a 
+ 553:i2c.c         ****  *          new data transfer can be initiated.
+ 554:i2c.c         ****  *
+ 555:i2c.c         ****  * Params:
+ 556:i2c.c         ****  *    [in] addr - address
+ 557:i2c.c         ****  *    [in] pBuf - receive buffer
+ 558:i2c.c         ****  *    [in] len  - number of bytes to receive
+ 559:i2c.c         ****  *
+ 560:i2c.c         ****  * Returns:
+ 561:i2c.c         ****  *    I2C_CODE_OK or I2C status code
+ 562:i2c.c         ****  *
+ 563:i2c.c         ****  *****************************************************************************/
+ 564:i2c.c         **** tS8
+ 565:i2c.c         **** i2cRead(tU8  addr,
+ 566:i2c.c         ****         tU8* pBuf,
+ 567:i2c.c         ****         tU16 len)
+ 568:i2c.c         **** {
+ 608              		.loc 1 568 0
+ 609 025c F0B5     		push	{r4, r5, r6, r7, lr}
+ 610              	.LCFI2:
+ 611              	.LVL55:
+ 612              		.loc 1 568 0
+ 613 025e 0006     		lsl	r0, r0, #24
+ 614              	.LVL56:
+ 615 0260 1204     		lsl	r2, r2, #16
+ 616              	.LVL57:
+ 617 0262 0D1C     		mov	r5, r1
+ 618 0264 060E     		lsr	r6, r0, #24
+ 619              	.LVL58:
+ 620 0266 170C     		lsr	r7, r2, #16
+ 621              	.LVL59:
+ 569:i2c.c         ****   tS8 retCode = 0;
+ 570:i2c.c         ****   tU8 status  = 0;
+ 571:i2c.c         ****   tU8 i       = 0;
+ 572:i2c.c         **** 
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 22
+
+
+ 573:i2c.c         ****   /* Generate Start condition */
+ 574:i2c.c         ****   retCode = i2cStart();
+ 622              		.loc 1 574 0
+ 623 0268 FFF7FEFF 		bl	i2cStart
+ 624              	.LVL60:
+ 625 026c 0006     		lsl	r0, r0, #24
+ 575:i2c.c         **** 
+ 576:i2c.c         ****   /* Transmit address */
+ 577:i2c.c         ****   if(retCode == I2C_CODE_OK )
+ 626              		.loc 1 577 0
+ 627 026e 040E     		lsr	r4, r0, #24
+ 628              	.LVL61:
+ 629 0270 0016     		asr	r0, r0, #24
+ 630 0272 0128     		cmp	r0, #1
+ 631 0274 36D1     		bne	.L113
+ 632              	.L116:
+ 578:i2c.c         ****   {
+ 579:i2c.c         ****     /* write SLA+R */
+ 580:i2c.c         ****     retCode = i2cPutChar(addr);
+ 581:i2c.c         ****     while(retCode == I2C_CODE_BUSY)
+ 582:i2c.c         ****     {
+ 583:i2c.c         ****       retCode = i2cPutChar(addr);
+ 633              		.loc 1 583 0
+ 634 0276 301C     		mov	r0, r6
+ 635 0278 FFF7FEFF 		bl	i2cPutChar
+ 636 027c 0006     		lsl	r0, r0, #24
+ 637 027e 040E     		lsr	r4, r0, #24
+ 638              		.loc 1 581 0
+ 639 0280 2306     		lsl	r3, r4, #24
+ 640 0282 FC2C     		cmp	r4, #252
+ 641 0284 F7D0     		beq	.L116
+ 584:i2c.c         ****     }
+ 585:i2c.c         ****   }
+ 586:i2c.c         **** 
+ 587:i2c.c         ****   if(retCode == I2C_CODE_OK )
+ 642              		.loc 1 587 0
+ 643 0286 1A1C     		mov	r2, r3
+ 644 0288 1B16     		asr	r3, r3, #24
+ 645 028a 012B     		cmp	r3, #1
+ 646 028c 2AD1     		bne	.L113
+ 647 028e 140E     		lsr	r4, r2, #24
+ 648 0290 0126     		mov	r6, #1
+ 649              	.LVL62:
+ 650 0292 25E0     		b	.L119
+ 651              	.LVL63:
+ 652              	.L142:
+ 653              	.LBB16:
+ 654              	.LBB17:
+ 655              		.loc 1 80 0
+ 656 0294 174B     		ldr	r3, .L143
+ 657              	.LVL64:
+ 658 0296 1B78     		ldrb	r3, [r3]
+ 659 0298 1A07     		lsl	r2, r3, #28
+ 660 029a FBD5     		bpl	.L142
+ 661              		.loc 1 86 0
+ 662 029c 164B     		ldr	r3, .L143+4
+ 663 029e 1B78     		ldrb	r3, [r3]
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 23
+
+
+ 664              	.LVL65:
+ 665              	.LBE17:
+ 666              	.LBE16:
+ 588:i2c.c         ****   {
+ 589:i2c.c         ****     /* wait until address transmitted and receive data */
+ 590:i2c.c         ****     for(i = 1; i <= len; i++ )
+ 591:i2c.c         ****     {
+ 592:i2c.c         ****       /* wait until data transmitted */
+ 593:i2c.c         ****       while(1)
+ 594:i2c.c         ****       {
+ 595:i2c.c         ****         /* get new status */
+ 596:i2c.c         ****         status = i2cCheckStatus();
+ 597:i2c.c         **** 
+ 598:i2c.c         ****         /*
+ 599:i2c.c         ****          * SLA+R transmitted, ACK received or
+ 600:i2c.c         ****          * SLA+R transmitted, ACK not received
+ 601:i2c.c         ****          * data byte received in master mode, ACK transmitted
+ 602:i2c.c         ****          */
+ 603:i2c.c         ****         if((status == 0x40 ) || (status == 0x48 ) || (status == 0x50 ))
+ 667              		.loc 1 603 0
+ 668 02a0 402B     		cmp	r3, #64
+ 669 02a2 03D0     		beq	.L122
+ 670 02a4 482B     		cmp	r3, #72
+ 671 02a6 01D0     		beq	.L122
+ 672 02a8 502B     		cmp	r3, #80
+ 673 02aa 11D1     		bne	.L125
+ 674              	.L122:
+ 604:i2c.c         ****         {
+ 605:i2c.c         ****           /* data received */
+ 606:i2c.c         **** 
+ 607:i2c.c         ****           if(i == len)
+ 675              		.loc 1 607 0
+ 676 02ac BE42     		cmp	r6, r7
+ 677 02ae 01D1     		bne	.L126
+ 608:i2c.c         ****           {
+ 609:i2c.c         ****             /* Set generate NACK */
+ 610:i2c.c         ****             retCode = i2cGetChar(I2C_MODE_ACK1, pBuf);
+ 678              		.loc 1 610 0
+ 679 02b0 0120     		mov	r0, #1
+ 680 02b2 00E0     		b	.L141
+ 681              	.L126:
+ 611:i2c.c         ****           }
+ 612:i2c.c         ****           else
+ 613:i2c.c         ****           {
+ 614:i2c.c         ****             retCode = i2cGetChar(I2C_MODE_ACK0, pBuf);
+ 682              		.loc 1 614 0
+ 683 02b4 0020     		mov	r0, #0
+ 684              	.L141:
+ 685 02b6 291C     		mov	r1, r5
+ 686 02b8 FFF7FEFF 		bl	i2cGetChar
+ 687              	.LVL66:
+ 688              	.L130:
+ 615:i2c.c         ****           }
+ 616:i2c.c         **** 
+ 617:i2c.c         ****           /* Read data */
+ 618:i2c.c         ****           retCode = i2cGetChar(I2C_MODE_READ, pBuf);
+ 619:i2c.c         ****           while(retCode == I2C_CODE_EMPTY)
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 24
+
+
+ 620:i2c.c         ****           {
+ 621:i2c.c         ****             retCode = i2cGetChar(I2C_MODE_READ, pBuf);
+ 689              		.loc 1 621 0
+ 690 02bc 0220     		mov	r0, #2
+ 691 02be 291C     		mov	r1, r5
+ 692 02c0 FFF7FEFF 		bl	i2cGetChar
+ 693 02c4 0006     		lsl	r0, r0, #24
+ 694 02c6 040E     		lsr	r4, r0, #24
+ 695              		.loc 1 619 0
+ 696 02c8 FD2C     		cmp	r4, #253
+ 697 02ca F7D0     		beq	.L130
+ 622:i2c.c         ****           }
+ 623:i2c.c         ****           pBuf++;
+ 698              		.loc 1 623 0
+ 699 02cc 0135     		add	r5, r5, #1
+ 700 02ce 04E0     		b	.L132
+ 701              	.LVL67:
+ 702              	.L125:
+ 624:i2c.c         **** 
+ 625:i2c.c         ****           break;
+ 626:i2c.c         ****         }
+ 627:i2c.c         **** 
+ 628:i2c.c         ****         /* no relevant status information */
+ 629:i2c.c         ****         else if(status != 0xf8 )
+ 703              		.loc 1 629 0
+ 704 02d0 F82B     		cmp	r3, #248
+ 705 02d2 DFD0     		beq	.L142
+ 630:i2c.c         ****         {
+ 631:i2c.c         ****           /* error */
+ 632:i2c.c         ****           i = len;
+ 706              		.loc 1 632 0
+ 707 02d4 3B06     		lsl	r3, r7, #24
+ 708              	.LVL68:
+ 709 02d6 1E0E     		lsr	r6, r3, #24
+ 710 02d8 FF24     		mov	r4, #255
+ 711              	.L132:
+ 712              		.loc 1 590 0
+ 713 02da 731C     		add	r3, r6, #1
+ 714 02dc 1B06     		lsl	r3, r3, #24
+ 715 02de 1E0E     		lsr	r6, r3, #24
+ 716              	.L119:
+ 717 02e0 BE42     		cmp	r6, r7
+ 718 02e2 D7D9     		bls	.L142
+ 719              	.LVL69:
+ 720              	.L113:
+ 633:i2c.c         ****           retCode = I2C_CODE_ERROR;
+ 634:i2c.c         ****           break;
+ 635:i2c.c         ****         }
+ 636:i2c.c         ****       }
+ 637:i2c.c         ****     }
+ 638:i2c.c         ****   }
+ 639:i2c.c         **** 
+ 640:i2c.c         ****   /*--- Generate Stop condition ---*/
+ 641:i2c.c         ****   i2cStop();
+ 721              		.loc 1 641 0
+ 722 02e4 FFF7FEFF 		bl	i2cStop
+ 723 02e8 2006     		lsl	r0, r4, #24
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 25
+
+
+ 724 02ea 0016     		asr	r0, r0, #24
+ 642:i2c.c         **** 
+ 643:i2c.c         ****   return retCode;
+ 644:i2c.c         **** }
+ 725              		.loc 1 644 0
+ 726              		@ sp needed for prologue
+ 727              	.LVL70:
+ 728              	.LVL71:
+ 729              	.LVL72:
+ 730              	.LVL73:
+ 731 02ec F0BC     		pop	{r4, r5, r6, r7}
+ 732 02ee 02BC     		pop	{r1}
+ 733 02f0 0847     		bx	r1
+ 734              	.L144:
+ 735 02f2 0000     		.align	2
+ 736              	.L143:
+ 737 02f4 00C001E0 		.word	-536756224
+ 738 02f8 04C001E0 		.word	-536756220
+ 739              	.LFE13:
+ 740              		.size	i2cRead, .-i2cRead
+ 741              		.align	2
+ 742              		.global	i2cWrite
+ 743              		.code 16
+ 744              		.thumb_func
+ 745              		.type	i2cWrite, %function
+ 746              	i2cWrite:
+ 747              	.LFB9:
+ 748              		.loc 1 366 0
+ 749 02fc F0B5     		push	{r4, r5, r6, r7, lr}
+ 750              	.LCFI3:
+ 751              	.LVL74:
+ 752              		.loc 1 366 0
+ 753 02fe 0006     		lsl	r0, r0, #24
+ 754              	.LVL75:
+ 755 0300 1204     		lsl	r2, r2, #16
+ 756              	.LVL76:
+ 757 0302 0D1C     		mov	r5, r1
+ 758 0304 060E     		lsr	r6, r0, #24
+ 759              	.LVL77:
+ 760 0306 170C     		lsr	r7, r2, #16
+ 761              	.LVL78:
+ 762              		.loc 1 372 0
+ 763 0308 FFF7FEFF 		bl	i2cStart
+ 764              	.LVL79:
+ 765 030c 0006     		lsl	r0, r0, #24
+ 766              		.loc 1 375 0
+ 767 030e 040E     		lsr	r4, r0, #24
+ 768              	.LVL80:
+ 769 0310 0016     		asr	r0, r0, #24
+ 770 0312 0128     		cmp	r0, #1
+ 771 0314 2AD1     		bne	.L187
+ 772              	.L149:
+ 773              		.loc 1 381 0
+ 774 0316 301C     		mov	r0, r6
+ 775 0318 FFF7FEFF 		bl	i2cPutChar
+ 776 031c 0006     		lsl	r0, r0, #24
+ 777 031e 000E     		lsr	r0, r0, #24
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 26
+
+
+ 778              	.LVL81:
+ 779              		.loc 1 379 0
+ 780 0320 0306     		lsl	r3, r0, #24
+ 781 0322 FC28     		cmp	r0, #252
+ 782 0324 F7D0     		beq	.L149
+ 783              		.loc 1 385 0
+ 784 0326 1C0E     		lsr	r4, r3, #24
+ 785 0328 1B16     		asr	r3, r3, #24
+ 786 032a 012B     		cmp	r3, #1
+ 787 032c 1ED1     		bne	.L187
+ 788 032e 0026     		mov	r6, #0
+ 789              	.LVL82:
+ 790 0330 1AE0     		b	.L153
+ 791              	.LVL83:
+ 792              	.L186:
+ 793              	.LBB22:
+ 794              	.LBB23:
+ 795              		.loc 1 80 0
+ 796 0332 184B     		ldr	r3, .L188
+ 797              	.LVL84:
+ 798 0334 1B78     		ldrb	r3, [r3]
+ 799 0336 1A07     		lsl	r2, r3, #28
+ 800 0338 FBD5     		bpl	.L186
+ 801              		.loc 1 86 0
+ 802 033a 174B     		ldr	r3, .L188+4
+ 803 033c 1B78     		ldrb	r3, [r3]
+ 804              	.LVL85:
+ 805              	.LBE23:
+ 806              	.LBE22:
+ 807              		.loc 1 401 0
+ 808 033e 182B     		cmp	r3, #24
+ 809 0340 01D0     		beq	.L160
+ 810 0342 282B     		cmp	r3, #40
+ 811 0344 08D1     		bne	.L158
+ 812              	.L160:
+ 813              		.loc 1 409 0
+ 814 0346 2878     		ldrb	r0, [r5]
+ 815              	.LVL86:
+ 816 0348 FFF7FEFF 		bl	i2cPutChar
+ 817              	.LVL87:
+ 818 034c 0006     		lsl	r0, r0, #24
+ 819 034e 040E     		lsr	r4, r0, #24
+ 820              		.loc 1 407 0
+ 821 0350 FC2C     		cmp	r4, #252
+ 822 0352 F8D0     		beq	.L160
+ 823              		.loc 1 411 0
+ 824 0354 0135     		add	r5, r5, #1
+ 825 0356 04E0     		b	.L162
+ 826              	.LVL88:
+ 827              	.L158:
+ 828              		.loc 1 417 0
+ 829 0358 F82B     		cmp	r3, #248
+ 830 035a EAD0     		beq	.L186
+ 831              		.loc 1 420 0
+ 832 035c 3B06     		lsl	r3, r7, #24
+ 833              	.LVL89:
+ 834 035e 1E0E     		lsr	r6, r3, #24
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 27
+
+
+ 835 0360 FF24     		mov	r4, #255
+ 836              	.L162:
+ 837              		.loc 1 388 0
+ 838 0362 731C     		add	r3, r6, #1
+ 839 0364 1B06     		lsl	r3, r3, #24
+ 840 0366 1E0E     		lsr	r6, r3, #24
+ 841              	.L153:
+ 842 0368 BE42     		cmp	r6, r7
+ 843 036a E2D3     		bcc	.L186
+ 844              	.LVL90:
+ 845              	.L187:
+ 846              	.LBB24:
+ 847              	.LBB25:
+ 848              		.loc 1 80 0
+ 849 036c 094B     		ldr	r3, .L188
+ 850              	.LVL91:
+ 851 036e 1B78     		ldrb	r3, [r3]
+ 852 0370 1A07     		lsl	r2, r3, #28
+ 853 0372 FBD5     		bpl	.L187
+ 854              		.loc 1 86 0
+ 855 0374 084B     		ldr	r3, .L188+4
+ 856 0376 1B78     		ldrb	r3, [r3]
+ 857              	.LVL92:
+ 858              	.LBE25:
+ 859              	.LBE24:
+ 860              		.loc 1 438 0
+ 861 0378 182B     		cmp	r3, #24
+ 862 037a 04D0     		beq	.L165
+ 863 037c 282B     		cmp	r3, #40
+ 864 037e 02D0     		beq	.L165
+ 865              		.loc 1 445 0
+ 866 0380 F82B     		cmp	r3, #248
+ 867 0382 F3D0     		beq	.L187
+ 868 0384 FF24     		mov	r4, #255
+ 869              	.L165:
+ 870              		.loc 1 455 0
+ 871 0386 FFF7FEFF 		bl	i2cStop
+ 872              	.LVL93:
+ 873 038a 2006     		lsl	r0, r4, #24
+ 874 038c 0016     		asr	r0, r0, #24
+ 875              		.loc 1 458 0
+ 876              		@ sp needed for prologue
+ 877              	.LVL94:
+ 878              	.LVL95:
+ 879              	.LVL96:
+ 880              	.LVL97:
+ 881 038e F0BC     		pop	{r4, r5, r6, r7}
+ 882 0390 02BC     		pop	{r1}
+ 883 0392 0847     		bx	r1
+ 884              	.L189:
+ 885              		.align	2
+ 886              	.L188:
+ 887 0394 00C001E0 		.word	-536756224
+ 888 0398 04C001E0 		.word	-536756220
+ 889              	.LFE9:
+ 890              		.size	i2cWrite, .-i2cWrite
+ 891              		.section	.debug_frame,"",%progbits
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 28
+
+
+ 892              	.Lframe0:
+ 893 0000 0C000000 		.4byte	.LECIE0-.LSCIE0
+ 894              	.LSCIE0:
+ 895 0004 FFFFFFFF 		.4byte	0xffffffff
+ 896 0008 01       		.byte	0x1
+ 897 0009 00       		.ascii	"\000"
+ 898 000a 01       		.uleb128 0x1
+ 899 000b 7C       		.sleb128 -4
+ 900 000c 0E       		.byte	0xe
+ 901 000d 0C       		.byte	0xc
+ 902 000e 0D       		.uleb128 0xd
+ 903 000f 00       		.uleb128 0x0
+ 904              		.align	2
+ 905              	.LECIE0:
+ 906              	.LSFDE0:
+ 907 0010 0C000000 		.4byte	.LEFDE0-.LASFDE0
+ 908              	.LASFDE0:
+ 909 0014 00000000 		.4byte	.Lframe0
+ 910 0018 00000000 		.4byte	.LFB2
+ 911 001c 18000000 		.4byte	.LFE2-.LFB2
+ 912              		.align	2
+ 913              	.LEFDE0:
+ 914              	.LSFDE2:
+ 915 0020 0C000000 		.4byte	.LEFDE2-.LASFDE2
+ 916              	.LASFDE2:
+ 917 0024 00000000 		.4byte	.Lframe0
+ 918 0028 18000000 		.4byte	.LFB3
+ 919 002c 4C000000 		.4byte	.LFE3-.LFB3
+ 920              		.align	2
+ 921              	.LEFDE2:
+ 922              	.LSFDE4:
+ 923 0030 0C000000 		.4byte	.LEFDE4-.LASFDE4
+ 924              	.LASFDE4:
+ 925 0034 00000000 		.4byte	.Lframe0
+ 926 0038 64000000 		.4byte	.LFB4
+ 927 003c 4C000000 		.4byte	.LFE4-.LFB4
+ 928              		.align	2
+ 929              	.LEFDE4:
+ 930              	.LSFDE6:
+ 931 0040 0C000000 		.4byte	.LEFDE6-.LASFDE6
+ 932              	.LASFDE6:
+ 933 0044 00000000 		.4byte	.Lframe0
+ 934 0048 B0000000 		.4byte	.LFB6
+ 935 004c 28000000 		.4byte	.LFE6-.LFB6
+ 936              		.align	2
+ 937              	.LEFDE6:
+ 938              	.LSFDE8:
+ 939 0050 0C000000 		.4byte	.LEFDE8-.LASFDE8
+ 940              	.LASFDE8:
+ 941 0054 00000000 		.4byte	.Lframe0
+ 942 0058 D8000000 		.4byte	.LFB7
+ 943 005c 2C000000 		.4byte	.LFE7-.LFB7
+ 944              		.align	2
+ 945              	.LEFDE8:
+ 946              	.LSFDE10:
+ 947 0060 0C000000 		.4byte	.LEFDE10-.LASFDE10
+ 948              	.LASFDE10:
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 29
+
+
+ 949 0064 00000000 		.4byte	.Lframe0
+ 950 0068 04010000 		.4byte	.LFB8
+ 951 006c 58000000 		.4byte	.LFE8-.LFB8
+ 952              		.align	2
+ 953              	.LEFDE10:
+ 954              	.LSFDE12:
+ 955 0070 0C000000 		.4byte	.LEFDE12-.LASFDE12
+ 956              	.LASFDE12:
+ 957 0074 00000000 		.4byte	.Lframe0
+ 958 0078 5C010000 		.4byte	.LFB10
+ 959 007c 2C000000 		.4byte	.LFE10-.LFB10
+ 960              		.align	2
+ 961              	.LEFDE12:
+ 962              	.LSFDE14:
+ 963 0080 14000000 		.4byte	.LEFDE14-.LASFDE14
+ 964              	.LASFDE14:
+ 965 0084 00000000 		.4byte	.Lframe0
+ 966 0088 88010000 		.4byte	.LFB11
+ 967 008c 2E000000 		.4byte	.LFE11-.LFB11
+ 968 0090 42       		.byte	0x4
+ 969              		.4byte	.LCFI0-.LFB11
+ 970 0091 0E       		.byte	0xe
+ 971 0092 08       		.uleb128 0x8
+ 972 0093 84       		.byte	0x84
+ 973 0094 02       		.uleb128 0x2
+ 974 0095 8E       		.byte	0x8e
+ 975 0096 01       		.uleb128 0x1
+ 976 0097 00       		.align	2
+ 977              	.LEFDE14:
+ 978              	.LSFDE16:
+ 979 0098 1C000000 		.4byte	.LEFDE16-.LASFDE16
+ 980              	.LASFDE16:
+ 981 009c 00000000 		.4byte	.Lframe0
+ 982 00a0 B8010000 		.4byte	.LFB12
+ 983 00a4 58000000 		.4byte	.LFE12-.LFB12
+ 984 00a8 42       		.byte	0x4
+ 985              		.4byte	.LCFI1-.LFB12
+ 986 00a9 0E       		.byte	0xe
+ 987 00aa 14       		.uleb128 0x14
+ 988 00ab 84       		.byte	0x84
+ 989 00ac 05       		.uleb128 0x5
+ 990 00ad 85       		.byte	0x85
+ 991 00ae 04       		.uleb128 0x4
+ 992 00af 86       		.byte	0x86
+ 993 00b0 03       		.uleb128 0x3
+ 994 00b1 87       		.byte	0x87
+ 995 00b2 02       		.uleb128 0x2
+ 996 00b3 8E       		.byte	0x8e
+ 997 00b4 01       		.uleb128 0x1
+ 998 00b5 000000   		.align	2
+ 999              	.LEFDE16:
+ 1000              	.LSFDE18:
+ 1001 00b8 0C000000 		.4byte	.LEFDE18-.LASFDE18
+ 1002              	.LASFDE18:
+ 1003 00bc 00000000 		.4byte	.Lframe0
+ 1004 00c0 10020000 		.4byte	.LFB5
+ 1005 00c4 4C000000 		.4byte	.LFE5-.LFB5
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 30
+
+
+ 1006              		.align	2
+ 1007              	.LEFDE18:
+ 1008              	.LSFDE20:
+ 1009 00c8 1C000000 		.4byte	.LEFDE20-.LASFDE20
+ 1010              	.LASFDE20:
+ 1011 00cc 00000000 		.4byte	.Lframe0
+ 1012 00d0 5C020000 		.4byte	.LFB13
+ 1013 00d4 A0000000 		.4byte	.LFE13-.LFB13
+ 1014 00d8 42       		.byte	0x4
+ 1015              		.4byte	.LCFI2-.LFB13
+ 1016 00d9 0E       		.byte	0xe
+ 1017 00da 14       		.uleb128 0x14
+ 1018 00db 84       		.byte	0x84
+ 1019 00dc 05       		.uleb128 0x5
+ 1020 00dd 85       		.byte	0x85
+ 1021 00de 04       		.uleb128 0x4
+ 1022 00df 86       		.byte	0x86
+ 1023 00e0 03       		.uleb128 0x3
+ 1024 00e1 87       		.byte	0x87
+ 1025 00e2 02       		.uleb128 0x2
+ 1026 00e3 8E       		.byte	0x8e
+ 1027 00e4 01       		.uleb128 0x1
+ 1028 00e5 000000   		.align	2
+ 1029              	.LEFDE20:
+ 1030              	.LSFDE22:
+ 1031 00e8 1C000000 		.4byte	.LEFDE22-.LASFDE22
+ 1032              	.LASFDE22:
+ 1033 00ec 00000000 		.4byte	.Lframe0
+ 1034 00f0 FC020000 		.4byte	.LFB9
+ 1035 00f4 A0000000 		.4byte	.LFE9-.LFB9
+ 1036 00f8 42       		.byte	0x4
+ 1037              		.4byte	.LCFI3-.LFB9
+ 1038 00f9 0E       		.byte	0xe
+ 1039 00fa 14       		.uleb128 0x14
+ 1040 00fb 84       		.byte	0x84
+ 1041 00fc 05       		.uleb128 0x5
+ 1042 00fd 85       		.byte	0x85
+ 1043 00fe 04       		.uleb128 0x4
+ 1044 00ff 86       		.byte	0x86
+ 1045 0100 03       		.uleb128 0x3
+ 1046 0101 87       		.byte	0x87
+ 1047 0102 02       		.uleb128 0x2
+ 1048 0103 8E       		.byte	0x8e
+ 1049 0104 01       		.uleb128 0x1
+ 1050 0105 000000   		.align	2
+ 1051              	.LEFDE22:
+ 1052              		.file 2 "./startup/general.h"
+ 1053              		.text
+ 1054              	.Letext0:
+ 1055              		.section	.debug_loc,"",%progbits
+ 1056              	.Ldebug_loc0:
+ 1057              	.LLST3:
+ 1058 0000 80000000 		.4byte	.LVL0-.Ltext0
+ 1059 0004 92000000 		.4byte	.LVL3-.Ltext0
+ 1060 0008 0100     		.2byte	0x1
+ 1061 000a 53       		.byte	0x53
+ 1062 000b 94000000 		.4byte	.LVL4-.Ltext0
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 31
+
+
+ 1063 000f 98000000 		.4byte	.LVL6-.Ltext0
+ 1064 0013 0100     		.2byte	0x1
+ 1065 0015 53       		.byte	0x53
+ 1066 0016 00000000 		.4byte	0x0
+ 1067 001a 00000000 		.4byte	0x0
+ 1068              	.LLST4:
+ 1069 001e 8E000000 		.4byte	.LVL1-.Ltext0
+ 1070 0022 90000000 		.4byte	.LVL2-.Ltext0
+ 1071 0026 0100     		.2byte	0x1
+ 1072 0028 50       		.byte	0x50
+ 1073 0029 96000000 		.4byte	.LVL5-.Ltext0
+ 1074 002d 9A000000 		.4byte	.LVL7-.Ltext0
+ 1075 0031 0100     		.2byte	0x1
+ 1076 0033 50       		.byte	0x50
+ 1077 0034 00000000 		.4byte	0x0
+ 1078 0038 00000000 		.4byte	0x0
+ 1079              	.LLST7:
+ 1080 003c D8000000 		.4byte	.LVL8-.Ltext0
+ 1081 0040 DE000000 		.4byte	.LVL9-.Ltext0
+ 1082 0044 0100     		.2byte	0x1
+ 1083 0046 50       		.byte	0x50
+ 1084 0047 E2000000 		.4byte	.LVL10-.Ltext0
+ 1085 004b E8000000 		.4byte	.LVL11-.Ltext0
+ 1086 004f 0100     		.2byte	0x1
+ 1087 0051 50       		.byte	0x50
+ 1088 0052 EA000000 		.4byte	.LVL12-.Ltext0
+ 1089 0056 F4000000 		.4byte	.LVL13-.Ltext0
+ 1090 005a 0100     		.2byte	0x1
+ 1091 005c 50       		.byte	0x50
+ 1092 005d 00000000 		.4byte	0x0
+ 1093 0061 00000000 		.4byte	0x0
+ 1094              	.LLST8:
+ 1095 0065 E8000000 		.4byte	.LVL11-.Ltext0
+ 1096 0069 EA000000 		.4byte	.LVL12-.Ltext0
+ 1097 006d 0100     		.2byte	0x1
+ 1098 006f 50       		.byte	0x50
+ 1099 0070 F4000000 		.4byte	.LVL13-.Ltext0
+ 1100 0074 F6000000 		.4byte	.LVL14-.Ltext0
+ 1101 0078 0100     		.2byte	0x1
+ 1102 007a 50       		.byte	0x50
+ 1103 007b 00000000 		.4byte	0x0
+ 1104 007f 00000000 		.4byte	0x0
+ 1105              	.LLST10:
+ 1106 0083 04010000 		.4byte	.LVL15-.Ltext0
+ 1107 0087 06010000 		.4byte	.LVL16-.Ltext0
+ 1108 008b 0100     		.2byte	0x1
+ 1109 008d 50       		.byte	0x50
+ 1110 008e 08010000 		.4byte	.LVL17-.Ltext0
+ 1111 0092 40010000 		.4byte	.LVL20-.Ltext0
+ 1112 0096 0100     		.2byte	0x1
+ 1113 0098 50       		.byte	0x50
+ 1114 0099 42010000 		.4byte	.LVL21-.Ltext0
+ 1115 009d 4A010000 		.4byte	.LVL22-.Ltext0
+ 1116 00a1 0100     		.2byte	0x1
+ 1117 00a3 50       		.byte	0x50
+ 1118 00a4 4A010000 		.4byte	.LVL22-.Ltext0
+ 1119 00a8 4A010000 		.4byte	.LVL23-.Ltext0
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 32
+
+
+ 1120 00ac 0100     		.2byte	0x1
+ 1121 00ae 50       		.byte	0x50
+ 1122 00af 00000000 		.4byte	0x0
+ 1123 00b3 00000000 		.4byte	0x0
+ 1124              	.LLST11:
+ 1125 00b7 04010000 		.4byte	.LVL15-.Ltext0
+ 1126 00bb 0E010000 		.4byte	.LVL18-.Ltext0
+ 1127 00bf 0100     		.2byte	0x1
+ 1128 00c1 51       		.byte	0x51
+ 1129 00c2 22010000 		.4byte	.LVL19-.Ltext0
+ 1130 00c6 5C010000 		.4byte	.LFE8-.Ltext0
+ 1131 00ca 0100     		.2byte	0x1
+ 1132 00cc 51       		.byte	0x51
+ 1133 00cd 00000000 		.4byte	0x0
+ 1134 00d1 00000000 		.4byte	0x0
+ 1135              	.LLST12:
+ 1136 00d5 40010000 		.4byte	.LVL20-.Ltext0
+ 1137 00d9 42010000 		.4byte	.LVL21-.Ltext0
+ 1138 00dd 0100     		.2byte	0x1
+ 1139 00df 50       		.byte	0x50
+ 1140 00e0 4A010000 		.4byte	.LVL22-.Ltext0
+ 1141 00e4 4C010000 		.4byte	.LVL24-.Ltext0
+ 1142 00e8 0100     		.2byte	0x1
+ 1143 00ea 50       		.byte	0x50
+ 1144 00eb 00000000 		.4byte	0x0
+ 1145 00ef 00000000 		.4byte	0x0
+ 1146              	.LLST14:
+ 1147 00f3 5C010000 		.4byte	.LVL25-.Ltext0
+ 1148 00f7 5E010000 		.4byte	.LVL26-.Ltext0
+ 1149 00fb 0100     		.2byte	0x1
+ 1150 00fd 53       		.byte	0x53
+ 1151 00fe 68010000 		.4byte	.LVL27-.Ltext0
+ 1152 0102 88010000 		.4byte	.LFE10-.Ltext0
+ 1153 0106 0100     		.2byte	0x1
+ 1154 0108 53       		.byte	0x53
+ 1155 0109 00000000 		.4byte	0x0
+ 1156 010d 00000000 		.4byte	0x0
+ 1157              	.LLST15:
+ 1158 0111 88010000 		.4byte	.LFB11-.Ltext0
+ 1159 0115 8A010000 		.4byte	.LCFI0-.Ltext0
+ 1160 0119 0100     		.2byte	0x1
+ 1161 011b 5D       		.byte	0x5d
+ 1162 011c 8A010000 		.4byte	.LCFI0-.Ltext0
+ 1163 0120 B6010000 		.4byte	.LFE11-.Ltext0
+ 1164 0124 0200     		.2byte	0x2
+ 1165 0126 7D       		.byte	0x7d
+ 1166 0127 08       		.sleb128 8
+ 1167 0128 00000000 		.4byte	0x0
+ 1168 012c 00000000 		.4byte	0x0
+ 1169              	.LLST16:
+ 1170 0130 8A010000 		.4byte	.LVL28-.Ltext0
+ 1171 0134 8C010000 		.4byte	.LVL29-.Ltext0
+ 1172 0138 0100     		.2byte	0x1
+ 1173 013a 50       		.byte	0x50
+ 1174 013b 00000000 		.4byte	0x0
+ 1175 013f 00000000 		.4byte	0x0
+ 1176              	.LLST17:
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 33
+
+
+ 1177 0143 98010000 		.4byte	.LVL30-.Ltext0
+ 1178 0147 A8010000 		.4byte	.LVL31-.Ltext0
+ 1179 014b 0100     		.2byte	0x1
+ 1180 014d 50       		.byte	0x50
+ 1181 014e AC010000 		.4byte	.LVL32-.Ltext0
+ 1182 0152 AE010000 		.4byte	.LVL33-.Ltext0
+ 1183 0156 0100     		.2byte	0x1
+ 1184 0158 50       		.byte	0x50
+ 1185 0159 00000000 		.4byte	0x0
+ 1186 015d 00000000 		.4byte	0x0
+ 1187              	.LLST18:
+ 1188 0161 B8010000 		.4byte	.LFB12-.Ltext0
+ 1189 0165 BA010000 		.4byte	.LCFI1-.Ltext0
+ 1190 0169 0100     		.2byte	0x1
+ 1191 016b 5D       		.byte	0x5d
+ 1192 016c BA010000 		.4byte	.LCFI1-.Ltext0
+ 1193 0170 10020000 		.4byte	.LFE12-.Ltext0
+ 1194 0174 0200     		.2byte	0x2
+ 1195 0176 7D       		.byte	0x7d
+ 1196 0177 14       		.sleb128 20
+ 1197 0178 00000000 		.4byte	0x0
+ 1198 017c 00000000 		.4byte	0x0
+ 1199              	.LLST19:
+ 1200 0180 BA010000 		.4byte	.LVL34-.Ltext0
+ 1201 0184 BC010000 		.4byte	.LVL35-.Ltext0
+ 1202 0188 0100     		.2byte	0x1
+ 1203 018a 50       		.byte	0x50
+ 1204 018b C2010000 		.4byte	.LVL37-.Ltext0
+ 1205 018f E4010000 		.4byte	.LVL41-.Ltext0
+ 1206 0193 0100     		.2byte	0x1
+ 1207 0195 54       		.byte	0x54
+ 1208 0196 02020000 		.4byte	.LVL42-.Ltext0
+ 1209 019a 0A020000 		.4byte	.LVL43-.Ltext0
+ 1210 019e 0100     		.2byte	0x1
+ 1211 01a0 54       		.byte	0x54
+ 1212 01a1 00000000 		.4byte	0x0
+ 1213 01a5 00000000 		.4byte	0x0
+ 1214              	.LLST20:
+ 1215 01a9 BA010000 		.4byte	.LVL34-.Ltext0
+ 1216 01ad C8010000 		.4byte	.LVL39-.Ltext0
+ 1217 01b1 0100     		.2byte	0x1
+ 1218 01b3 51       		.byte	0x51
+ 1219 01b4 C8010000 		.4byte	.LVL39-.Ltext0
+ 1220 01b8 0A020000 		.4byte	.LVL46-.Ltext0
+ 1221 01bc 0100     		.2byte	0x1
+ 1222 01be 57       		.byte	0x57
+ 1223 01bf 00000000 		.4byte	0x0
+ 1224 01c3 00000000 		.4byte	0x0
+ 1225              	.LLST21:
+ 1226 01c7 BA010000 		.4byte	.LVL34-.Ltext0
+ 1227 01cb BE010000 		.4byte	.LVL36-.Ltext0
+ 1228 01cf 0100     		.2byte	0x1
+ 1229 01d1 52       		.byte	0x52
+ 1230 01d2 C4010000 		.4byte	.LVL38-.Ltext0
+ 1231 01d6 0A020000 		.4byte	.LVL45-.Ltext0
+ 1232 01da 0100     		.2byte	0x1
+ 1233 01dc 56       		.byte	0x56
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 34
+
+
+ 1234 01dd 00000000 		.4byte	0x0
+ 1235 01e1 00000000 		.4byte	0x0
+ 1236              	.LLST22:
+ 1237 01e5 CC010000 		.4byte	.LVL40-.Ltext0
+ 1238 01e9 0A020000 		.4byte	.LVL44-.Ltext0
+ 1239 01ed 0100     		.2byte	0x1
+ 1240 01ef 55       		.byte	0x55
+ 1241 01f0 00000000 		.4byte	0x0
+ 1242 01f4 00000000 		.4byte	0x0
+ 1243              	.LLST24:
+ 1244 01f8 20020000 		.4byte	.LVL47-.Ltext0
+ 1245 01fc 22020000 		.4byte	.LVL48-.Ltext0
+ 1246 0200 0100     		.2byte	0x1
+ 1247 0202 53       		.byte	0x53
+ 1248 0203 32020000 		.4byte	.LVL49-.Ltext0
+ 1249 0207 46020000 		.4byte	.LVL53-.Ltext0
+ 1250 020b 0100     		.2byte	0x1
+ 1251 020d 53       		.byte	0x53
+ 1252 020e 00000000 		.4byte	0x0
+ 1253 0212 00000000 		.4byte	0x0
+ 1254              	.LLST25:
+ 1255 0216 40020000 		.4byte	.LVL50-.Ltext0
+ 1256 021a 42020000 		.4byte	.LVL51-.Ltext0
+ 1257 021e 0100     		.2byte	0x1
+ 1258 0220 50       		.byte	0x50
+ 1259 0221 44020000 		.4byte	.LVL52-.Ltext0
+ 1260 0225 48020000 		.4byte	.LVL54-.Ltext0
+ 1261 0229 0100     		.2byte	0x1
+ 1262 022b 50       		.byte	0x50
+ 1263 022c 00000000 		.4byte	0x0
+ 1264 0230 00000000 		.4byte	0x0
+ 1265              	.LLST26:
+ 1266 0234 5C020000 		.4byte	.LFB13-.Ltext0
+ 1267 0238 5E020000 		.4byte	.LCFI2-.Ltext0
+ 1268 023c 0100     		.2byte	0x1
+ 1269 023e 5D       		.byte	0x5d
+ 1270 023f 5E020000 		.4byte	.LCFI2-.Ltext0
+ 1271 0243 FC020000 		.4byte	.LFE13-.Ltext0
+ 1272 0247 0200     		.2byte	0x2
+ 1273 0249 7D       		.byte	0x7d
+ 1274 024a 14       		.sleb128 20
+ 1275 024b 00000000 		.4byte	0x0
+ 1276 024f 00000000 		.4byte	0x0
+ 1277              	.LLST27:
+ 1278 0253 5E020000 		.4byte	.LVL55-.Ltext0
+ 1279 0257 60020000 		.4byte	.LVL56-.Ltext0
+ 1280 025b 0100     		.2byte	0x1
+ 1281 025d 50       		.byte	0x50
+ 1282 025e 66020000 		.4byte	.LVL58-.Ltext0
+ 1283 0262 92020000 		.4byte	.LVL62-.Ltext0
+ 1284 0266 0100     		.2byte	0x1
+ 1285 0268 56       		.byte	0x56
+ 1286 0269 E4020000 		.4byte	.LVL69-.Ltext0
+ 1287 026d EC020000 		.4byte	.LVL72-.Ltext0
+ 1288 0271 0100     		.2byte	0x1
+ 1289 0273 56       		.byte	0x56
+ 1290 0274 00000000 		.4byte	0x0
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 35
+
+
+ 1291 0278 00000000 		.4byte	0x0
+ 1292              	.LLST28:
+ 1293 027c 5E020000 		.4byte	.LVL55-.Ltext0
+ 1294 0280 6C020000 		.4byte	.LVL60-.Ltext0
+ 1295 0284 0100     		.2byte	0x1
+ 1296 0286 51       		.byte	0x51
+ 1297 0287 6C020000 		.4byte	.LVL60-.Ltext0
+ 1298 028b EC020000 		.4byte	.LVL71-.Ltext0
+ 1299 028f 0100     		.2byte	0x1
+ 1300 0291 55       		.byte	0x55
+ 1301 0292 00000000 		.4byte	0x0
+ 1302 0296 00000000 		.4byte	0x0
+ 1303              	.LLST29:
+ 1304 029a 5E020000 		.4byte	.LVL55-.Ltext0
+ 1305 029e 62020000 		.4byte	.LVL57-.Ltext0
+ 1306 02a2 0100     		.2byte	0x1
+ 1307 02a4 52       		.byte	0x52
+ 1308 02a5 68020000 		.4byte	.LVL59-.Ltext0
+ 1309 02a9 EC020000 		.4byte	.LVL73-.Ltext0
+ 1310 02ad 0100     		.2byte	0x1
+ 1311 02af 57       		.byte	0x57
+ 1312 02b0 00000000 		.4byte	0x0
+ 1313 02b4 00000000 		.4byte	0x0
+ 1314              	.LLST30:
+ 1315 02b8 70020000 		.4byte	.LVL61-.Ltext0
+ 1316 02bc EC020000 		.4byte	.LVL70-.Ltext0
+ 1317 02c0 0100     		.2byte	0x1
+ 1318 02c2 54       		.byte	0x54
+ 1319 02c3 00000000 		.4byte	0x0
+ 1320 02c7 00000000 		.4byte	0x0
+ 1321              	.LLST31:
+ 1322 02cb 94020000 		.4byte	.LVL63-.Ltext0
+ 1323 02cf 96020000 		.4byte	.LVL64-.Ltext0
+ 1324 02d3 0100     		.2byte	0x1
+ 1325 02d5 53       		.byte	0x53
+ 1326 02d6 A0020000 		.4byte	.LVL65-.Ltext0
+ 1327 02da BC020000 		.4byte	.LVL66-.Ltext0
+ 1328 02de 0100     		.2byte	0x1
+ 1329 02e0 53       		.byte	0x53
+ 1330 02e1 D0020000 		.4byte	.LVL67-.Ltext0
+ 1331 02e5 D6020000 		.4byte	.LVL68-.Ltext0
+ 1332 02e9 0100     		.2byte	0x1
+ 1333 02eb 53       		.byte	0x53
+ 1334 02ec 00000000 		.4byte	0x0
+ 1335 02f0 00000000 		.4byte	0x0
+ 1336              	.LLST32:
+ 1337 02f4 92020000 		.4byte	.LVL62-.Ltext0
+ 1338 02f8 EC020000 		.4byte	.LVL72-.Ltext0
+ 1339 02fc 0100     		.2byte	0x1
+ 1340 02fe 56       		.byte	0x56
+ 1341 02ff 00000000 		.4byte	0x0
+ 1342 0303 00000000 		.4byte	0x0
+ 1343              	.LLST33:
+ 1344 0307 FC020000 		.4byte	.LFB9-.Ltext0
+ 1345 030b FE020000 		.4byte	.LCFI3-.Ltext0
+ 1346 030f 0100     		.2byte	0x1
+ 1347 0311 5D       		.byte	0x5d
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 36
+
+
+ 1348 0312 FE020000 		.4byte	.LCFI3-.Ltext0
+ 1349 0316 9C030000 		.4byte	.LFE9-.Ltext0
+ 1350 031a 0200     		.2byte	0x2
+ 1351 031c 7D       		.byte	0x7d
+ 1352 031d 14       		.sleb128 20
+ 1353 031e 00000000 		.4byte	0x0
+ 1354 0322 00000000 		.4byte	0x0
+ 1355              	.LLST34:
+ 1356 0326 FE020000 		.4byte	.LVL74-.Ltext0
+ 1357 032a 00030000 		.4byte	.LVL75-.Ltext0
+ 1358 032e 0100     		.2byte	0x1
+ 1359 0330 50       		.byte	0x50
+ 1360 0331 06030000 		.4byte	.LVL77-.Ltext0
+ 1361 0335 30030000 		.4byte	.LVL82-.Ltext0
+ 1362 0339 0100     		.2byte	0x1
+ 1363 033b 56       		.byte	0x56
+ 1364 033c 6C030000 		.4byte	.LVL90-.Ltext0
+ 1365 0340 8E030000 		.4byte	.LVL96-.Ltext0
+ 1366 0344 0100     		.2byte	0x1
+ 1367 0346 56       		.byte	0x56
+ 1368 0347 00000000 		.4byte	0x0
+ 1369 034b 00000000 		.4byte	0x0
+ 1370              	.LLST35:
+ 1371 034f FE020000 		.4byte	.LVL74-.Ltext0
+ 1372 0353 0C030000 		.4byte	.LVL79-.Ltext0
+ 1373 0357 0100     		.2byte	0x1
+ 1374 0359 51       		.byte	0x51
+ 1375 035a 0C030000 		.4byte	.LVL79-.Ltext0
+ 1376 035e 8E030000 		.4byte	.LVL95-.Ltext0
+ 1377 0362 0100     		.2byte	0x1
+ 1378 0364 55       		.byte	0x55
+ 1379 0365 00000000 		.4byte	0x0
+ 1380 0369 00000000 		.4byte	0x0
+ 1381              	.LLST36:
+ 1382 036d FE020000 		.4byte	.LVL74-.Ltext0
+ 1383 0371 02030000 		.4byte	.LVL76-.Ltext0
+ 1384 0375 0100     		.2byte	0x1
+ 1385 0377 52       		.byte	0x52
+ 1386 0378 08030000 		.4byte	.LVL78-.Ltext0
+ 1387 037c 8E030000 		.4byte	.LVL97-.Ltext0
+ 1388 0380 0100     		.2byte	0x1
+ 1389 0382 57       		.byte	0x57
+ 1390 0383 00000000 		.4byte	0x0
+ 1391 0387 00000000 		.4byte	0x0
+ 1392              	.LLST37:
+ 1393 038b 10030000 		.4byte	.LVL80-.Ltext0
+ 1394 038f 20030000 		.4byte	.LVL81-.Ltext0
+ 1395 0393 0100     		.2byte	0x1
+ 1396 0395 54       		.byte	0x54
+ 1397 0396 20030000 		.4byte	.LVL81-.Ltext0
+ 1398 039a 48030000 		.4byte	.LVL86-.Ltext0
+ 1399 039e 0100     		.2byte	0x1
+ 1400 03a0 50       		.byte	0x50
+ 1401 03a1 58030000 		.4byte	.LVL88-.Ltext0
+ 1402 03a5 8A030000 		.4byte	.LVL93-.Ltext0
+ 1403 03a9 0100     		.2byte	0x1
+ 1404 03ab 50       		.byte	0x50
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 37
+
+
+ 1405 03ac 00000000 		.4byte	0x0
+ 1406 03b0 00000000 		.4byte	0x0
+ 1407              	.LLST38:
+ 1408 03b4 32030000 		.4byte	.LVL83-.Ltext0
+ 1409 03b8 34030000 		.4byte	.LVL84-.Ltext0
+ 1410 03bc 0100     		.2byte	0x1
+ 1411 03be 53       		.byte	0x53
+ 1412 03bf 3E030000 		.4byte	.LVL85-.Ltext0
+ 1413 03c3 4C030000 		.4byte	.LVL87-.Ltext0
+ 1414 03c7 0100     		.2byte	0x1
+ 1415 03c9 53       		.byte	0x53
+ 1416 03ca 58030000 		.4byte	.LVL88-.Ltext0
+ 1417 03ce 5E030000 		.4byte	.LVL89-.Ltext0
+ 1418 03d2 0100     		.2byte	0x1
+ 1419 03d4 53       		.byte	0x53
+ 1420 03d5 6C030000 		.4byte	.LVL90-.Ltext0
+ 1421 03d9 6E030000 		.4byte	.LVL91-.Ltext0
+ 1422 03dd 0100     		.2byte	0x1
+ 1423 03df 53       		.byte	0x53
+ 1424 03e0 78030000 		.4byte	.LVL92-.Ltext0
+ 1425 03e4 8A030000 		.4byte	.LVL93-.Ltext0
+ 1426 03e8 0100     		.2byte	0x1
+ 1427 03ea 53       		.byte	0x53
+ 1428 03eb 00000000 		.4byte	0x0
+ 1429 03ef 00000000 		.4byte	0x0
+ 1430              	.LLST39:
+ 1431 03f3 30030000 		.4byte	.LVL82-.Ltext0
+ 1432 03f7 8E030000 		.4byte	.LVL96-.Ltext0
+ 1433 03fb 0100     		.2byte	0x1
+ 1434 03fd 56       		.byte	0x56
+ 1435 03fe 00000000 		.4byte	0x0
+ 1436 0402 00000000 		.4byte	0x0
+ 1437              		.section	.debug_info
+ 1438 0000 61040000 		.4byte	0x461
+ 1439 0004 0200     		.2byte	0x2
+ 1440 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 1441 000a 04       		.byte	0x4
+ 1442 000b 01       		.uleb128 0x1
+ 1443 000c 00000000 		.4byte	.Ldebug_line0
+ 1444 0010 9C030000 		.4byte	.Letext0
+ 1445 0014 00000000 		.4byte	.Ltext0
+ 1446 0018 DE000000 		.4byte	.LASF24
+ 1447 001c 01       		.byte	0x1
+ 1448 001d 82000000 		.4byte	.LASF25
+ 1449 0021 5B000000 		.4byte	.LASF26
+ 1450 0025 02       		.uleb128 0x2
+ 1451 0026 74553800 		.ascii	"tU8\000"
+ 1452 002a 02       		.byte	0x2
+ 1453 002b 47       		.byte	0x47
+ 1454 002c 30000000 		.4byte	0x30
+ 1455 0030 03       		.uleb128 0x3
+ 1456 0031 A2000000 		.4byte	.LASF1
+ 1457 0035 01       		.byte	0x1
+ 1458 0036 08       		.byte	0x8
+ 1459 0037 04       		.uleb128 0x4
+ 1460 0038 11010000 		.4byte	.LASF0
+ 1461 003c 02       		.byte	0x2
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 38
+
+
+ 1462 003d 48       		.byte	0x48
+ 1463 003e 42000000 		.4byte	0x42
+ 1464 0042 03       		.uleb128 0x3
+ 1465 0043 EA000000 		.4byte	.LASF2
+ 1466 0047 02       		.byte	0x2
+ 1467 0048 07       		.byte	0x7
+ 1468 0049 03       		.uleb128 0x3
+ 1469 004a 0B000000 		.4byte	.LASF3
+ 1470 004e 04       		.byte	0x4
+ 1471 004f 07       		.byte	0x7
+ 1472 0050 02       		.uleb128 0x2
+ 1473 0051 74533800 		.ascii	"tS8\000"
+ 1474 0055 02       		.byte	0x2
+ 1475 0056 4A       		.byte	0x4a
+ 1476 0057 5B000000 		.4byte	0x5b
+ 1477 005b 03       		.uleb128 0x3
+ 1478 005c FD000000 		.4byte	.LASF4
+ 1479 0060 01       		.byte	0x1
+ 1480 0061 06       		.byte	0x6
+ 1481 0062 03       		.uleb128 0x3
+ 1482 0063 16010000 		.4byte	.LASF5
+ 1483 0067 02       		.byte	0x2
+ 1484 0068 05       		.byte	0x5
+ 1485 0069 05       		.uleb128 0x5
+ 1486 006a 696E7400 		.ascii	"int\000"
+ 1487 006e 04       		.byte	0x4
+ 1488 006f 05       		.byte	0x5
+ 1489 0070 06       		.uleb128 0x6
+ 1490 0071 8E000000 		.4byte	0x8e
+ 1491 0075 01       		.byte	0x1
+ 1492 0076 26010000 		.4byte	.LASF6
+ 1493 007a 01       		.byte	0x1
+ 1494 007b 4C       		.byte	0x4c
+ 1495 007c 01       		.byte	0x1
+ 1496 007d 25000000 		.4byte	0x25
+ 1497 0081 01       		.byte	0x1
+ 1498 0082 07       		.uleb128 0x7
+ 1499 0083 44000000 		.4byte	.LASF8
+ 1500 0087 01       		.byte	0x1
+ 1501 0088 4D       		.byte	0x4d
+ 1502 0089 25000000 		.4byte	0x25
+ 1503 008d 00       		.byte	0x0
+ 1504 008e 08       		.uleb128 0x8
+ 1505 008f A9000000 		.4byte	0xa9
+ 1506 0093 70000000 		.4byte	0x70
+ 1507 0097 00000000 		.4byte	.LFB2
+ 1508 009b 18000000 		.4byte	.LFE2
+ 1509 009f 01       		.byte	0x1
+ 1510 00a0 5D       		.byte	0x5d
+ 1511 00a1 09       		.uleb128 0x9
+ 1512 00a2 82000000 		.4byte	0x82
+ 1513 00a6 01       		.byte	0x1
+ 1514 00a7 50       		.byte	0x50
+ 1515 00a8 00       		.byte	0x0
+ 1516 00a9 0A       		.uleb128 0xa
+ 1517 00aa 01       		.byte	0x1
+ 1518 00ab 4B000000 		.4byte	.LASF10
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 39
+
+
+ 1519 00af 01       		.byte	0x1
+ 1520 00b0 65       		.byte	0x65
+ 1521 00b1 01       		.byte	0x1
+ 1522 00b2 18000000 		.4byte	.LFB3
+ 1523 00b6 64000000 		.4byte	.LFE3
+ 1524 00ba 01       		.byte	0x1
+ 1525 00bb 5D       		.byte	0x5d
+ 1526 00bc 0B       		.uleb128 0xb
+ 1527 00bd 15010000 		.4byte	0x115
+ 1528 00c1 01       		.byte	0x1
+ 1529 00c2 18000000 		.4byte	.LASF7
+ 1530 00c6 01       		.byte	0x1
+ 1531 00c7 81       		.byte	0x81
+ 1532 00c8 01       		.byte	0x1
+ 1533 00c9 50000000 		.4byte	0x50
+ 1534 00cd 64000000 		.4byte	.LFB4
+ 1535 00d1 B0000000 		.4byte	.LFE4
+ 1536 00d5 01       		.byte	0x1
+ 1537 00d6 5D       		.byte	0x5d
+ 1538 00d7 0C       		.uleb128 0xc
+ 1539 00d8 44000000 		.4byte	.LASF8
+ 1540 00dc 01       		.byte	0x1
+ 1541 00dd 82       		.byte	0x82
+ 1542 00de 25000000 		.4byte	0x25
+ 1543 00e2 00000000 		.4byte	.LLST3
+ 1544 00e6 0C       		.uleb128 0xc
+ 1545 00e7 31000000 		.4byte	.LASF9
+ 1546 00eb 01       		.byte	0x1
+ 1547 00ec 83       		.byte	0x83
+ 1548 00ed 50000000 		.4byte	0x50
+ 1549 00f1 1E000000 		.4byte	.LLST4
+ 1550 00f5 0D       		.uleb128 0xd
+ 1551 00f6 70000000 		.4byte	0x70
+ 1552 00fa 72000000 		.4byte	.LBB6
+ 1553 00fe 80000000 		.4byte	.LBE6
+ 1554 0102 01       		.byte	0x1
+ 1555 0103 8B       		.byte	0x8b
+ 1556 0104 0E       		.uleb128 0xe
+ 1557 0105 72000000 		.4byte	.LBB7
+ 1558 0109 80000000 		.4byte	.LBE7
+ 1559 010d 0F       		.uleb128 0xf
+ 1560 010e 82000000 		.4byte	0x82
+ 1561 0112 00       		.byte	0x0
+ 1562 0113 00       		.byte	0x0
+ 1563 0114 00       		.byte	0x0
+ 1564 0115 10       		.uleb128 0x10
+ 1565 0116 01       		.byte	0x1
+ 1566 0117 53000000 		.4byte	.LASF11
+ 1567 011b 01       		.byte	0x1
+ 1568 011c EE       		.byte	0xee
+ 1569 011d 01       		.byte	0x1
+ 1570 011e 50000000 		.4byte	0x50
+ 1571 0122 B0000000 		.4byte	.LFB6
+ 1572 0126 D8000000 		.4byte	.LFE6
+ 1573 012a 01       		.byte	0x1
+ 1574 012b 5D       		.byte	0x5d
+ 1575 012c 11       		.uleb128 0x11
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 40
+
+
+ 1576 012d 69010000 		.4byte	0x169
+ 1577 0131 01       		.byte	0x1
+ 1578 0132 39000000 		.4byte	.LASF12
+ 1579 0136 01       		.byte	0x1
+ 1580 0137 0B01     		.2byte	0x10b
+ 1581 0139 01       		.byte	0x1
+ 1582 013a 50000000 		.4byte	0x50
+ 1583 013e D8000000 		.4byte	.LFB7
+ 1584 0142 04010000 		.4byte	.LFE7
+ 1585 0146 01       		.byte	0x1
+ 1586 0147 5D       		.byte	0x5d
+ 1587 0148 12       		.uleb128 0x12
+ 1588 0149 C1000000 		.4byte	.LASF14
+ 1589 014d 01       		.byte	0x1
+ 1590 014e 0A01     		.2byte	0x10a
+ 1591 0150 25000000 		.4byte	0x25
+ 1592 0154 3C000000 		.4byte	.LLST7
+ 1593 0158 13       		.uleb128 0x13
+ 1594 0159 31000000 		.4byte	.LASF9
+ 1595 015d 01       		.byte	0x1
+ 1596 015e 0C01     		.2byte	0x10c
+ 1597 0160 50000000 		.4byte	0x50
+ 1598 0164 65000000 		.4byte	.LLST8
+ 1599 0168 00       		.byte	0x0
+ 1600 0169 11       		.uleb128 0x11
+ 1601 016a B6010000 		.4byte	0x1b6
+ 1602 016e 01       		.byte	0x1
+ 1603 016f 26000000 		.4byte	.LASF13
+ 1604 0173 01       		.byte	0x1
+ 1605 0174 3401     		.2byte	0x134
+ 1606 0176 01       		.byte	0x1
+ 1607 0177 50000000 		.4byte	0x50
+ 1608 017b 04010000 		.4byte	.LFB8
+ 1609 017f 5C010000 		.4byte	.LFE8
+ 1610 0183 01       		.byte	0x1
+ 1611 0184 5D       		.byte	0x5d
+ 1612 0185 12       		.uleb128 0x12
+ 1613 0186 21000000 		.4byte	.LASF15
+ 1614 018a 01       		.byte	0x1
+ 1615 018b 3201     		.2byte	0x132
+ 1616 018d 25000000 		.4byte	0x25
+ 1617 0191 83000000 		.4byte	.LLST10
+ 1618 0195 12       		.uleb128 0x12
+ 1619 0196 20010000 		.4byte	.LASF16
+ 1620 019a 01       		.byte	0x1
+ 1621 019b 3301     		.2byte	0x133
+ 1622 019d B6010000 		.4byte	0x1b6
+ 1623 01a1 B7000000 		.4byte	.LLST11
+ 1624 01a5 13       		.uleb128 0x13
+ 1625 01a6 31000000 		.4byte	.LASF9
+ 1626 01aa 01       		.byte	0x1
+ 1627 01ab 3501     		.2byte	0x135
+ 1628 01ad 50000000 		.4byte	0x50
+ 1629 01b1 D5000000 		.4byte	.LLST12
+ 1630 01b5 00       		.byte	0x0
+ 1631 01b6 14       		.uleb128 0x14
+ 1632 01b7 04       		.byte	0x4
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 41
+
+
+ 1633 01b8 25000000 		.4byte	0x25
+ 1634 01bc 11       		.uleb128 0x11
+ 1635 01bd 09020000 		.4byte	0x209
+ 1636 01c1 01       		.byte	0x1
+ 1637 01c2 8D000000 		.4byte	.LASF17
+ 1638 01c6 01       		.byte	0x1
+ 1639 01c7 CE01     		.2byte	0x1ce
+ 1640 01c9 01       		.byte	0x1
+ 1641 01ca 50000000 		.4byte	0x50
+ 1642 01ce 5C010000 		.4byte	.LFB10
+ 1643 01d2 88010000 		.4byte	.LFE10
+ 1644 01d6 01       		.byte	0x1
+ 1645 01d7 5D       		.byte	0x5d
+ 1646 01d8 13       		.uleb128 0x13
+ 1647 01d9 44000000 		.4byte	.LASF8
+ 1648 01dd 01       		.byte	0x1
+ 1649 01de CF01     		.2byte	0x1cf
+ 1650 01e0 25000000 		.4byte	0x25
+ 1651 01e4 F3000000 		.4byte	.LLST14
+ 1652 01e8 15       		.uleb128 0x15
+ 1653 01e9 70000000 		.4byte	0x70
+ 1654 01ed 5C010000 		.4byte	.LBB8
+ 1655 01f1 68010000 		.4byte	.LBE8
+ 1656 01f5 01       		.byte	0x1
+ 1657 01f6 D501     		.2byte	0x1d5
+ 1658 01f8 0E       		.uleb128 0xe
+ 1659 01f9 5C010000 		.4byte	.LBB9
+ 1660 01fd 68010000 		.4byte	.LBE9
+ 1661 0201 0F       		.uleb128 0xf
+ 1662 0202 82000000 		.4byte	0x82
+ 1663 0206 00       		.byte	0x0
+ 1664 0207 00       		.byte	0x0
+ 1665 0208 00       		.byte	0x0
+ 1666 0209 16       		.uleb128 0x16
+ 1667 020a 48020000 		.4byte	0x248
+ 1668 020e 01       		.byte	0x1
+ 1669 020f B0000000 		.4byte	.LASF18
+ 1670 0213 01       		.byte	0x1
+ 1671 0214 ED01     		.2byte	0x1ed
+ 1672 0216 01       		.byte	0x1
+ 1673 0217 50000000 		.4byte	0x50
+ 1674 021b 88010000 		.4byte	.LFB11
+ 1675 021f B6010000 		.4byte	.LFE11
+ 1676 0223 11010000 		.4byte	.LLST15
+ 1677 0227 12       		.uleb128 0x12
+ 1678 0228 C1000000 		.4byte	.LASF14
+ 1679 022c 01       		.byte	0x1
+ 1680 022d EC01     		.2byte	0x1ec
+ 1681 022f 25000000 		.4byte	0x25
+ 1682 0233 30010000 		.4byte	.LLST16
+ 1683 0237 13       		.uleb128 0x13
+ 1684 0238 31000000 		.4byte	.LASF9
+ 1685 023c 01       		.byte	0x1
+ 1686 023d EE01     		.2byte	0x1ee
+ 1687 023f 50000000 		.4byte	0x50
+ 1688 0243 43010000 		.4byte	.LLST17
+ 1689 0247 00       		.byte	0x0
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 42
+
+
+ 1690 0248 16       		.uleb128 0x16
+ 1691 0249 B1020000 		.4byte	0x2b1
+ 1692 024d 01       		.byte	0x1
+ 1693 024e 00000000 		.4byte	.LASF19
+ 1694 0252 01       		.byte	0x1
+ 1695 0253 0002     		.2byte	0x200
+ 1696 0255 01       		.byte	0x1
+ 1697 0256 50000000 		.4byte	0x50
+ 1698 025a B8010000 		.4byte	.LFB12
+ 1699 025e 10020000 		.4byte	.LFE12
+ 1700 0262 61010000 		.4byte	.LLST18
+ 1701 0266 12       		.uleb128 0x12
+ 1702 0267 88000000 		.4byte	.LASF20
+ 1703 026b 01       		.byte	0x1
+ 1704 026c FD01     		.2byte	0x1fd
+ 1705 026e 25000000 		.4byte	0x25
+ 1706 0272 80010000 		.4byte	.LLST19
+ 1707 0276 12       		.uleb128 0x12
+ 1708 0277 20010000 		.4byte	.LASF16
+ 1709 027b 01       		.byte	0x1
+ 1710 027c FE01     		.2byte	0x1fe
+ 1711 027e B6010000 		.4byte	0x1b6
+ 1712 0282 A9010000 		.4byte	.LLST20
+ 1713 0286 17       		.uleb128 0x17
+ 1714 0287 6C656E00 		.ascii	"len\000"
+ 1715 028b 01       		.byte	0x1
+ 1716 028c FF01     		.2byte	0x1ff
+ 1717 028e 37000000 		.4byte	0x37
+ 1718 0292 C7010000 		.4byte	.LLST21
+ 1719 0296 13       		.uleb128 0x13
+ 1720 0297 31000000 		.4byte	.LASF9
+ 1721 029b 01       		.byte	0x1
+ 1722 029c 0102     		.2byte	0x201
+ 1723 029e 50000000 		.4byte	0x50
+ 1724 02a2 E5010000 		.4byte	.LLST22
+ 1725 02a6 18       		.uleb128 0x18
+ 1726 02a7 6900     		.ascii	"i\000"
+ 1727 02a9 01       		.byte	0x1
+ 1728 02aa 0202     		.2byte	0x202
+ 1729 02ac 25000000 		.4byte	0x25
+ 1730 02b0 00       		.byte	0x0
+ 1731 02b1 0B       		.uleb128 0xb
+ 1732 02b2 0A030000 		.4byte	0x30a
+ 1733 02b6 01       		.byte	0x1
+ 1734 02b7 C6000000 		.4byte	.LASF21
+ 1735 02bb 01       		.byte	0x1
+ 1736 02bc B7       		.byte	0xb7
+ 1737 02bd 01       		.byte	0x1
+ 1738 02be 50000000 		.4byte	0x50
+ 1739 02c2 10020000 		.4byte	.LFB5
+ 1740 02c6 5C020000 		.4byte	.LFE5
+ 1741 02ca 01       		.byte	0x1
+ 1742 02cb 5D       		.byte	0x5d
+ 1743 02cc 0C       		.uleb128 0xc
+ 1744 02cd 44000000 		.4byte	.LASF8
+ 1745 02d1 01       		.byte	0x1
+ 1746 02d2 B8       		.byte	0xb8
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 43
+
+
+ 1747 02d3 25000000 		.4byte	0x25
+ 1748 02d7 F8010000 		.4byte	.LLST24
+ 1749 02db 0C       		.uleb128 0xc
+ 1750 02dc 31000000 		.4byte	.LASF9
+ 1751 02e0 01       		.byte	0x1
+ 1752 02e1 B9       		.byte	0xb9
+ 1753 02e2 50000000 		.4byte	0x50
+ 1754 02e6 16020000 		.4byte	.LLST25
+ 1755 02ea 0D       		.uleb128 0xd
+ 1756 02eb 70000000 		.4byte	0x70
+ 1757 02ef 24020000 		.4byte	.LBB12
+ 1758 02f3 32020000 		.4byte	.LBE12
+ 1759 02f7 01       		.byte	0x1
+ 1760 02f8 C2       		.byte	0xc2
+ 1761 02f9 0E       		.uleb128 0xe
+ 1762 02fa 24020000 		.4byte	.LBB13
+ 1763 02fe 32020000 		.4byte	.LBE13
+ 1764 0302 0F       		.uleb128 0xf
+ 1765 0303 82000000 		.4byte	0x82
+ 1766 0307 00       		.byte	0x0
+ 1767 0308 00       		.byte	0x0
+ 1768 0309 00       		.byte	0x0
+ 1769 030a 16       		.uleb128 0x16
+ 1770 030b A7030000 		.4byte	0x3a7
+ 1771 030f 01       		.byte	0x1
+ 1772 0310 09010000 		.4byte	.LASF22
+ 1773 0314 01       		.byte	0x1
+ 1774 0315 3802     		.2byte	0x238
+ 1775 0317 01       		.byte	0x1
+ 1776 0318 50000000 		.4byte	0x50
+ 1777 031c 5C020000 		.4byte	.LFB13
+ 1778 0320 FC020000 		.4byte	.LFE13
+ 1779 0324 34020000 		.4byte	.LLST26
+ 1780 0328 12       		.uleb128 0x12
+ 1781 0329 88000000 		.4byte	.LASF20
+ 1782 032d 01       		.byte	0x1
+ 1783 032e 3502     		.2byte	0x235
+ 1784 0330 25000000 		.4byte	0x25
+ 1785 0334 53020000 		.4byte	.LLST27
+ 1786 0338 12       		.uleb128 0x12
+ 1787 0339 9D000000 		.4byte	.LASF23
+ 1788 033d 01       		.byte	0x1
+ 1789 033e 3602     		.2byte	0x236
+ 1790 0340 B6010000 		.4byte	0x1b6
+ 1791 0344 7C020000 		.4byte	.LLST28
+ 1792 0348 17       		.uleb128 0x17
+ 1793 0349 6C656E00 		.ascii	"len\000"
+ 1794 034d 01       		.byte	0x1
+ 1795 034e 3702     		.2byte	0x237
+ 1796 0350 37000000 		.4byte	0x37
+ 1797 0354 9A020000 		.4byte	.LLST29
+ 1798 0358 13       		.uleb128 0x13
+ 1799 0359 31000000 		.4byte	.LASF9
+ 1800 035d 01       		.byte	0x1
+ 1801 035e 3902     		.2byte	0x239
+ 1802 0360 50000000 		.4byte	0x50
+ 1803 0364 B8020000 		.4byte	.LLST30
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 44
+
+
+ 1804 0368 13       		.uleb128 0x13
+ 1805 0369 44000000 		.4byte	.LASF8
+ 1806 036d 01       		.byte	0x1
+ 1807 036e 3A02     		.2byte	0x23a
+ 1808 0370 25000000 		.4byte	0x25
+ 1809 0374 CB020000 		.4byte	.LLST31
+ 1810 0378 19       		.uleb128 0x19
+ 1811 0379 6900     		.ascii	"i\000"
+ 1812 037b 01       		.byte	0x1
+ 1813 037c 3B02     		.2byte	0x23b
+ 1814 037e 25000000 		.4byte	0x25
+ 1815 0382 F4020000 		.4byte	.LLST32
+ 1816 0386 15       		.uleb128 0x15
+ 1817 0387 70000000 		.4byte	0x70
+ 1818 038b 94020000 		.4byte	.LBB16
+ 1819 038f A0020000 		.4byte	.LBE16
+ 1820 0393 01       		.byte	0x1
+ 1821 0394 5402     		.2byte	0x254
+ 1822 0396 0E       		.uleb128 0xe
+ 1823 0397 94020000 		.4byte	.LBB17
+ 1824 039b A0020000 		.4byte	.LBE17
+ 1825 039f 0F       		.uleb128 0xf
+ 1826 03a0 82000000 		.4byte	0x82
+ 1827 03a4 00       		.byte	0x0
+ 1828 03a5 00       		.byte	0x0
+ 1829 03a6 00       		.byte	0x0
+ 1830 03a7 1A       		.uleb128 0x1a
+ 1831 03a8 01       		.byte	0x1
+ 1832 03a9 D5000000 		.4byte	.LASF27
+ 1833 03ad 01       		.byte	0x1
+ 1834 03ae 6E01     		.2byte	0x16e
+ 1835 03b0 01       		.byte	0x1
+ 1836 03b1 50000000 		.4byte	0x50
+ 1837 03b5 FC020000 		.4byte	.LFB9
+ 1838 03b9 9C030000 		.4byte	.LFE9
+ 1839 03bd 07030000 		.4byte	.LLST33
+ 1840 03c1 12       		.uleb128 0x12
+ 1841 03c2 88000000 		.4byte	.LASF20
+ 1842 03c6 01       		.byte	0x1
+ 1843 03c7 6B01     		.2byte	0x16b
+ 1844 03c9 25000000 		.4byte	0x25
+ 1845 03cd 26030000 		.4byte	.LLST34
+ 1846 03d1 12       		.uleb128 0x12
+ 1847 03d2 20010000 		.4byte	.LASF16
+ 1848 03d6 01       		.byte	0x1
+ 1849 03d7 6C01     		.2byte	0x16c
+ 1850 03d9 B6010000 		.4byte	0x1b6
+ 1851 03dd 4F030000 		.4byte	.LLST35
+ 1852 03e1 17       		.uleb128 0x17
+ 1853 03e2 6C656E00 		.ascii	"len\000"
+ 1854 03e6 01       		.byte	0x1
+ 1855 03e7 6D01     		.2byte	0x16d
+ 1856 03e9 37000000 		.4byte	0x37
+ 1857 03ed 6D030000 		.4byte	.LLST36
+ 1858 03f1 13       		.uleb128 0x13
+ 1859 03f2 31000000 		.4byte	.LASF9
+ 1860 03f6 01       		.byte	0x1
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 45
+
+
+ 1861 03f7 6F01     		.2byte	0x16f
+ 1862 03f9 50000000 		.4byte	0x50
+ 1863 03fd 8B030000 		.4byte	.LLST37
+ 1864 0401 13       		.uleb128 0x13
+ 1865 0402 44000000 		.4byte	.LASF8
+ 1866 0406 01       		.byte	0x1
+ 1867 0407 7001     		.2byte	0x170
+ 1868 0409 25000000 		.4byte	0x25
+ 1869 040d B4030000 		.4byte	.LLST38
+ 1870 0411 19       		.uleb128 0x19
+ 1871 0412 6900     		.ascii	"i\000"
+ 1872 0414 01       		.byte	0x1
+ 1873 0415 7101     		.2byte	0x171
+ 1874 0417 25000000 		.4byte	0x25
+ 1875 041b F3030000 		.4byte	.LLST39
+ 1876 041f 1B       		.uleb128 0x1b
+ 1877 0420 43040000 		.4byte	0x443
+ 1878 0424 70000000 		.4byte	0x70
+ 1879 0428 32030000 		.4byte	.LBB22
+ 1880 042c 3E030000 		.4byte	.LBE22
+ 1881 0430 01       		.byte	0x1
+ 1882 0431 8B01     		.2byte	0x18b
+ 1883 0433 0E       		.uleb128 0xe
+ 1884 0434 32030000 		.4byte	.LBB23
+ 1885 0438 3E030000 		.4byte	.LBE23
+ 1886 043c 0F       		.uleb128 0xf
+ 1887 043d 82000000 		.4byte	0x82
+ 1888 0441 00       		.byte	0x0
+ 1889 0442 00       		.byte	0x0
+ 1890 0443 15       		.uleb128 0x15
+ 1891 0444 70000000 		.4byte	0x70
+ 1892 0448 6C030000 		.4byte	.LBB24
+ 1893 044c 78030000 		.4byte	.LBE24
+ 1894 0450 01       		.byte	0x1
+ 1895 0451 B001     		.2byte	0x1b0
+ 1896 0453 0E       		.uleb128 0xe
+ 1897 0454 6C030000 		.4byte	.LBB25
+ 1898 0458 78030000 		.4byte	.LBE25
+ 1899 045c 0F       		.uleb128 0xf
+ 1900 045d 82000000 		.4byte	0x82
+ 1901 0461 00       		.byte	0x0
+ 1902 0462 00       		.byte	0x0
+ 1903 0463 00       		.byte	0x0
+ 1904 0464 00       		.byte	0x0
+ 1905              		.section	.debug_abbrev
+ 1906 0000 01       		.uleb128 0x1
+ 1907 0001 11       		.uleb128 0x11
+ 1908 0002 01       		.byte	0x1
+ 1909 0003 10       		.uleb128 0x10
+ 1910 0004 06       		.uleb128 0x6
+ 1911 0005 12       		.uleb128 0x12
+ 1912 0006 01       		.uleb128 0x1
+ 1913 0007 11       		.uleb128 0x11
+ 1914 0008 01       		.uleb128 0x1
+ 1915 0009 25       		.uleb128 0x25
+ 1916 000a 0E       		.uleb128 0xe
+ 1917 000b 13       		.uleb128 0x13
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 46
+
+
+ 1918 000c 0B       		.uleb128 0xb
+ 1919 000d 03       		.uleb128 0x3
+ 1920 000e 0E       		.uleb128 0xe
+ 1921 000f 1B       		.uleb128 0x1b
+ 1922 0010 0E       		.uleb128 0xe
+ 1923 0011 00       		.byte	0x0
+ 1924 0012 00       		.byte	0x0
+ 1925 0013 02       		.uleb128 0x2
+ 1926 0014 16       		.uleb128 0x16
+ 1927 0015 00       		.byte	0x0
+ 1928 0016 03       		.uleb128 0x3
+ 1929 0017 08       		.uleb128 0x8
+ 1930 0018 3A       		.uleb128 0x3a
+ 1931 0019 0B       		.uleb128 0xb
+ 1932 001a 3B       		.uleb128 0x3b
+ 1933 001b 0B       		.uleb128 0xb
+ 1934 001c 49       		.uleb128 0x49
+ 1935 001d 13       		.uleb128 0x13
+ 1936 001e 00       		.byte	0x0
+ 1937 001f 00       		.byte	0x0
+ 1938 0020 03       		.uleb128 0x3
+ 1939 0021 24       		.uleb128 0x24
+ 1940 0022 00       		.byte	0x0
+ 1941 0023 03       		.uleb128 0x3
+ 1942 0024 0E       		.uleb128 0xe
+ 1943 0025 0B       		.uleb128 0xb
+ 1944 0026 0B       		.uleb128 0xb
+ 1945 0027 3E       		.uleb128 0x3e
+ 1946 0028 0B       		.uleb128 0xb
+ 1947 0029 00       		.byte	0x0
+ 1948 002a 00       		.byte	0x0
+ 1949 002b 04       		.uleb128 0x4
+ 1950 002c 16       		.uleb128 0x16
+ 1951 002d 00       		.byte	0x0
+ 1952 002e 03       		.uleb128 0x3
+ 1953 002f 0E       		.uleb128 0xe
+ 1954 0030 3A       		.uleb128 0x3a
+ 1955 0031 0B       		.uleb128 0xb
+ 1956 0032 3B       		.uleb128 0x3b
+ 1957 0033 0B       		.uleb128 0xb
+ 1958 0034 49       		.uleb128 0x49
+ 1959 0035 13       		.uleb128 0x13
+ 1960 0036 00       		.byte	0x0
+ 1961 0037 00       		.byte	0x0
+ 1962 0038 05       		.uleb128 0x5
+ 1963 0039 24       		.uleb128 0x24
+ 1964 003a 00       		.byte	0x0
+ 1965 003b 03       		.uleb128 0x3
+ 1966 003c 08       		.uleb128 0x8
+ 1967 003d 0B       		.uleb128 0xb
+ 1968 003e 0B       		.uleb128 0xb
+ 1969 003f 3E       		.uleb128 0x3e
+ 1970 0040 0B       		.uleb128 0xb
+ 1971 0041 00       		.byte	0x0
+ 1972 0042 00       		.byte	0x0
+ 1973 0043 06       		.uleb128 0x6
+ 1974 0044 2E       		.uleb128 0x2e
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 47
+
+
+ 1975 0045 01       		.byte	0x1
+ 1976 0046 01       		.uleb128 0x1
+ 1977 0047 13       		.uleb128 0x13
+ 1978 0048 3F       		.uleb128 0x3f
+ 1979 0049 0C       		.uleb128 0xc
+ 1980 004a 03       		.uleb128 0x3
+ 1981 004b 0E       		.uleb128 0xe
+ 1982 004c 3A       		.uleb128 0x3a
+ 1983 004d 0B       		.uleb128 0xb
+ 1984 004e 3B       		.uleb128 0x3b
+ 1985 004f 0B       		.uleb128 0xb
+ 1986 0050 27       		.uleb128 0x27
+ 1987 0051 0C       		.uleb128 0xc
+ 1988 0052 49       		.uleb128 0x49
+ 1989 0053 13       		.uleb128 0x13
+ 1990 0054 20       		.uleb128 0x20
+ 1991 0055 0B       		.uleb128 0xb
+ 1992 0056 00       		.byte	0x0
+ 1993 0057 00       		.byte	0x0
+ 1994 0058 07       		.uleb128 0x7
+ 1995 0059 34       		.uleb128 0x34
+ 1996 005a 00       		.byte	0x0
+ 1997 005b 03       		.uleb128 0x3
+ 1998 005c 0E       		.uleb128 0xe
+ 1999 005d 3A       		.uleb128 0x3a
+ 2000 005e 0B       		.uleb128 0xb
+ 2001 005f 3B       		.uleb128 0x3b
+ 2002 0060 0B       		.uleb128 0xb
+ 2003 0061 49       		.uleb128 0x49
+ 2004 0062 13       		.uleb128 0x13
+ 2005 0063 00       		.byte	0x0
+ 2006 0064 00       		.byte	0x0
+ 2007 0065 08       		.uleb128 0x8
+ 2008 0066 2E       		.uleb128 0x2e
+ 2009 0067 01       		.byte	0x1
+ 2010 0068 01       		.uleb128 0x1
+ 2011 0069 13       		.uleb128 0x13
+ 2012 006a 31       		.uleb128 0x31
+ 2013 006b 13       		.uleb128 0x13
+ 2014 006c 11       		.uleb128 0x11
+ 2015 006d 01       		.uleb128 0x1
+ 2016 006e 12       		.uleb128 0x12
+ 2017 006f 01       		.uleb128 0x1
+ 2018 0070 40       		.uleb128 0x40
+ 2019 0071 0A       		.uleb128 0xa
+ 2020 0072 00       		.byte	0x0
+ 2021 0073 00       		.byte	0x0
+ 2022 0074 09       		.uleb128 0x9
+ 2023 0075 34       		.uleb128 0x34
+ 2024 0076 00       		.byte	0x0
+ 2025 0077 31       		.uleb128 0x31
+ 2026 0078 13       		.uleb128 0x13
+ 2027 0079 02       		.uleb128 0x2
+ 2028 007a 0A       		.uleb128 0xa
+ 2029 007b 00       		.byte	0x0
+ 2030 007c 00       		.byte	0x0
+ 2031 007d 0A       		.uleb128 0xa
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 48
+
+
+ 2032 007e 2E       		.uleb128 0x2e
+ 2033 007f 00       		.byte	0x0
+ 2034 0080 3F       		.uleb128 0x3f
+ 2035 0081 0C       		.uleb128 0xc
+ 2036 0082 03       		.uleb128 0x3
+ 2037 0083 0E       		.uleb128 0xe
+ 2038 0084 3A       		.uleb128 0x3a
+ 2039 0085 0B       		.uleb128 0xb
+ 2040 0086 3B       		.uleb128 0x3b
+ 2041 0087 0B       		.uleb128 0xb
+ 2042 0088 27       		.uleb128 0x27
+ 2043 0089 0C       		.uleb128 0xc
+ 2044 008a 11       		.uleb128 0x11
+ 2045 008b 01       		.uleb128 0x1
+ 2046 008c 12       		.uleb128 0x12
+ 2047 008d 01       		.uleb128 0x1
+ 2048 008e 40       		.uleb128 0x40
+ 2049 008f 0A       		.uleb128 0xa
+ 2050 0090 00       		.byte	0x0
+ 2051 0091 00       		.byte	0x0
+ 2052 0092 0B       		.uleb128 0xb
+ 2053 0093 2E       		.uleb128 0x2e
+ 2054 0094 01       		.byte	0x1
+ 2055 0095 01       		.uleb128 0x1
+ 2056 0096 13       		.uleb128 0x13
+ 2057 0097 3F       		.uleb128 0x3f
+ 2058 0098 0C       		.uleb128 0xc
+ 2059 0099 03       		.uleb128 0x3
+ 2060 009a 0E       		.uleb128 0xe
+ 2061 009b 3A       		.uleb128 0x3a
+ 2062 009c 0B       		.uleb128 0xb
+ 2063 009d 3B       		.uleb128 0x3b
+ 2064 009e 0B       		.uleb128 0xb
+ 2065 009f 27       		.uleb128 0x27
+ 2066 00a0 0C       		.uleb128 0xc
+ 2067 00a1 49       		.uleb128 0x49
+ 2068 00a2 13       		.uleb128 0x13
+ 2069 00a3 11       		.uleb128 0x11
+ 2070 00a4 01       		.uleb128 0x1
+ 2071 00a5 12       		.uleb128 0x12
+ 2072 00a6 01       		.uleb128 0x1
+ 2073 00a7 40       		.uleb128 0x40
+ 2074 00a8 0A       		.uleb128 0xa
+ 2075 00a9 00       		.byte	0x0
+ 2076 00aa 00       		.byte	0x0
+ 2077 00ab 0C       		.uleb128 0xc
+ 2078 00ac 34       		.uleb128 0x34
+ 2079 00ad 00       		.byte	0x0
+ 2080 00ae 03       		.uleb128 0x3
+ 2081 00af 0E       		.uleb128 0xe
+ 2082 00b0 3A       		.uleb128 0x3a
+ 2083 00b1 0B       		.uleb128 0xb
+ 2084 00b2 3B       		.uleb128 0x3b
+ 2085 00b3 0B       		.uleb128 0xb
+ 2086 00b4 49       		.uleb128 0x49
+ 2087 00b5 13       		.uleb128 0x13
+ 2088 00b6 02       		.uleb128 0x2
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 49
+
+
+ 2089 00b7 06       		.uleb128 0x6
+ 2090 00b8 00       		.byte	0x0
+ 2091 00b9 00       		.byte	0x0
+ 2092 00ba 0D       		.uleb128 0xd
+ 2093 00bb 1D       		.uleb128 0x1d
+ 2094 00bc 01       		.byte	0x1
+ 2095 00bd 31       		.uleb128 0x31
+ 2096 00be 13       		.uleb128 0x13
+ 2097 00bf 11       		.uleb128 0x11
+ 2098 00c0 01       		.uleb128 0x1
+ 2099 00c1 12       		.uleb128 0x12
+ 2100 00c2 01       		.uleb128 0x1
+ 2101 00c3 58       		.uleb128 0x58
+ 2102 00c4 0B       		.uleb128 0xb
+ 2103 00c5 59       		.uleb128 0x59
+ 2104 00c6 0B       		.uleb128 0xb
+ 2105 00c7 00       		.byte	0x0
+ 2106 00c8 00       		.byte	0x0
+ 2107 00c9 0E       		.uleb128 0xe
+ 2108 00ca 0B       		.uleb128 0xb
+ 2109 00cb 01       		.byte	0x1
+ 2110 00cc 11       		.uleb128 0x11
+ 2111 00cd 01       		.uleb128 0x1
+ 2112 00ce 12       		.uleb128 0x12
+ 2113 00cf 01       		.uleb128 0x1
+ 2114 00d0 00       		.byte	0x0
+ 2115 00d1 00       		.byte	0x0
+ 2116 00d2 0F       		.uleb128 0xf
+ 2117 00d3 34       		.uleb128 0x34
+ 2118 00d4 00       		.byte	0x0
+ 2119 00d5 31       		.uleb128 0x31
+ 2120 00d6 13       		.uleb128 0x13
+ 2121 00d7 00       		.byte	0x0
+ 2122 00d8 00       		.byte	0x0
+ 2123 00d9 10       		.uleb128 0x10
+ 2124 00da 2E       		.uleb128 0x2e
+ 2125 00db 00       		.byte	0x0
+ 2126 00dc 3F       		.uleb128 0x3f
+ 2127 00dd 0C       		.uleb128 0xc
+ 2128 00de 03       		.uleb128 0x3
+ 2129 00df 0E       		.uleb128 0xe
+ 2130 00e0 3A       		.uleb128 0x3a
+ 2131 00e1 0B       		.uleb128 0xb
+ 2132 00e2 3B       		.uleb128 0x3b
+ 2133 00e3 0B       		.uleb128 0xb
+ 2134 00e4 27       		.uleb128 0x27
+ 2135 00e5 0C       		.uleb128 0xc
+ 2136 00e6 49       		.uleb128 0x49
+ 2137 00e7 13       		.uleb128 0x13
+ 2138 00e8 11       		.uleb128 0x11
+ 2139 00e9 01       		.uleb128 0x1
+ 2140 00ea 12       		.uleb128 0x12
+ 2141 00eb 01       		.uleb128 0x1
+ 2142 00ec 40       		.uleb128 0x40
+ 2143 00ed 0A       		.uleb128 0xa
+ 2144 00ee 00       		.byte	0x0
+ 2145 00ef 00       		.byte	0x0
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 50
+
+
+ 2146 00f0 11       		.uleb128 0x11
+ 2147 00f1 2E       		.uleb128 0x2e
+ 2148 00f2 01       		.byte	0x1
+ 2149 00f3 01       		.uleb128 0x1
+ 2150 00f4 13       		.uleb128 0x13
+ 2151 00f5 3F       		.uleb128 0x3f
+ 2152 00f6 0C       		.uleb128 0xc
+ 2153 00f7 03       		.uleb128 0x3
+ 2154 00f8 0E       		.uleb128 0xe
+ 2155 00f9 3A       		.uleb128 0x3a
+ 2156 00fa 0B       		.uleb128 0xb
+ 2157 00fb 3B       		.uleb128 0x3b
+ 2158 00fc 05       		.uleb128 0x5
+ 2159 00fd 27       		.uleb128 0x27
+ 2160 00fe 0C       		.uleb128 0xc
+ 2161 00ff 49       		.uleb128 0x49
+ 2162 0100 13       		.uleb128 0x13
+ 2163 0101 11       		.uleb128 0x11
+ 2164 0102 01       		.uleb128 0x1
+ 2165 0103 12       		.uleb128 0x12
+ 2166 0104 01       		.uleb128 0x1
+ 2167 0105 40       		.uleb128 0x40
+ 2168 0106 0A       		.uleb128 0xa
+ 2169 0107 00       		.byte	0x0
+ 2170 0108 00       		.byte	0x0
+ 2171 0109 12       		.uleb128 0x12
+ 2172 010a 05       		.uleb128 0x5
+ 2173 010b 00       		.byte	0x0
+ 2174 010c 03       		.uleb128 0x3
+ 2175 010d 0E       		.uleb128 0xe
+ 2176 010e 3A       		.uleb128 0x3a
+ 2177 010f 0B       		.uleb128 0xb
+ 2178 0110 3B       		.uleb128 0x3b
+ 2179 0111 05       		.uleb128 0x5
+ 2180 0112 49       		.uleb128 0x49
+ 2181 0113 13       		.uleb128 0x13
+ 2182 0114 02       		.uleb128 0x2
+ 2183 0115 06       		.uleb128 0x6
+ 2184 0116 00       		.byte	0x0
+ 2185 0117 00       		.byte	0x0
+ 2186 0118 13       		.uleb128 0x13
+ 2187 0119 34       		.uleb128 0x34
+ 2188 011a 00       		.byte	0x0
+ 2189 011b 03       		.uleb128 0x3
+ 2190 011c 0E       		.uleb128 0xe
+ 2191 011d 3A       		.uleb128 0x3a
+ 2192 011e 0B       		.uleb128 0xb
+ 2193 011f 3B       		.uleb128 0x3b
+ 2194 0120 05       		.uleb128 0x5
+ 2195 0121 49       		.uleb128 0x49
+ 2196 0122 13       		.uleb128 0x13
+ 2197 0123 02       		.uleb128 0x2
+ 2198 0124 06       		.uleb128 0x6
+ 2199 0125 00       		.byte	0x0
+ 2200 0126 00       		.byte	0x0
+ 2201 0127 14       		.uleb128 0x14
+ 2202 0128 0F       		.uleb128 0xf
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 51
+
+
+ 2203 0129 00       		.byte	0x0
+ 2204 012a 0B       		.uleb128 0xb
+ 2205 012b 0B       		.uleb128 0xb
+ 2206 012c 49       		.uleb128 0x49
+ 2207 012d 13       		.uleb128 0x13
+ 2208 012e 00       		.byte	0x0
+ 2209 012f 00       		.byte	0x0
+ 2210 0130 15       		.uleb128 0x15
+ 2211 0131 1D       		.uleb128 0x1d
+ 2212 0132 01       		.byte	0x1
+ 2213 0133 31       		.uleb128 0x31
+ 2214 0134 13       		.uleb128 0x13
+ 2215 0135 11       		.uleb128 0x11
+ 2216 0136 01       		.uleb128 0x1
+ 2217 0137 12       		.uleb128 0x12
+ 2218 0138 01       		.uleb128 0x1
+ 2219 0139 58       		.uleb128 0x58
+ 2220 013a 0B       		.uleb128 0xb
+ 2221 013b 59       		.uleb128 0x59
+ 2222 013c 05       		.uleb128 0x5
+ 2223 013d 00       		.byte	0x0
+ 2224 013e 00       		.byte	0x0
+ 2225 013f 16       		.uleb128 0x16
+ 2226 0140 2E       		.uleb128 0x2e
+ 2227 0141 01       		.byte	0x1
+ 2228 0142 01       		.uleb128 0x1
+ 2229 0143 13       		.uleb128 0x13
+ 2230 0144 3F       		.uleb128 0x3f
+ 2231 0145 0C       		.uleb128 0xc
+ 2232 0146 03       		.uleb128 0x3
+ 2233 0147 0E       		.uleb128 0xe
+ 2234 0148 3A       		.uleb128 0x3a
+ 2235 0149 0B       		.uleb128 0xb
+ 2236 014a 3B       		.uleb128 0x3b
+ 2237 014b 05       		.uleb128 0x5
+ 2238 014c 27       		.uleb128 0x27
+ 2239 014d 0C       		.uleb128 0xc
+ 2240 014e 49       		.uleb128 0x49
+ 2241 014f 13       		.uleb128 0x13
+ 2242 0150 11       		.uleb128 0x11
+ 2243 0151 01       		.uleb128 0x1
+ 2244 0152 12       		.uleb128 0x12
+ 2245 0153 01       		.uleb128 0x1
+ 2246 0154 40       		.uleb128 0x40
+ 2247 0155 06       		.uleb128 0x6
+ 2248 0156 00       		.byte	0x0
+ 2249 0157 00       		.byte	0x0
+ 2250 0158 17       		.uleb128 0x17
+ 2251 0159 05       		.uleb128 0x5
+ 2252 015a 00       		.byte	0x0
+ 2253 015b 03       		.uleb128 0x3
+ 2254 015c 08       		.uleb128 0x8
+ 2255 015d 3A       		.uleb128 0x3a
+ 2256 015e 0B       		.uleb128 0xb
+ 2257 015f 3B       		.uleb128 0x3b
+ 2258 0160 05       		.uleb128 0x5
+ 2259 0161 49       		.uleb128 0x49
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 52
+
+
+ 2260 0162 13       		.uleb128 0x13
+ 2261 0163 02       		.uleb128 0x2
+ 2262 0164 06       		.uleb128 0x6
+ 2263 0165 00       		.byte	0x0
+ 2264 0166 00       		.byte	0x0
+ 2265 0167 18       		.uleb128 0x18
+ 2266 0168 34       		.uleb128 0x34
+ 2267 0169 00       		.byte	0x0
+ 2268 016a 03       		.uleb128 0x3
+ 2269 016b 08       		.uleb128 0x8
+ 2270 016c 3A       		.uleb128 0x3a
+ 2271 016d 0B       		.uleb128 0xb
+ 2272 016e 3B       		.uleb128 0x3b
+ 2273 016f 05       		.uleb128 0x5
+ 2274 0170 49       		.uleb128 0x49
+ 2275 0171 13       		.uleb128 0x13
+ 2276 0172 00       		.byte	0x0
+ 2277 0173 00       		.byte	0x0
+ 2278 0174 19       		.uleb128 0x19
+ 2279 0175 34       		.uleb128 0x34
+ 2280 0176 00       		.byte	0x0
+ 2281 0177 03       		.uleb128 0x3
+ 2282 0178 08       		.uleb128 0x8
+ 2283 0179 3A       		.uleb128 0x3a
+ 2284 017a 0B       		.uleb128 0xb
+ 2285 017b 3B       		.uleb128 0x3b
+ 2286 017c 05       		.uleb128 0x5
+ 2287 017d 49       		.uleb128 0x49
+ 2288 017e 13       		.uleb128 0x13
+ 2289 017f 02       		.uleb128 0x2
+ 2290 0180 06       		.uleb128 0x6
+ 2291 0181 00       		.byte	0x0
+ 2292 0182 00       		.byte	0x0
+ 2293 0183 1A       		.uleb128 0x1a
+ 2294 0184 2E       		.uleb128 0x2e
+ 2295 0185 01       		.byte	0x1
+ 2296 0186 3F       		.uleb128 0x3f
+ 2297 0187 0C       		.uleb128 0xc
+ 2298 0188 03       		.uleb128 0x3
+ 2299 0189 0E       		.uleb128 0xe
+ 2300 018a 3A       		.uleb128 0x3a
+ 2301 018b 0B       		.uleb128 0xb
+ 2302 018c 3B       		.uleb128 0x3b
+ 2303 018d 05       		.uleb128 0x5
+ 2304 018e 27       		.uleb128 0x27
+ 2305 018f 0C       		.uleb128 0xc
+ 2306 0190 49       		.uleb128 0x49
+ 2307 0191 13       		.uleb128 0x13
+ 2308 0192 11       		.uleb128 0x11
+ 2309 0193 01       		.uleb128 0x1
+ 2310 0194 12       		.uleb128 0x12
+ 2311 0195 01       		.uleb128 0x1
+ 2312 0196 40       		.uleb128 0x40
+ 2313 0197 06       		.uleb128 0x6
+ 2314 0198 00       		.byte	0x0
+ 2315 0199 00       		.byte	0x0
+ 2316 019a 1B       		.uleb128 0x1b
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 53
+
+
+ 2317 019b 1D       		.uleb128 0x1d
+ 2318 019c 01       		.byte	0x1
+ 2319 019d 01       		.uleb128 0x1
+ 2320 019e 13       		.uleb128 0x13
+ 2321 019f 31       		.uleb128 0x31
+ 2322 01a0 13       		.uleb128 0x13
+ 2323 01a1 11       		.uleb128 0x11
+ 2324 01a2 01       		.uleb128 0x1
+ 2325 01a3 12       		.uleb128 0x12
+ 2326 01a4 01       		.uleb128 0x1
+ 2327 01a5 58       		.uleb128 0x58
+ 2328 01a6 0B       		.uleb128 0xb
+ 2329 01a7 59       		.uleb128 0x59
+ 2330 01a8 05       		.uleb128 0x5
+ 2331 01a9 00       		.byte	0x0
+ 2332 01aa 00       		.byte	0x0
+ 2333 01ab 00       		.byte	0x0
+ 2334              		.section	.debug_pubnames,"",%progbits
+ 2335 0000 C8000000 		.4byte	0xc8
+ 2336 0004 0200     		.2byte	0x2
+ 2337 0006 00000000 		.4byte	.Ldebug_info0
+ 2338 000a 65040000 		.4byte	0x465
+ 2339 000e 8E000000 		.4byte	0x8e
+ 2340 0012 69326343 		.ascii	"i2cCheckStatus\000"
+ 2340      6865636B 
+ 2340      53746174 
+ 2340      757300
+ 2341 0021 A9000000 		.4byte	0xa9
+ 2342 0025 69326349 		.ascii	"i2cInit\000"
+ 2342      6E697400 
+ 2343 002d BC000000 		.4byte	0xbc
+ 2344 0031 69326353 		.ascii	"i2cStart\000"
+ 2344      74617274 
+ 2344      00
+ 2345 003a 15010000 		.4byte	0x115
+ 2346 003e 69326353 		.ascii	"i2cStop\000"
+ 2346      746F7000 
+ 2347 0046 2C010000 		.4byte	0x12c
+ 2348 004a 69326350 		.ascii	"i2cPutChar\000"
+ 2348      75744368 
+ 2348      617200
+ 2349 0055 69010000 		.4byte	0x169
+ 2350 0059 69326347 		.ascii	"i2cGetChar\000"
+ 2350      65744368 
+ 2350      617200
+ 2351 0064 BC010000 		.4byte	0x1bc
+ 2352 0068 69326357 		.ascii	"i2cWaitTransmit\000"
+ 2352      61697454 
+ 2352      72616E73 
+ 2352      6D697400 
+ 2353 0078 09020000 		.4byte	0x209
+ 2354 007c 69326357 		.ascii	"i2cWriteWithWait\000"
+ 2354      72697465 
+ 2354      57697468 
+ 2354      57616974 
+ 2354      00
+ 2355 008d 48020000 		.4byte	0x248
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 54
+
+
+ 2356 0091 6932634D 		.ascii	"i2cMyWrite\000"
+ 2356      79577269 
+ 2356      746500
+ 2357 009c B1020000 		.4byte	0x2b1
+ 2358 00a0 69326352 		.ascii	"i2cRepeatStart\000"
+ 2358      65706561 
+ 2358      74537461 
+ 2358      727400
+ 2359 00af 0A030000 		.4byte	0x30a
+ 2360 00b3 69326352 		.ascii	"i2cRead\000"
+ 2360      65616400 
+ 2361 00bb A7030000 		.4byte	0x3a7
+ 2362 00bf 69326357 		.ascii	"i2cWrite\000"
+ 2362      72697465 
+ 2362      00
+ 2363 00c8 00000000 		.4byte	0x0
+ 2364              		.section	.debug_aranges,"",%progbits
+ 2365 0000 1C000000 		.4byte	0x1c
+ 2366 0004 0200     		.2byte	0x2
+ 2367 0006 00000000 		.4byte	.Ldebug_info0
+ 2368 000a 04       		.byte	0x4
+ 2369 000b 00       		.byte	0x0
+ 2370 000c 0000     		.2byte	0x0
+ 2371 000e 0000     		.2byte	0x0
+ 2372 0010 00000000 		.4byte	.Ltext0
+ 2373 0014 9C030000 		.4byte	.Letext0-.Ltext0
+ 2374 0018 00000000 		.4byte	0x0
+ 2375 001c 00000000 		.4byte	0x0
+ 2376              		.section	.debug_str,"MS",%progbits,1
+ 2377              	.LASF19:
+ 2378 0000 6932634D 		.ascii	"i2cMyWrite\000"
+ 2378      79577269 
+ 2378      746500
+ 2379              	.LASF3:
+ 2380 000b 756E7369 		.ascii	"unsigned int\000"
+ 2380      676E6564 
+ 2380      20696E74 
+ 2380      00
+ 2381              	.LASF7:
+ 2382 0018 69326353 		.ascii	"i2cStart\000"
+ 2382      74617274 
+ 2382      00
+ 2383              	.LASF15:
+ 2384 0021 6D6F6465 		.ascii	"mode\000"
+ 2384      00
+ 2385              	.LASF13:
+ 2386 0026 69326347 		.ascii	"i2cGetChar\000"
+ 2386      65744368 
+ 2386      617200
+ 2387              	.LASF9:
+ 2388 0031 72657443 		.ascii	"retCode\000"
+ 2388      6F646500 
+ 2389              	.LASF12:
+ 2390 0039 69326350 		.ascii	"i2cPutChar\000"
+ 2390      75744368 
+ 2390      617200
+ 2391              	.LASF8:
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 55
+
+
+ 2392 0044 73746174 		.ascii	"status\000"
+ 2392      757300
+ 2393              	.LASF10:
+ 2394 004b 69326349 		.ascii	"i2cInit\000"
+ 2394      6E697400 
+ 2395              	.LASF11:
+ 2396 0053 69326353 		.ascii	"i2cStop\000"
+ 2396      746F7000 
+ 2397              	.LASF26:
+ 2398 005b 2F637967 		.ascii	"/cygdrive/c/Embedded/eclipse/Demo/2138\000"
+ 2398      64726976 
+ 2398      652F632F 
+ 2398      456D6265 
+ 2398      64646564 
+ 2399              	.LASF25:
+ 2400 0082 6932632E 		.ascii	"i2c.c\000"
+ 2400      6300
+ 2401              	.LASF20:
+ 2402 0088 61646472 		.ascii	"addr\000"
+ 2402      00
+ 2403              	.LASF17:
+ 2404 008d 69326357 		.ascii	"i2cWaitTransmit\000"
+ 2404      61697454 
+ 2404      72616E73 
+ 2404      6D697400 
+ 2405              	.LASF23:
+ 2406 009d 70427566 		.ascii	"pBuf\000"
+ 2406      00
+ 2407              	.LASF1:
+ 2408 00a2 756E7369 		.ascii	"unsigned char\000"
+ 2408      676E6564 
+ 2408      20636861 
+ 2408      7200
+ 2409              	.LASF18:
+ 2410 00b0 69326357 		.ascii	"i2cWriteWithWait\000"
+ 2410      72697465 
+ 2410      57697468 
+ 2410      57616974 
+ 2410      00
+ 2411              	.LASF14:
+ 2412 00c1 64617461 		.ascii	"data\000"
+ 2412      00
+ 2413              	.LASF21:
+ 2414 00c6 69326352 		.ascii	"i2cRepeatStart\000"
+ 2414      65706561 
+ 2414      74537461 
+ 2414      727400
+ 2415              	.LASF27:
+ 2416 00d5 69326357 		.ascii	"i2cWrite\000"
+ 2416      72697465 
+ 2416      00
+ 2417              	.LASF24:
+ 2418 00de 474E5520 		.ascii	"GNU C 4.1.1\000"
+ 2418      4320342E 
+ 2418      312E3100 
+ 2419              	.LASF2:
+ 2420 00ea 73686F72 		.ascii	"short unsigned int\000"
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 56
+
+
+ 2420      7420756E 
+ 2420      7369676E 
+ 2420      65642069 
+ 2420      6E7400
+ 2421              	.LASF4:
+ 2422 00fd 7369676E 		.ascii	"signed char\000"
+ 2422      65642063 
+ 2422      68617200 
+ 2423              	.LASF22:
+ 2424 0109 69326352 		.ascii	"i2cRead\000"
+ 2424      65616400 
+ 2425              	.LASF0:
+ 2426 0111 74553136 		.ascii	"tU16\000"
+ 2426      00
+ 2427              	.LASF5:
+ 2428 0116 73686F72 		.ascii	"short int\000"
+ 2428      7420696E 
+ 2428      7400
+ 2429              	.LASF16:
+ 2430 0120 70446174 		.ascii	"pData\000"
+ 2430      6100
+ 2431              	.LASF6:
+ 2432 0126 69326343 		.ascii	"i2cCheckStatus\000"
+ 2432      6865636B 
+ 2432      53746174 
+ 2432      757300
+ 2433              		.ident	"GCC: (GNU) 4.1.1"
+ARM GAS  /cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s 			page 57
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 i2c.c
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:1      .text:00000000 $t
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:16     .text:00000000 i2cCheckStatus
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:36     .text:00000010 $d
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:45     .text:00000018 i2cInit
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:42     .text:00000018 $t
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:92     .text:00000054 $d
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:103    .text:00000064 i2cStart
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:100    .text:00000064 $t
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:171    .text:000000a4 $d
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:181    .text:000000b0 i2cStop
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:178    .text:000000b0 $t
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:211    .text:000000d0 $d
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:220    .text:000000d8 i2cPutChar
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:217    .text:000000d8 $t
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:263    .text:000000fc $d
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:272    .text:00000104 i2cGetChar
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:269    .text:00000104 $t
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:343    .text:00000150 $d
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:353    .text:0000015c i2cWaitTransmit
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:350    .text:0000015c $t
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:393    .text:00000180 $d
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:402    .text:00000188 i2cWriteWithWait
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:399    .text:00000188 $t
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:448    .text:000001b8 i2cMyWrite
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:529    .text:00000210 i2cRepeatStart
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:596    .text:00000250 $d
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:606    .text:0000025c i2cRead
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:603    .text:0000025c $t
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:737    .text:000002f4 $d
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:746    .text:000002fc i2cWrite
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:743    .text:000002fc $t
+/cygdrive/c/Users/embedded/AppData/Local/Temp/cc3ZWbg2.s:887    .text:00000394 $d
+
+NO UNDEFINED SYMBOLS

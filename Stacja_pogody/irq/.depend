@@ -1,0 +1,2 @@
+irq_handler.o: irq_handler.c ../general.h ../startup/lpc2xxx.h \
+ irq_handler.h ../timer.h ../general.h ../Common_Def.h
