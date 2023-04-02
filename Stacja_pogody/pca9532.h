@@ -19,20 +19,16 @@
 #include "general.h"
 #include <lpc2xxx.h>
 
-
 /******************************************************************************
  * Typedefs and defines
  *****************************************************************************/
-#define LCD_CS     0x00000080
-#define LCD_CLK    0x00000010
-#define LCD_MOSI   0x00000040
 
 
 /*****************************************************************************
  * Global variables
  ****************************************************************************/
-void sendToLCD(tU8 firstBit, tU8 data);
-void initSpiForLcd(void);
-void selectLCD(tBool select);
+tBool pca9532Init(void);
+void  setPca9532Pin(tU8 pinNum, tU8 value);
+tU16  getPca9532Pin(void);
 
 #endif

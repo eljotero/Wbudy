@@ -11,6 +11,7 @@ tS8 measureTemperature1(tU8 addr,
                         tU8 *pBuf,
                         tU16 len)
 {
+	tU8 i;
     tS8 status;
     tS8 retCode = i2cStart();
 
@@ -25,7 +26,7 @@ tS8 measureTemperature1(tU8 addr,
         if (retCode == I2C_CODE_OK)
         {
 
-            for (tU8 i = 0; i < len; i++)
+            for (i = 0; i < len; i++)
             {
                 /* wait until data transmitted */
                 while (TRUE)
@@ -77,21 +78,14 @@ tS8 measureTemperature(tU8 addr,
                        tU8 *pBuf,
                        tU16 len)
 {
-    tU8 retCode;
-    retCode = i2cStart();
-    
-    if (retCode == I2C_CODE_OK) {
-        retCode = i2cWrite(addr, 0x00, 1);
-        if (retCode == I2C_CODE_OK) {
-            mdelay(300);
-            retCode = i2cRead(addr, pBuf, len);
-        }
-    }
-    return retCode;
+
+    return     retCode = i2cRead(addr, pBuf, len);
+
 }
 
 tU8 calculateTemperatureValue(tU8 *byteArray)
 {
+	tU8 i;
     tS16 intValue = 0;
     tU16 readValue = ((byteArray[0] << 8) | byteArray[1]);
     tBool isNegative = (readValue & 0x8000);
@@ -99,9 +93,9 @@ tU8 calculateTemperatureValue(tU8 *byteArray)
     {
         intValue = -1;
     }
-    for (tU8 i = 1; i < 9; i++)
+    for (i = 1; i < 9; i++)
     {
         intValue = intValue * 2 + ((readValue << i) & 0x8000);
     }
-    return (intValue / 2.0);
+    return (intValue);
 }

@@ -16,9 +16,8 @@
  *****************************************************************************/
 #include "general.h"
 #include "lcd.h"
-#include "ascii.h"
 #include "lcd_hw.h"
-
+#include "ascii.h"
 
 /******************************************************************************
  * Typedefs and defines
@@ -78,11 +77,11 @@ lcdInit(void)
 
 	lcdWrcmd(LCD_CMD_SWRESET);
 
-	osSleep(1);
+	sdelay(1);
 	lcdWrcmd(LCD_CMD_SLEEPOUT);
 	lcdWrcmd(LCD_CMD_DISPON);
 	lcdWrcmd(LCD_CMD_BSTRON);
-	osSleep(1);
+	sdelay(1);
 		
 	lcdWrcmd(LCD_CMD_MADCTL);   //Memory data acces control
 	lcdWrdata(MADCTL_HORIZ);    //X Mirror and BGR format

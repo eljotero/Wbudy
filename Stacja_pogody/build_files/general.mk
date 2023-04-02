@@ -78,11 +78,11 @@ endif
 #            -Wreturn-type 
 # -Wshadow -Wunused
 # -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls -Wstrict-prototypes
-W_OPTS    = -Wall -Wcast-align -Wcast-qual -Wimplicit \
-            -Wnested-externs -Wpointer-arith -Wswitch \
-            -Wreturn-type \
-			-Wformat -Wformat-security\
-			-Werror -Wextra -pedantic
+#W_OPTS    = -Wall -Wcast-align -Wcast-qual -Wimplicit \
+#            -Wnested-externs -Wpointer-arith -Wswitch \
+#            -Wreturn-type \
+#			-Wformat -Wformat-security\
+#			-Werror -Wextra -pedantic
 CPU       = arm7tdmi
 OPTS      = -mcpu=$(CPU) $(THUMB_IW)
 CA_OPTS   = $(OPTS) $(INC) -DEL -DGCC $(THUMB_IW) $(T_FLAGS) $(EFLAGS) -D$(CPU_VARIANT) $(RAM_EXEC)

@@ -14,8 +14,7 @@
 /******************************************************************************
  * Includes
  *****************************************************************************/
-#include "../pre_emptive_os/api/osapi.h"
-#include "../pre_emptive_os/api/general.h"
+#include "general.h"
 #include <lpc2xxx.h>
 #include "lcd_hw.h"
 

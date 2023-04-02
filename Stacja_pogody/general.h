@@ -15,6 +15,11 @@
 #ifndef __GENERAL_H__
 #define __GENERAL_H__
 
+#ifndef NULL
+#define NULL (0)
+#endif
+
+
 typedef unsigned char             tU8;
 typedef unsigned short            tU16;
 typedef unsigned int              tU32;
