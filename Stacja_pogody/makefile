@@ -51,14 +51,15 @@ EFLAGS  = -mthumb-interwork
 CODE    = THUMB
 
 # List C source files here.
-CSRCS   = main.c \
-		  i2c.c  \
-		  lm75.c \
-		  additional.c \
-		  lcd.c		  \
-		  lcd_hw.c	\
-		  pca9532.c	\
-		  eeprom.c
+CSRCS   = main.c 		\
+		  i2c.c 		\
+		  lm75.c 		\
+		  additional.c 	\
+		  lcd.c		  	\
+		  lcd_hw.c		\
+		  pca9532.c		\
+		  eeprom.c		\
+		  htu21df.c		
  
 # List C source files here.
 CPPSRCS   = 

@@ -7,83 +7,15 @@
 #include "lm75.h"
 #include "additional.h"
 
-tS8 measureTemperature1(tU8 addr,
-                        tU8 *pBuf,
-                        tU16 len)
-{
-	tU8 i;
-    tS8 status;
-    tS8 retCode = i2cStart();
-
-    if (retCode == I2C_CODE_OK)
-    {
-        retCode = i2cPutChar(addr);
-        while (retCode == I2C_CODE_BUSY)
-        {
-            retCode = i2cPutChar(addr);
-        }
-
-        if (retCode == I2C_CODE_OK)
-        {
-
-            for (i = 0; i < len; i++)
-            {
-                /* wait until data transmitted */
-                while (TRUE)
-                {
-                    /* Get new status */
-                    status = i2cCheckStatus();
-
-                    if ((status == 0x40) || (status == 0x48) || (status == 0x50))
-                    {
-                        /* Data received */
-
-                        if (i == len)
-                        {
-                            /* Set generate NACK */
-                            retCode = i2cGetChar(I2C_MODE_ACK1, pBuf);
-                        }
-                        else
-                        {
-                            retCode = i2cGetChar(I2C_MODE_ACK0, pBuf);
-                        }
-
-                        /* Read data */
-                        retCode = i2cGetChar(I2C_MODE_READ, pBuf);
-                        while (retCode == I2C_CODE_EMPTY)
-                        {
-                            retCode = i2cGetChar(I2C_MODE_READ, pBuf);
-                        }
-                        pBuf++;
-
-                        break;
-                    }
-                    else if (status != 0xf8)
-                    {
-                        /* ERROR */
-                        i = len;
-                        retCode = I2C_CODE_ERROR;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    i2cStop();
-    return retCode;
-}
-
 tS8 measureTemperature(tU8 addr,
                        tU8 *pBuf,
                        tU16 len)
 {
-
-    return     retCode = i2cRead(addr, pBuf, len);
-
+    tU8 retCode;
+    return retCode = i2cRead(addr, pBuf, len);
 }
 
-tU8 calculateTemperatureValue(tU8 *byteArray)
+tS8 calculateTemperatureValue(tU8 *byteArray)
 {
 	tU8 i;
     tS16 intValue = 0;
