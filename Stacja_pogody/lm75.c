@@ -13,7 +13,6 @@ tS8 measureTemperature(tU8 addr,
                        tU8 *pBuf,
                        tU16 len)
 {
-
     return i2cRead(addr, pBuf, len);
 
 }

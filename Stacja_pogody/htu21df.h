@@ -15,3 +15,4 @@ tS8 measureTemperature(tU8 address,
 tS16 calculateHumidity(tU8 *readData);
 
 #endif
+
