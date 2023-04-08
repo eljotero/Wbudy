@@ -58,7 +58,8 @@ CSRCS   = main.c \
 		  lcd.c		  \
 		  lcd_hw.c	\
 		  pca9532.c	\
-		  eeprom.c
+		  eeprom.c \
+		  htu21df.c
  
 # List C source files here.
 CPPSRCS   = 

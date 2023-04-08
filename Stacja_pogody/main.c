@@ -1,39 +1,3 @@
-/*************************************************************************************
- *
- * @Description:
- * Program przykładowy - odpowiednik "Hello World" dla systemów wbudowanych
- * Rekomendujemy wkopiowywanie do niniejszego projektu nowych funkcjonalności
- *
- *
- * UWAGA! Po zmianie rozszerzenia na cpp program automatycznie będzie używać
- * kompilatora g++. Oczywiście konieczne jest wprowadzenie odpowiednich zmian w
- * pliku "makefile"
- *
- *
- * Program przykładowy wykorzystuje Timer #0 i Timer #1 do "mrugania" diodami
- * Dioda P1.16 jest zapalona i gaszona, a czas pomiędzy tymi zdarzeniami
- * odmierzany jest przez Timer #0.
- * Program aktywnie oczekuje na upłynięcie odmierzanego czasu (1s)
- *
- * Druga z diod P1.17 jest gaszona i zapalana w takt przerwań generowanych
- * przez timer #1, z okresem 500 ms i wypełnieniem 20%.
- * Procedura obsługi przerwań zdefiniowana jest w innym pliku (irq/irq_handler.c)
- * Sama procedura MUSI być oznaczona dla kompilatora jako procedura obsługi 
- * przerwania odpowiedniego typu. W przykładzie jest to przerwanie wektoryzowane.
- * Odpowiednia deklaracja znajduje się w pliku (irq/irq_handler.h)
- * 
- * Prócz "mrugania" diodami program wypisuje na konsoli powitalny tekst.
- * 
- * @Authors: Michał Morawski,
- *           Daniel Arendt, 
- *           Przemysław Ignaciuk,
- *           Marcin Kwapisz
- *
- * @Change log:
- *           2016.12.01: Wersja oryginalna.
- *
- ******************************************************************************/
-
 #include "general.h"
 #include <lpc2xxx.h>
 #include <printf_P.h>
@@ -44,7 +8,12 @@
 #include "timer.h"
 #include "VIC.h"
 #include "i2c.h"
+
+// Include'y
+
 #include "lm75.h"
+#include "htu21df.h"
+
 #include "lcd.h"
 #include "pca9532.h"
 #include "additional.h"
@@ -109,33 +78,57 @@ int main(void)
 			         Adres termometru LM75 po drugiej stronie interfejsu I2C.
 			         Jak nie zadzaiała to 3 przedostatnie bity zamienić i 1 i sprawdzić.
 			    */
-			    tU8 lm75Address = 0x9F;
-			    // dla zalutowanego	tU8 lm75Address = (0x48<<1)|1;
-			    //tU8 htu21dfaddress = 0x40;
-			    tU8 readTemperature[2];
-			    //tU8 readHumidity[2];
-			    tU8 temperatureInChar[20];
-			    //tU8 humidityInChar[43];
-			    tS8 temperatureValue;
-			    //tS8 humidityValue;
+			    //tU8 lm75Address = 0x9F;
+			    // dla zalutowanego
+			    tU8 lm75Address = (0x48<<1)|1;
+			    tU8 htu21dfaddress = 0x40;
+			    tU8 readTemperature[2] = {};
+			    tU8 readHumidity[2] = {};
+			    tU8 temperatureInChar[6] = {};
+			    tU8 humidityInChar[6] = {};
+			    tU16 humidityValue;
 
 			    while (TRUE)
 			    {
-			    	lcdGotoxy(0,0);
-			    	if (measureTemperature(lm75Address, readTemperature, 2) != I2C_CODE_ERROR)
-			    	        {
-			    	            temperatureValue = calculateTemperatureValue(readTemperature);
-			    	            lcdClrscr();
-			    	            sprintf(temperatureInChar, "Temp: %d ", temperatureValue);
-			    	            lcdGotoxy(10, 10);
-			    	            lcdPuts(temperatureInChar);
-			    	        }
-			        sdelay(2);
+			    	if ((IOPIN & 0x00000100) == 0) {
+			    		lcdClrscr();
+			    		lcdGotoxy(0, 0);
+			    		lcdPuts("Stacja pogody");
+			    	} else if ((IOPIN & 0x00000200) == 0 && measureTemperature(lm75Address, readTemperature, 2) != I2C_CODE_ERROR) {
+			    		lcdClrscr();
+			    		lcdGotoxy(0, 0);
+			    		lcdPuts("Pomiar");
+			    		lcdGotoxy(0, 15);
+			    		lcdPuts("temperatury: ");
+			    		lcdGotoxy(0, 30);
+			    		calculateTemperatureValue(readTemperature);
+			    	} else if ((IOPIN & 0x00000400) == 0 && measureHumidity(htu21dfaddress, readHumidity, 2) != I2C_CODE_ERROR) {
+			    		lcdClrscr();
+			    		lcdGotoxy(0, 0);
+			    		lcdPuts("Pomiar");
+			    		lcdGotoxy(0, 15);
+			    		lcdPuts("wilgotnosci: ");
+			    		humidityValue = calculateHumidity(readHumidity);
+			    		sprintf(humidityInChar, "%d", humidityValue);
+			    		lcdGotoxy(0, 30);
+			    		lcdPuts(humidityInChar);
+			    	} else if ((IOPIN & 0x00000800) == 0) {
+			    		lcdClrscr();
+			    		lcdGotoxy(0, 0);
+			    		lcdGotoxy(0, 0);
+			    		lcdPuts("Pomiar");
+			    		lcdGotoxy(0, 15);
+			    	    lcdPuts("jasnosci: ");
+			    	} else if ((IOPIN & 0x00001000)== 0){
+			    		lcdClrscr();
+			    		lcdGotoxy(0, 0);
+			    		lcdGotoxy(0, 0);
+			    		lcdPuts("Pomiar");
+			    		lcdGotoxy(0, 15);
+			    		lcdPuts("cisnienia: ");
+			    	}
+			        sdelay(1);
 			    }
-
-
-
-		    sdelay(10);
 		}
 		}
 } 
