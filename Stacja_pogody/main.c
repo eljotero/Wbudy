@@ -17,6 +17,8 @@
 #include "lcd.h"
 #include "pca9532.h"
 #include "additional.h"
+#include "bmp180.h"
+#include "tsl2561.h"
 
 #include "Common_Def.h"
 #include <stdio.h>
@@ -87,13 +89,20 @@ int main(void)
 			    tU8 temperatureInChar[6] = {};
 			    tU8 humidityInChar[6] = {};
 			    tU16 humidityValue;
+				tU16 brightnessValue;
+				tU16 pressureValue;
 
 			    while (TRUE)
 			    {
+
+					// Trzeba będzie napisać jak ustawiony ma być PINSEL.
+
+					// Check if P0.8 center-key is pressed
 			    	if ((IOPIN & 0x00000100) == 0) {
 			    		lcdClrscr();
 			    		lcdGotoxy(0, 0);
 			    		lcdPuts("Stacja pogody");
+					// Check if P0.9 left-key is pressed
 			    	} else if ((IOPIN & 0x00000200) == 0 && measureTemperature(lm75Address, readTemperature, 2) != I2C_CODE_ERROR) {
 			    		lcdClrscr();
 			    		lcdGotoxy(0, 0);
@@ -102,6 +111,7 @@ int main(void)
 			    		lcdPuts("temperatury: ");
 			    		lcdGotoxy(0, 30);
 			    		calculateTemperatureValue(readTemperature);
+					// Check if P0.10 up-key is pressed
 			    	} else if ((IOPIN & 0x00000400) == 0 && measureHumidity(htu21dfaddress, readHumidity, 2) != I2C_CODE_ERROR) {
 			    		lcdClrscr();
 			    		lcdGotoxy(0, 0);
@@ -112,6 +122,7 @@ int main(void)
 			    		sprintf(humidityInChar, "%d", humidityValue);
 			    		lcdGotoxy(0, 30);
 			    		lcdPuts(humidityInChar);
+					// Check if P0.11 right-key is pressed
 			    	} else if ((IOPIN & 0x00000800) == 0) {
 			    		lcdClrscr();
 			    		lcdGotoxy(0, 0);
@@ -119,6 +130,11 @@ int main(void)
 			    		lcdPuts("Pomiar");
 			    		lcdGotoxy(0, 15);
 			    	    lcdPuts("jasnosci: ");
+						brightnessValue = measureBrightness();
+						sprintf(charArray, "Jasnosc: %d ", brightnessValue);
+						lcdGotoxy(10, 10);
+						lcdPuts(charArray);
+					// Check if P0.12 down-key is pressed
 			    	} else if ((IOPIN & 0x00001000)== 0){
 			    		lcdClrscr();
 			    		lcdGotoxy(0, 0);
@@ -126,7 +142,19 @@ int main(void)
 			    		lcdPuts("Pomiar");
 			    		lcdGotoxy(0, 15);
 			    		lcdPuts("cisnienia: ");
-			    	}
+						pressureValue = measurePressure();
+						sprintf(charArray, "Cisnienie: %d ", pressureValue);
+						lcdGotoxy(10, 10);
+						lcdPuts(charArray);
+					// Check
+			    	} else {
+						lcdClrscr();
+			    		lcdGotoxy(0, 0);
+			    		lcdGotoxy(0, 0);
+			    		lcdPuts("Aktualny");
+			    		lcdGotoxy(0, 15);
+			    		lcdPuts("czas: ");
+					}
 			        sdelay(1);
 			    }
 		}
