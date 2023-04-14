@@ -1,12 +1,8 @@
-/*
-    Plik nagłówkowy, zawierający definicję funkcji przeznaczonych
-    do obsługi czujnika oświetlenia TLS2561.
-*/
-
 #ifndef _TLS2561_H
 #define _TLS2561_H
 
 #include "general.h"
+#include "math.h"
 
 tU16 measureBrightness();
 
