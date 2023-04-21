@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 1
 
 
    1              		.cpu arm7tdmi
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
   40              		.cfi_def_cfa_register 7
   41 0006 3960     		str	r1, [r7]
   42 0008 1100     		movs	r1, r2
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 2
 
 
   43 000a FB1D     		adds	r3, r7, #7
@@ -67,9 +67,8 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
   46 0010 3B1D     		adds	r3, r7, #4
   47 0012 0A1C     		adds	r2, r1, #0
   48 0014 1A80     		strh	r2, [r3]
-  16:lm75.c        **** 
-  17:lm75.c        ****     return i2cRead(addr, pBuf, len);
-  49              		.loc 1 17 0
+  16:lm75.c        ****     return i2cRead(addr, pBuf, len);
+  49              		.loc 1 16 0
   50 0016 3B1D     		adds	r3, r7, #4
   51 0018 1A88     		ldrh	r2, [r3]
   52 001a 3968     		ldr	r1, [r7]
@@ -78,9 +77,9 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
   55 0020 1800     		movs	r0, r3
   56 0022 FFF7FEFF 		bl	i2cRead
   57 0026 0300     		movs	r3, r0
-  18:lm75.c        **** 
-  19:lm75.c        **** }
-  58              		.loc 1 19 0
+  17:lm75.c        **** 
+  18:lm75.c        **** }
+  58              		.loc 1 18 0
   59 0028 1800     		movs	r0, r3
   60 002a BD46     		mov	sp, r7
   61 002c 02B0     		add	sp, sp, #8
@@ -109,19 +108,19 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
   83              		.type	calculateTemperatureValue, %function
   84              	calculateTemperatureValue:
   85              	.LFB1:
-  20:lm75.c        **** 
-  21:lm75.c        **** void calculateTemperatureValue(tU8 *byteArray)
-  22:lm75.c        **** {
-  86              		.loc 1 22 0
+  19:lm75.c        **** 
+  20:lm75.c        **** void calculateTemperatureValue(tU8 *byteArray)
+  21:lm75.c        **** {
+  86              		.loc 1 21 0
   87              		.cfi_startproc
   88              		@ Function supports interworking.
   89              		@ args = 0, pretend = 0, frame = 24
   90              		@ frame_needed = 1, uses_anonymous_args = 0
   91 0034 80B5     		push	{r7, lr}
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 3
-
-
   92              	.LCFI3:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 3
+
+
   93              		.cfi_def_cfa_offset 8
   94              		.cfi_offset 7, -8
   95              		.cfi_offset 14, -4
@@ -132,9 +131,9 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  100              	.LCFI5:
  101              		.cfi_def_cfa_register 7
  102 003a 7860     		str	r0, [r7, #4]
-  23:lm75.c        **** 	tU8 i;
-  24:lm75.c        ****     tU8 charArray[6] = {};
- 103              		.loc 1 24 0
+  22:lm75.c        **** 	tU8 i;
+  23:lm75.c        ****     tU8 charArray[6] = {};
+ 103              		.loc 1 23 0
  104 003c 0C23     		movs	r3, #12
  105 003e FB18     		adds	r3, r7, r3
  106 0040 1800     		movs	r0, r3
@@ -142,71 +141,71 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  108 0044 1A00     		movs	r2, r3
  109 0046 0021     		movs	r1, #0
  110 0048 FFF7FEFF 		bl	memset
-  25:lm75.c        ****     byteArray[1] = (byteArray[1] & (1 << 8));
- 111              		.loc 1 25 0
+  24:lm75.c        ****     byteArray[1] = (byteArray[1] & (1 << 8));
+ 111              		.loc 1 24 0
  112 004c 7B68     		ldr	r3, [r7, #4]
  113 004e 0133     		adds	r3, r3, #1
  114 0050 0022     		movs	r2, #0
  115 0052 1A70     		strb	r2, [r3]
-  26:lm75.c        ****     tS8 calculatedValue = byteArray[0];
- 116              		.loc 1 26 0
+  25:lm75.c        ****     tS8 calculatedValue = byteArray[0];
+ 116              		.loc 1 25 0
  117 0054 7B68     		ldr	r3, [r7, #4]
  118 0056 1A78     		ldrb	r2, [r3]
  119 0058 1621     		movs	r1, #22
  120 005a 7B18     		adds	r3, r7, r1
  121 005c 1A70     		strb	r2, [r3]
-  27:lm75.c        ****     tU8 isNegative = 0;
- 122              		.loc 1 27 0
+  26:lm75.c        ****     tU8 isNegative = 0;
+ 122              		.loc 1 26 0
  123 005e 1723     		movs	r3, #23
  124 0060 FB18     		adds	r3, r7, r3
  125 0062 0022     		movs	r2, #0
  126 0064 1A70     		strb	r2, [r3]
-  28:lm75.c        ****     tU8 appendHalf = 0;
- 127              		.loc 1 28 0
+  27:lm75.c        ****     tU8 appendHalf = 0;
+ 127              		.loc 1 27 0
  128 0066 1523     		movs	r3, #21
  129 0068 FB18     		adds	r3, r7, r3
  130 006a 0022     		movs	r2, #0
  131 006c 1A70     		strb	r2, [r3]
-  29:lm75.c        ****     if (calculatedValue < 0) {
- 132              		.loc 1 29 0
+  28:lm75.c        ****     if (calculatedValue < 0) {
+ 132              		.loc 1 28 0
  133 006e 7B18     		adds	r3, r7, r1
  134 0070 1B78     		ldrb	r3, [r3]
  135 0072 7F2B     		cmp	r3, #127
  136 0074 03D9     		bls	.L9
-  30:lm75.c        ****     	isNegative = 1;
- 137              		.loc 1 30 0
+  29:lm75.c        ****     	isNegative = 1;
+ 137              		.loc 1 29 0
  138 0076 1723     		movs	r3, #23
  139 0078 FB18     		adds	r3, r7, r3
  140 007a 0122     		movs	r2, #1
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 4
-
-
  141 007c 1A70     		strb	r2, [r3]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 4
+
+
  142              	.L9:
-  31:lm75.c        ****     }
-  32:lm75.c        ****     if (isNegative == 1 && (byteArray[1] & 0x80) == 1){
-  33:lm75.c        ****     	calculatedValue--;
-  34:lm75.c        ****     	appendHalf = 1;
-  35:lm75.c        ****     } else if (isNegative == 0 && (byteArray[1] & 0x80) == 1) {
-  36:lm75.c        ****     	appendHalf = 1;
-  37:lm75.c        ****     }
-  38:lm75.c        **** 
-  39:lm75.c        ****     if (isNegative == 1 && appendHalf == 1) {
- 143              		.loc 1 39 0
+  30:lm75.c        ****     }
+  31:lm75.c        ****     if (isNegative == 1 && (byteArray[1] & 0x80) == 1){
+  32:lm75.c        ****     	calculatedValue--;
+  33:lm75.c        ****     	appendHalf = 1;
+  34:lm75.c        ****     } else if (isNegative == 0 && (byteArray[1] & 0x80) == 1) {
+  35:lm75.c        ****     	appendHalf = 1;
+  36:lm75.c        ****     }
+  37:lm75.c        **** 
+  38:lm75.c        ****     if (isNegative == 1 && appendHalf == 1) {
+ 143              		.loc 1 38 0
  144 007e 1723     		movs	r3, #23
  145 0080 FB18     		adds	r3, r7, r3
  146 0082 1B78     		ldrb	r3, [r3]
  147 0084 012B     		cmp	r3, #1
  148 0086 0FD1     		bne	.L5
- 149              		.loc 1 39 0 is_stmt 0 discriminator 1
+ 149              		.loc 1 38 0 is_stmt 0 discriminator 1
  150 0088 1523     		movs	r3, #21
  151 008a FB18     		adds	r3, r7, r3
  152 008c 1B78     		ldrb	r3, [r3]
  153 008e 012B     		cmp	r3, #1
  154 0090 0AD1     		bne	.L5
  155              	.LBB2:
-  40:lm75.c        ****     	sprintf(charArray, "%d.5", calculatedValue);
- 156              		.loc 1 40 0 is_stmt 1
+  39:lm75.c        ****     	sprintf(charArray, "%d.5", calculatedValue);
+ 156              		.loc 1 39 0 is_stmt 1
  157 0092 1623     		movs	r3, #22
  158 0094 FB18     		adds	r3, r7, r3
  159 0096 0022     		movs	r2, #0
@@ -217,31 +216,31 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  164 00a0 1800     		movs	r0, r3
  165 00a2 FFF7FEFF 		bl	sprintf
  166              	.LBE2:
-  39:lm75.c        ****     	sprintf(charArray, "%d.5", calculatedValue);
- 167              		.loc 1 39 0
+  38:lm75.c        ****     	sprintf(charArray, "%d.5", calculatedValue);
+ 167              		.loc 1 38 0
  168 00a6 33E0     		b	.L6
  169              	.L5:
-  41:lm75.c        ****     } else if (isNegative == 1 && appendHalf == 0) {
- 170              		.loc 1 41 0
+  40:lm75.c        ****     } else if (isNegative == 1 && appendHalf == 0) {
+ 170              		.loc 1 40 0
  171 00a8 1723     		movs	r3, #23
  172 00aa FB18     		adds	r3, r7, r3
  173 00ac 1B78     		ldrb	r3, [r3]
  174 00ae 012B     		cmp	r3, #1
  175 00b0 0FD1     		bne	.L7
- 176              		.loc 1 41 0 is_stmt 0 discriminator 1
+ 176              		.loc 1 40 0 is_stmt 0 discriminator 1
  177 00b2 1523     		movs	r3, #21
  178 00b4 FB18     		adds	r3, r7, r3
  179 00b6 1B78     		ldrb	r3, [r3]
  180 00b8 002B     		cmp	r3, #0
  181 00ba 0AD1     		bne	.L7
  182              	.LBB3:
-  42:lm75.c        ****     	sprintf(charArray, "%d", calculatedValue);
- 183              		.loc 1 42 0 is_stmt 1
+  41:lm75.c        ****     	sprintf(charArray, "%d", calculatedValue);
+ 183              		.loc 1 41 0 is_stmt 1
  184 00bc 1623     		movs	r3, #22
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 5
-
-
  185 00be FB18     		adds	r3, r7, r3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 5
+
+
  186 00c0 0022     		movs	r2, #0
  187 00c2 9A56     		ldrsb	r2, [r3, r2]
  188 00c4 1949     		ldr	r1, .L10+4
@@ -250,26 +249,26 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  191 00ca 1800     		movs	r0, r3
  192 00cc FFF7FEFF 		bl	sprintf
  193              	.LBE3:
-  41:lm75.c        ****     } else if (isNegative == 1 && appendHalf == 0) {
- 194              		.loc 1 41 0
+  40:lm75.c        ****     } else if (isNegative == 1 && appendHalf == 0) {
+ 194              		.loc 1 40 0
  195 00d0 1EE0     		b	.L6
  196              	.L7:
-  43:lm75.c        ****     }  else if (isNegative == 0 && appendHalf == 1) {
- 197              		.loc 1 43 0
+  42:lm75.c        ****     }  else if (isNegative == 0 && appendHalf == 1) {
+ 197              		.loc 1 42 0
  198 00d2 1723     		movs	r3, #23
  199 00d4 FB18     		adds	r3, r7, r3
  200 00d6 1B78     		ldrb	r3, [r3]
  201 00d8 002B     		cmp	r3, #0
  202 00da 0FD1     		bne	.L8
- 203              		.loc 1 43 0 is_stmt 0 discriminator 1
+ 203              		.loc 1 42 0 is_stmt 0 discriminator 1
  204 00dc 1523     		movs	r3, #21
  205 00de FB18     		adds	r3, r7, r3
  206 00e0 1B78     		ldrb	r3, [r3]
  207 00e2 012B     		cmp	r3, #1
  208 00e4 0AD1     		bne	.L8
  209              	.LBB4:
-  44:lm75.c        ****     	sprintf(charArray, "%d.5", calculatedValue);
- 210              		.loc 1 44 0 is_stmt 1
+  43:lm75.c        ****     	sprintf(charArray, "%d.5", calculatedValue);
+ 210              		.loc 1 43 0 is_stmt 1
  211 00e6 1623     		movs	r3, #22
  212 00e8 FB18     		adds	r3, r7, r3
  213 00ea 0022     		movs	r2, #0
@@ -280,14 +279,14 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  218 00f4 1800     		movs	r0, r3
  219 00f6 FFF7FEFF 		bl	sprintf
  220              	.LBE4:
-  43:lm75.c        ****     }  else if (isNegative == 0 && appendHalf == 1) {
- 221              		.loc 1 43 0
+  42:lm75.c        ****     }  else if (isNegative == 0 && appendHalf == 1) {
+ 221              		.loc 1 42 0
  222 00fa 09E0     		b	.L6
  223              	.L8:
  224              	.LBB5:
-  45:lm75.c        ****     } else {
-  46:lm75.c        ****     	sprintf(charArray, "%d", calculatedValue);
- 225              		.loc 1 46 0
+  44:lm75.c        ****     } else {
+  45:lm75.c        ****     	sprintf(charArray, "%d", calculatedValue);
+ 225              		.loc 1 45 0
  226 00fc 1623     		movs	r3, #22
  227 00fe FB18     		adds	r3, r7, r3
  228 0100 0022     		movs	r2, #0
@@ -298,19 +297,19 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  233 010a 1800     		movs	r0, r3
  234 010c FFF7FEFF 		bl	sprintf
  235              	.L6:
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 6
-
-
  236              	.LBE5:
-  47:lm75.c        ****     }
-  48:lm75.c        ****     lcdPuts(charArray);
- 237              		.loc 1 48 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 6
+
+
+  46:lm75.c        ****     }
+  47:lm75.c        ****     lcdPuts(charArray);
+ 237              		.loc 1 47 0
  238 0110 0C23     		movs	r3, #12
  239 0112 FB18     		adds	r3, r7, r3
  240 0114 1800     		movs	r0, r3
  241 0116 FFF7FEFF 		bl	lcdPuts
-  49:lm75.c        **** }
- 242              		.loc 1 49 0
+  48:lm75.c        **** }
+ 242              		.loc 1 48 0
  243 011a C046     		nop
  244 011c BD46     		mov	sp, r7
  245 011e 06B0     		add	sp, sp, #24
@@ -358,10 +357,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  287 003d 18       		.byte	0x18
  288 003e 42000000 		.4byte	0x42
  289 0042 03       		.uleb128 0x3
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 7
-
-
  290 0043 02       		.byte	0x2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 7
+
+
  291 0044 07       		.byte	0x7
  292 0045 42010000 		.4byte	.LASF2
  293 0049 03       		.uleb128 0x3
@@ -397,7 +396,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  323 007f 01       		.byte	0x1
  324 0080 FF000000 		.4byte	.LASF14
  325 0084 01       		.byte	0x1
- 326 0085 15       		.byte	0x15
+ 326 0085 14       		.byte	0x14
  327 0086 01       		.byte	0x1
  328 0087 34000000 		.4byte	.LFB1
  329 008b 30010000 		.4byte	.LFE1
@@ -407,7 +406,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  333 0098 07       		.uleb128 0x7
  334 0099 5D000000 		.4byte	.LASF16
  335 009d 01       		.byte	0x1
- 336 009e 15       		.byte	0x15
+ 336 009e 14       		.byte	0x14
  337 009f 84010000 		.4byte	0x184
  338 00a3 02       		.byte	0x2
  339 00a4 91       		.byte	0x91
@@ -415,15 +414,15 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  341 00a6 08       		.uleb128 0x8
  342 00a7 6900     		.ascii	"i\000"
  343 00a9 01       		.byte	0x1
- 344 00aa 17       		.byte	0x17
+ 344 00aa 16       		.byte	0x16
  345 00ab 25000000 		.4byte	0x25
  346 00af 09       		.uleb128 0x9
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 8
-
-
  347 00b0 61010000 		.4byte	.LASF8
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 8
+
+
  348 00b4 01       		.byte	0x1
- 349 00b5 18       		.byte	0x18
+ 349 00b5 17       		.byte	0x17
  350 00b6 8A010000 		.4byte	0x18a
  351 00ba 02       		.byte	0x2
  352 00bb 91       		.byte	0x91
@@ -431,7 +430,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  354 00bd 09       		.uleb128 0x9
  355 00be 81010000 		.4byte	.LASF9
  356 00c2 01       		.byte	0x1
- 357 00c3 1A       		.byte	0x1a
+ 357 00c3 19       		.byte	0x19
  358 00c4 57000000 		.4byte	0x57
  359 00c8 02       		.byte	0x2
  360 00c9 91       		.byte	0x91
@@ -439,7 +438,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  362 00cb 09       		.uleb128 0x9
  363 00cc 36000000 		.4byte	.LASF10
  364 00d0 01       		.byte	0x1
- 365 00d1 1B       		.byte	0x1b
+ 365 00d1 1A       		.byte	0x1a
  366 00d2 25000000 		.4byte	0x25
  367 00d6 02       		.byte	0x2
  368 00d7 91       		.byte	0x91
@@ -447,7 +446,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  370 00d9 09       		.uleb128 0x9
  371 00da 19010000 		.4byte	.LASF11
  372 00de 01       		.byte	0x1
- 373 00df 1C       		.byte	0x1c
+ 373 00df 1B       		.byte	0x1b
  374 00e0 25000000 		.4byte	0x25
  375 00e4 02       		.byte	0x2
  376 00e5 91       		.byte	0x91
@@ -478,10 +477,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  401 011c 0B       		.uleb128 0xb
  402 011d 01       		.byte	0x1
  403 011e 2E000000 		.4byte	.LASF12
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 9
-
-
  404 0122 03       		.byte	0x3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 9
+
+
  405 0123 00       		.byte	0
  406 0124 01       		.byte	0x1
  407 0125 70000000 		.4byte	0x70
@@ -538,10 +537,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  458 018b 25000000 		.4byte	0x25
  459 018f 9A010000 		.4byte	0x19a
  460 0193 11       		.uleb128 0x11
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 10
-
-
  461 0194 49000000 		.4byte	0x49
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 10
+
+
  462 0198 05       		.byte	0x5
  463 0199 00       		.byte	0
  464 019a 0F       		.uleb128 0xf
@@ -598,10 +597,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  515 0000 01       		.uleb128 0x1
  516 0001 11       		.uleb128 0x11
  517 0002 01       		.byte	0x1
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 11
-
-
  518 0003 25       		.uleb128 0x25
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 11
+
+
  519 0004 0E       		.uleb128 0xe
  520 0005 13       		.uleb128 0x13
  521 0006 0B       		.uleb128 0xb
@@ -658,10 +657,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  572 0039 24       		.uleb128 0x24
  573 003a 00       		.byte	0
  574 003b 0B       		.uleb128 0xb
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 12
-
-
  575 003c 0B       		.uleb128 0xb
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 12
+
+
  576 003d 3E       		.uleb128 0x3e
  577 003e 0B       		.uleb128 0xb
  578 003f 03       		.uleb128 0x3
@@ -718,10 +717,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  629 0073 3B       		.uleb128 0x3b
  630 0074 0B       		.uleb128 0xb
  631 0075 49       		.uleb128 0x49
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 13
-
-
  632 0076 13       		.uleb128 0x13
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 13
+
+
  633 0077 00       		.byte	0
  634 0078 00       		.byte	0
  635 0079 09       		.uleb128 0x9
@@ -778,10 +777,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  686 00ac 00       		.byte	0
  687 00ad 0D       		.uleb128 0xd
  688 00ae 18       		.uleb128 0x18
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 14
-
-
  689 00af 00       		.byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 14
+
+
  690 00b0 00       		.byte	0
  691 00b1 00       		.byte	0
  692 00b2 0E       		.uleb128 0xe
@@ -838,10 +837,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  743 00e5 0B       		.uleb128 0xb
  744 00e6 3B       		.uleb128 0x3b
  745 00e7 0B       		.uleb128 0xb
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 15
-
-
  746 00e8 27       		.uleb128 0x27
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 15
+
+
  747 00e9 0C       		.uleb128 0xc
  748 00ea 49       		.uleb128 0x49
  749 00eb 13       		.uleb128 0x13
@@ -898,10 +897,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  800 0034 00000000 		.4byte	0
  801              	.LLST0:
  802 0038 00000000 		.4byte	.LFB0-.Ltext0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 16
-
-
  803 003c 02000000 		.4byte	.LCFI0-.Ltext0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 16
+
+
  804 0040 0200     		.2byte	0x2
  805 0042 7D       		.byte	0x7d
  806 0043 00       		.sleb128 0
@@ -958,10 +957,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  844      20696E74 
  844      00
  845              	.LASF12:
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 17
-
-
  846 002e 73707269 		.ascii	"sprintf\000"
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 17
+
+
  846      6E746600 
  847              	.LASF10:
  848 0036 69734E65 		.ascii	"isNegative\000"
@@ -1018,10 +1017,10 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  868      6E644861 
  868      6C6600
  869              	.LASF21:
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 18
-
-
  870 0124 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 18
+
+
  870      6D626564 
  870      6465645C 
  870      32313338 
@@ -1056,16 +1055,16 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 1
  884      65645661 
  884      6C756500 
  885              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cczWETiD.s 			page 19
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s 			page 19
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 lm75.c
-C:\Users\embedded\AppData\Local\Temp\cczWETiD.s:22     .text:00000000 measureTemperature
-C:\Users\embedded\AppData\Local\Temp\cczWETiD.s:30     .text:00000000 $t
-C:\Users\embedded\AppData\Local\Temp\cczWETiD.s:70     .rodata:00000000 $d
-C:\Users\embedded\AppData\Local\Temp\cczWETiD.s:84     .text:00000034 calculateTemperatureValue
-C:\Users\embedded\AppData\Local\Temp\cczWETiD.s:253    .text:00000128 $d
+C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s:22     .text:00000000 measureTemperature
+C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s:30     .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s:70     .rodata:00000000 $d
+C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s:84     .text:00000034 calculateTemperatureValue
+C:\Users\embedded\AppData\Local\Temp\cc9KaiPX.s:253    .text:00000128 $d
 
 UNDEFINED SYMBOLS
 i2cRead

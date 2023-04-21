@@ -1,7 +1,7 @@
 main.o: main.c general.h startup/lpc2xxx.h startup/printf_P.h \
  startup/config.h startup/consol.h startup/printf_init.h startup/consol.h \
  startup/config.h irq/irq_handler.h timer.h VIC.h i2c.h lm75.h htu21df.h \
- lcd.h pca9532.h additional.h Common_Def.h
+ bmp180.h additional.h tsl2561.h lcd.h pca9532.h Common_Def.h
 i2c.o: i2c.c general.h i2c.h startup/lpc2xxx.h
 lm75.o: lm75.c lm75.h general.h i2c.h additional.h lcd.h
 additional.o: additional.c general.h startup/lpc2xxx.h startup/config.h
@@ -11,3 +11,5 @@ pca9532.o: pca9532.c general.h startup/lpc2xxx.h startup/printf_P.h \
  startup/config.h startup/consol.h i2c.h pca9532.h eeprom.h
 eeprom.o: eeprom.c general.h i2c.h
 htu21df.o: htu21df.c general.h i2c.h additional.h
+tsl2561.o: tsl2561.c general.h
+bmp180.o: bmp180.c bmp180.h general.h additional.h
