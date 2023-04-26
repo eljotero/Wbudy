@@ -53,10 +53,12 @@ pca9532Init(void)
   //                                                         10 = BT_RST# low
 
   //initialize PCA9532
+  tU8 returnedValue = FALSE;
   if (I2C_CODE_OK == pca9532(initCommand, sizeof(initCommand), NULL, 0))
-    return TRUE;
-  else
-    return FALSE;
+  {
+    returnedValue = TRUE;
+  }
+  return returnedValue;
 }
 
 
@@ -72,27 +74,39 @@ setPca9532Pin(tU8 pinNum, tU8 value)
   tU8 regValue;
   tU8 mask;
   
-  if (pinNum < 4)
+  if (pinNum < (tU8)4) 
+  {
     command[0] = 0x06;
-  else if (pinNum < 8)
+  }
+  else if (pinNum < (tU8)8) 
+  {
     command[0] = 0x07;
-  else if (pinNum < 12)
+  }
+  else if (pinNum < (tU8)12) 
+  {
     command[0] = 0x08;
+  }
   else
+  {
     command[0] = 0x09;
+  }
     
   pca9532(command, 1, &regValue, 1);
   
-  mask = (3 << 2*(pinNum % 4));
+  mask = ((tU8)3 << ((tU8)2 * (tU8)(pinNum % (tU8)4)));
   
   regValue &= ~mask;
   
-  if (value == 0)
+  if (value == (tU8)0)
+  {
     command[1] = 0x01;
+  }
   else
+  {
     command[1] = 0x00;
+  }
     
-  command[1] <<= 2*(pinNum % 4);
+  command[1] = (command[1] << ((tU8)2 * (pinNum % (tU8)4)));
   
   command[1] |= regValue;
 

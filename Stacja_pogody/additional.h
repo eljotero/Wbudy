@@ -1,5 +1,5 @@
-#ifndef __ADDITIONAL_H
-#define __ADDITIONAL_H
+#ifndef ADDITIONAL_H
+#define ADDITIONAL_H
 
 #include "general.h"
 #include "lpc2xxx.h"

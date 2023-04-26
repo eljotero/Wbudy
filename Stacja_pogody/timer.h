@@ -1,24 +1,24 @@
 /*************************************************************************************
  *
  * @Description:
- * Lista sta³ych u¿ywanych do programowania timerów/liczników
- * Wskazane jest uzupe³nienie listy
+ * Lista staï¿½ych uï¿½ywanych do programowania timerï¿½w/licznikï¿½w
+ * Wskazane jest uzupeï¿½nienie listy
  *
- * @Authors: Micha³ Morawski, 
+ * @Authors: Michaï¿½ Morawski, 
  *           Daniel Arendt, 
- *           Przemys³aw Ignaciuk,
+ *           Przemysï¿½aw Ignaciuk,
  *           Marcin Kwapisz
  *
  * @Change log:
  *           2016.12.01: Wersja oryginalna.
  *
  ******************************************************************************/
-#ifndef __TIMER_H__
-#define __TIMER_H__
+#ifndef TIMER_H
+#define TIMER_H
 
 #include "general.h"
 
-//Sta³e dla Timerów
+//Staï¿½e dla Timerï¿½w
 #define TIMER_RESET     _BIT(1)
 #define TIMER_RUN       _BIT(0)
 #define MR0_I           _BIT(0)
@@ -44,6 +44,6 @@
 #define TIMER_CR3_INT	_BIT(7)
 #define TIMER_ALL_INT	(TIMER_MR0_INT | TIMER_MR1_INT | TIMER_MR2_INT | TIMER_MR3_INT | TIMER_CR0_INT | TIMER_CR1_INT | TIMER_CR2_INT | TIMER_CR3_INT)
 
-// Listê sta³ych warto rozszerzyæ
+// Listï¿½ staï¿½ych warto rozszerzyï¿½
 
-#endif //__TIMER_H__
+#endif //TIMER_H

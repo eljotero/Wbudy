@@ -27,8 +27,10 @@ void mdelay(unsigned int delayInMs)
   T1TCR = 0x01; // start timer
 
   // wait until delay time has elapsed
-  while (T1TCR & 0x01)
+  while ((T1TCR & 0x01) != 0)
+  {
     ;
+  }
 }
 
 void sdelay(unsigned int delayInS)
@@ -44,6 +46,8 @@ void sdelay(unsigned int delayInS)
   T1TCR = 0x01; // start timer
 
   // wait until delay time has elapsed
-  while (T1TCR & 0x01)
+  while ((T1TCR & 0x01) != 0)
+  {
     ;
+  }
 }

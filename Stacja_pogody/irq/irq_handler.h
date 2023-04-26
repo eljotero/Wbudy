@@ -13,8 +13,8 @@
  *
  ******************************************************************************/
 
-#ifndef __IRQ_HANDLER__
-#define __IRQ_HANDLER__
+#ifndef IRQ_HANDLER
+#define IRQ_HANDLER
 
 /******************************************************************************
  * makro __cplusplus pozwala użyć procedury obsługi przerwań w programie
@@ -31,4 +31,4 @@ void IRQ_Test(void) __attribute__ ((interrupt("IRQ"))) ;
 #endif
 
 
-#endif //__IRQ_HANDLER__
+#endif //IRQ_HANDLER

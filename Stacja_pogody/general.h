@@ -12,10 +12,11 @@
  *           2016.12.01: Wersja oryginalna.
  *
  ******************************************************************************/
-#ifndef __GENERAL_H__
-#define __GENERAL_H__
+#ifndef GENERAL_H
+#define GENERAL_H
 
 #ifndef NULL
+// Wymagana zmiana do MISRA check
 #define NULL (0)
 #endif
 
@@ -30,8 +31,9 @@ typedef signed int                tS32;
 typedef signed long long          tS64;
 typedef enum{FALSE = 0, 
              TRUE  = !FALSE}      tBool;
-#define _BIT(n)                   (1<<(n))
-#define _PIN(port,bit)            ((IOPIN##port & _BIT(bit)) != 0)
+#define BIT(n)                   (1<<(n))
+// Wymagana zmiana do MISRA check
+#define PIN(port,bit)            ((IOPIN##port & BIT(bit)) != 0)
 
-#endif  //__GENERAL_H__
+#endif  //GENERAL_H
 

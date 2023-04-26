@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "math.h": "c",
-        "additional.h": "c"
+        "additional.h": "c",
+        "general.h": "c",
+        "i2c.h": "c",
+        "lm75.h": "c",
+        "ascii.h": "c"
     }
 }
