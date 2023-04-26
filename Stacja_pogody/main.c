@@ -8,6 +8,8 @@
 #include "timer.h"
 #include "VIC.h"
 #include "i2c.h"
+#include <stdio.h>
+#include <string.h>
 
 // Include'y do urządzeń peryferyjnych
 
@@ -26,7 +28,7 @@
 
 /*!
  *  @brief    Uruchomienie obsługi przerwań
- *  @param period 
+ *  @param period
  *             Okres generatora przerwań
  *  @param duty_cycle
  *             Wypełnienie w %
@@ -84,9 +86,10 @@ int main(void)
 		{
 			// Key P0.8 center-key is pressed
 			lcdGotoxy(0, 0);
-			lcdGotoxy(0, 0);
-			messagePointer = strcpy(messageHolder, "Aktualny \nczas: \nNOT_IMPL");
+			messagePointer = strcpy(messageHolder, "Aktualny \nczas: ");
 			lcdPuts(messagePointer);
+			lcdGotoxy(0, 28);
+			// lcdGotoxy(48, 0);
 		}
 		else if ((IOPIN & 0x00000200) == 0)
 		{
@@ -105,7 +108,8 @@ int main(void)
 			lcdPuts(messagePointer);
 			humidityValue = measureHumidity();
 			returnedValue = sprintf(charArray, "%d '%'", humidityValue);
-			if (returnedValue == (tS8)(-1)) {
+			if (returnedValue == (tS8)(-1))
+			{
 				charPtr = strncpy(charArray, "Error", 6);
 			}
 			lcdGotoxy(0, 30);
@@ -119,7 +123,8 @@ int main(void)
 			lcdPuts(messagePointer);
 			brightnessValue = measureBrightness();
 			returnedValue = sprintf(charArray, "%d Lux", brightnessValue);
-			if (returnedValue == (tS8)(-1)) {
+			if (returnedValue == (tS8)(-1))
+			{
 				charPtr = strncpy(charArray, "Error", 6);
 			}
 			lcdGotoxy(0, 30);
@@ -133,7 +138,8 @@ int main(void)
 			lcdPuts(messagePointer);
 			pressureValue = measurePressure();
 			returnedValue = sprintf(charArray, "%d hPa", pressureValue / 100);
-			if (returnedValue == (tS8)(-1)) {
+			if (returnedValue == (tS8)(-1))
+			{
 				charPtr = strncpy(charArray, "Error", 6);
 			}
 			lcdGotoxy(0, 30);
@@ -149,4 +155,76 @@ int main(void)
 		mdelay(300);
 		lcdClrscr();
 	}
+}
+
+void printCurrentTime(void)
+{
+	// TODO: Write comments to below code
+	RTC_CCR = 0x00000010;
+	RTC_ILR = 0x00000000;
+	RTC_CIIR = 0x00000000;
+	RTC_AMR = 0x00000000;
+	mdelay(100);
+	RTC_SEC = 50;
+	RTC_MIN = 59;
+	RTC_HOUR = 23;
+	mdelay(100);
+	RTC_CCR = 0x00000011;
+	// Till here
+
+	tU8 secTable[2] = {0};
+	tU8 minTable[2] = {0};
+	tU8 hourTable[2] = {0};
+	if (RTC_SEC < 10)
+	{
+		secTable[0] = '0';
+		secTable[1] = RTC_SEC + '0';
+	}
+	else
+	{
+		tU8 div = RTC_SEC / 10;
+		secTable[0] = div;
+		secTable[1] = (RTC_SEC - (div * 10));
+	}
+	if (RTC_MIN < 10)
+	{
+		minTable[0] = '0';
+		minTable[1] = RTC_MIN + '0';
+	}
+	else
+	{
+		tU8 div = RTC_MIN / 10;
+		minTable[0] = div;
+		minTable[1] = (RTC_MIN - (div * 10));
+	}
+	if (RTC_HOUR < 10)
+	{
+		hourTable[0] = '0';
+		hourTable[1] = RTC_HOUR + '0';
+	}
+	else
+	{
+		tU8 div = RTC_HOUR / 10;
+		hourTable[0] = div;
+		hourTable[1] = (RTC_HOUR - (div * 10));
+	}
+
+	int length = sizeof(secTable) / sizeof(secTable[0]) +
+				 sizeof(minTable) / sizeof(minTable[0]) +
+				 sizeof(hourTable) / sizeof(hourTable[0] + 2);
+
+	tU8 fullHourTable[length];
+
+	memcpy(fullHourTable, secTable, sizeof(secTable));
+	memcpy(fullHourTable + sizeof(secTable) / sizeof(secTable[0]), ":", sizeof(":"));
+	memcpy(fullHourTable + sizeof(secTable) / sizeof(secTable[0]) + 1, minTable, sizeof(minTable));
+	memcpy(fullHourTable + (sizeof(secTable) / sizeof(secTable[0]) + sizeof(minTable) / sizeof(minTable[0]) + 1), ":", sizeof(":"));
+	memcpy(fullHourTable + (sizeof(secTable) / sizeof(secTable[0]) + sizeof(minTable) / sizeof(minTable[0]) + 2), hourTable, sizeof(hourTable));
+
+	lcdPuts(fullHourTable);
+}
+
+void printCurrentDate(void)
+{
+	;
 }
