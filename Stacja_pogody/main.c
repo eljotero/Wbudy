@@ -88,8 +88,12 @@ int main(void)
 			lcdGotoxy(0, 0);
 			messagePointer = strcpy(messageHolder, "Aktualny \nczas: ");
 			lcdPuts(messagePointer);
+			lcdGotoxy(48, 0);
+			printCurrentTime();
 			lcdGotoxy(0, 28);
-			// lcdGotoxy(48, 0);
+			messagePointer = strcpy(messageHolder, "Aktualna \ndata: ");
+			lcdGotoxy(42, 70);
+			printCurrentDate();
 		}
 		else if ((IOPIN & 0x00000200) == 0)
 		{
@@ -183,8 +187,8 @@ void printCurrentTime(void)
 	else
 	{
 		tU8 div = RTC_SEC / 10;
-		secTable[0] = div;
-		secTable[1] = (RTC_SEC - (div * 10));
+		secTable[0] = div + '0';
+		secTable[1] = (RTC_SEC - (div * 10)) + '0';
 	}
 	if (RTC_MIN < 10)
 	{
@@ -194,8 +198,8 @@ void printCurrentTime(void)
 	else
 	{
 		tU8 div = RTC_MIN / 10;
-		minTable[0] = div;
-		minTable[1] = (RTC_MIN - (div * 10));
+		minTable[0] = div + '0';
+		minTable[1] = (RTC_MIN - (div * 10)) + '0';
 	}
 	if (RTC_HOUR < 10)
 	{
@@ -205,8 +209,8 @@ void printCurrentTime(void)
 	else
 	{
 		tU8 div = RTC_HOUR / 10;
-		hourTable[0] = div;
-		hourTable[1] = (RTC_HOUR - (div * 10));
+		hourTable[0] = div + '0';
+		hourTable[1] = (RTC_HOUR - (div * 10)) + '0';
 	}
 
 	int length = sizeof(secTable) / sizeof(secTable[0]) +
@@ -226,5 +230,73 @@ void printCurrentTime(void)
 
 void printCurrentDate(void)
 {
-	;
+	tU8 totalDateTable[11] = {0}
+	totalDateTable[2] = ':';
+	totalDateTable[5] = ':';
+
+	if (RTC_DOM < 10) 
+	{
+		totalDateTable[0] = '0';
+		totalDateTable[1] = RTC_DOM + '0';
+	} 
+	else {
+		tU8 divValue = RTC_DOM / 10;
+		totalDateTable[0] = divValue + '0';
+		totalDateTable[1] = (RTC_DOM - (div * 10)) + '0';
+	}
+	if (RTC_MONTH < 10) 
+	{
+		totalDateTable[3] = '0';
+		totalDateTable[4] = RTC_MONTH + '0';
+	} 
+	else {
+		tU8 divValue = RTC_MONTH / 10;
+		totalDateTable[3] = divValue + '0';
+		totalDateTable[4] = (RTC_MONTH - (divValue * 10)) + '0';
+	}
+	if (RTC_YEAR < 10) 
+	{
+		totalDateTable[6] = RTC_YEAR + '0';
+	}
+	else if (RTC_YEAR < 100) 
+	{
+		tU8 registerValue = RTC_YEAR;
+		tU8 divValue;
+		tU8 moduloValue;
+		tU8 iterator = 7;
+		while(registerValue != 0) 
+		{
+			divValue = registerValue / 10;
+			moduloValue = (RTC_YEAR - (10 * divValue)) + '0';
+			iterator = iterator - (tU8)1;
+			registerValue = divValue;
+		}
+	}
+	else if (RTC_YEAR < 1000) 
+	{
+		tU8 registerValue = RTC_YEAR;
+		tU8 divValue;
+		tU8 moduloValue;
+		tU8 iterator = 8;
+		while(registerValue != 0) 
+		{
+			divValue = registerValue / 10;
+			moduloValue = (RTC_YEAR - (10 * divValue)) + '0';
+			iterator = iterator - (tU8)1;
+			registerValue = divValue;
+	}
+	else 
+	{
+		tU8 registerValue = RTC_YEAR;
+		tU8 divValue;
+		tU8 moduloValue;
+		tU8 iterator = 9;
+		while(registerValue != 0) 
+		{
+			divValue = registerValue / 10;
+			moduloValue = (RTC_YEAR - (10 * divValue)) + '0';
+			iterator = iterator - (tU8)1;
+			registerValue = divValue;
+	}
+	lcdPuts(totalDateTable);
 }
