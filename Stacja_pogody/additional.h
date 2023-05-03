@@ -3,10 +3,14 @@
     pomocnicznych.
 */
 
-#ifndef __ADDITIONAL_H
-#define __ADDITIONAL_H
+#ifndef ADDITIONAL_H
+#define ADDITIONAL_H
 
-void mdelay( unsigned int delayInMs );
+#include "general.h"
+#include "lpc2xxx.h"
+#include "config.h"
+
+void mdelay(tU32 delayInMs);
 void sdelay(tU32 seconds);
 
 #endif

@@ -3,9 +3,7 @@
     pomocniczych.
 */
 
-#include "general.h"
-#include "lpc2xxx.h"
-#include "config.h"
+#include "additional.h"
 
 /******************************************************************************
 ** Function name:		mdelay
@@ -16,7 +14,7 @@
 ** Returned value:		None
 ** 
 ******************************************************************************/
-void mdelay( unsigned int delayInMs )
+void mdelay(tU32 delayInMs)
 {
   /*
    * setup timer #1 for delay
@@ -29,11 +27,13 @@ void mdelay( unsigned int delayInMs )
   T1TCR = 0x01;          //start timer
   
   //wait until delay time has elapsed
-  while (T1TCR & 0x01)
+  while ((T1TCR & 0x01) == 1)
+  {
     ;
+  }
 }
 
-void sdelay( unsigned int delayInS )
+void sdelay(tU32 delayInS)
 {
   /*
    * setup timer #1 for delay
@@ -46,6 +46,8 @@ void sdelay( unsigned int delayInS )
   T1TCR = 0x01;          //start timer
 
   //wait until delay time has elapsed
-  while (T1TCR & 0x01)
+  while ((T1TCR & 0x01) == 1)
+  {
     ;
+  }
 }

@@ -3,19 +3,15 @@
     czujnika wilgotności HTU21D(F)
 */
 
-#include "general.h"
-#include "i2c.h"
-#include "additional.h"
+#include "htu21df.h"
 
-tS8 measureHumidity(tU8 address,
-                        tU8 *pBuf,
-                        tU16 length)
+tS8 measureHumidity(tU8 address, tU8 *pBuf)
 {
     tS8 retCode;
     /*
         Komenda odczytu wilgotności w trybie "No Hold Master".
     */
-    tU8 commandNoHoldMaster[1] = {};
+    tU8 commandNoHoldMaster[1] = {0};
     commandNoHoldMaster[0] = 0xF5;
     /*
         Adres rejestru do którego trzeba wpisać komendę: (0x40 << 1)
@@ -24,7 +20,7 @@ tS8 measureHumidity(tU8 address,
     tU8 finalAddress = (address << 1);
     retCode = i2cWrite(finalAddress, commandNoHoldMaster, 1);
     mdelay(16);
-    finalAddress = ((address << 1) | 1);
+    finalAddress = ((address << 1) | (tU8)1);
     retCode = i2cRead(finalAddress, pBuf, 2);
     return retCode;
 }
@@ -40,5 +36,5 @@ tS8 calculateHumidity(tU8 *byteArray)
 	byteArray[1] = (byteArray[1] & mask);
     tU16 readData = ((byteArray[0] << 8) | byteArray[1]);
 
-    return (((125 * (readData)) / 65536.0) - 6.0);
+    return ((((tU32)125 * (tU32)readData) / (tU32)65536) - (tU32)6);
 }

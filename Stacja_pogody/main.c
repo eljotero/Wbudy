@@ -23,7 +23,6 @@
 #include "additional.h"
 
 #include "Common_Def.h"
-#include <stdio.h>
 
 /************************************************************************
  * @Description: uruchomienie obsługi przerwań
@@ -53,6 +52,8 @@ static void init_irq (tU32 period, tU8 duty_cycle)
 }
 */
 
+void printCurrentTime(void);
+
 int main(void)
 {
 	tU8 pca9532Present = FALSE;
@@ -60,7 +61,7 @@ int main(void)
 	i2cInit();
 	pca9532Present = pca9532Init();
 	printf_init();
-	if (TRUE == pca9532Present)
+	if ((tU8)TRUE == pca9532Present)
 	{
 
 		lcdInit();
@@ -79,16 +80,17 @@ int main(void)
 		// Address of the LM75 thermometer, when not soldered. 
 		// tU8 lm75Address = 0x9F;
 		// Address of the LM75 thermometer, when soldered.
-		tU8 lm75Address = (0x48 << 1) | 1;
+		tU8 lm75Address = (((tU8)0x48 << 1) | (tU8)1);
 		tU8 htu21dfaddress = 0x40;
-		tU8 readTemperature[2] = {};
-		tU8 readHumidity[2] = {};
-		tU8 charArray[10] = {};
+		tU8 readTemperature[2] = {0};
+		tU8 readHumidity[2] = {0};
+		tU8 charArray[10] = {0};
 		tU16 humidityValue;
-		tU16 brightnessValue;
+		tU64 brightnessValue;
 		tS64 pressureValue;
 
-		while (TRUE)
+		tU8 helperValue = (tU8)1;
+		while (helperValue == (tU8)TRUE)
 		{
 
 			// Trzeba będzie napisać jak ustawiony ma być PINSEL.
@@ -97,29 +99,24 @@ int main(void)
 			if ((IOPIN & 0x00000100) == 0)
 			{
 				// Key P0.8 center-key is pressed
-				lcdClrscr();
 				lcdGotoxy(0, 0);
-				lcdPuts("Stacja pogody");
+				lcdPuts("Aktualny czas: ");
+				lcdGotoxy(0, 15);
+			 	printCurrentTime();
 			}
-			else if ((IOPIN & 0x00000200) == 0 && measureTemperature(lm75Address, readTemperature, 2) != I2C_CODE_ERROR)
+			else if (((IOPIN & 0x00000200) == 0) && (measureTemperature(lm75Address, readTemperature) != I2C_CODE_ERROR))
 			{
 				// Key P0.9 left-key is pressed
-				lcdClrscr();
 				lcdGotoxy(0, 0);
-				lcdPuts("Pomiar");
-				lcdGotoxy(0, 15);
-				lcdPuts("temperatury: ");
+				lcdPuts("Pomiar\ntemperatury: ");
 				lcdGotoxy(0, 30);
 				calculateTemperatureValue(readTemperature);
 			}
-			else if ((IOPIN & 0x00000400) == 0 && measureHumidity(htu21dfaddress, readHumidity, 2) != I2C_CODE_ERROR)
+			else if (((IOPIN & 0x00000400) == 0) && (measureHumidity(htu21dfaddress, readHumidity) != I2C_CODE_ERROR))
 			{
 				// Key P0.10 up-key is pressed
-				lcdClrscr();
 				lcdGotoxy(0, 0);
-				lcdPuts("Pomiar");
-				lcdGotoxy(0, 15);
-				lcdPuts("wilgotnosci: ");
+				lcdPuts("Pomiar\nwilgotnosci: ");
 				humidityValue = calculateHumidity(readHumidity);
 				sprintf(charArray, "%d", humidityValue);
 				lcdGotoxy(0, 30);
@@ -128,12 +125,8 @@ int main(void)
 			else if ((IOPIN & 0x00000800) == 0)
 			{
 				// Key P0.11 right-key is pressed
-				lcdClrscr();
 				lcdGotoxy(0, 0);
-				lcdGotoxy(0, 0);
-				lcdPuts("Pomiar");
-				lcdGotoxy(0, 15);
-				lcdPuts("jasnosci: ");
+				lcdPuts("Pomiar\njasnosci: ");
 				brightnessValue = measureBrightness();
 				sprintf(charArray, "%d", brightnessValue);
 				lcdGotoxy(0, 30);
@@ -142,12 +135,8 @@ int main(void)
 			else if ((IOPIN & 0x00001000) == 0)
 			{
 				// Key P0.12 down-key is pressed
-				lcdClrscr();
 				lcdGotoxy(0, 0);
-				lcdGotoxy(0, 0);
-				lcdPuts("Pomiar");
-				lcdGotoxy(0, 15);
-				lcdPuts("cisnienia: ");
+				lcdPuts("Pomiar\ncisnienia: ");
 				pressureValue = measurePressure();
 				sprintf(charArray, "%d", pressureValue);
 				lcdGotoxy(0, 30);
@@ -156,14 +145,53 @@ int main(void)
 			else
 			{
 				// Joystick is not pressed at all.
-				lcdClrscr();
 				lcdGotoxy(0, 0);
-				lcdGotoxy(0, 0);
-				lcdPuts("Aktualny");
-				lcdGotoxy(0, 15);
-				lcdPuts("czas: ");
+				lcdPuts("Stacja pogody.\nWybor funkcji\nprzy pomocy\njoystick'a:\nL - temperatura\nR - jasnosc\nG - wilgotnosc\nD - cisnienie");
 			}
 			sdelay(1);
+			lcdClrscr();
 		}
 	}
+}
+
+void printCurrentTime(void)
+{
+	// TODO: Write comments to below code
+	RTC_CCR = 0x00000010;
+	RTC_ILR = 0x00000000;
+	RTC_CIIR = 0x00000000;
+	RTC_AMR = 0x00000000;
+	mdelay(100);
+	RTC_CCR = 0x00000011;
+	// Till here
+
+	tU8 fullHourTable[9] = {0};
+	if (RTC_SEC < 10) {
+		fullHourTable[6] = 0x30; 			// Ascii code for '0'.
+		fullHourTable[7] = RTC_SEC + 0x30; 	// Ascii code for '0'.
+	} else {
+		tU8 div = RTC_SEC / 10;
+		fullHourTable[6] = div + (tU8)0x30;
+		fullHourTable[7] = ((tU8)RTC_SEC - (div * (tU8)10)) + (tU8)0x30;
+	}
+	
+	if (RTC_MIN < 10) {
+		fullHourTable[3] = 0x30;				// Ascii code for '0'.
+		fullHourTable[4] = RTC_MIN + 0x30;	// Ascii code for '0'.
+	} else {
+		tU8 div = RTC_MIN / 10;
+		fullHourTable[3] = div + (tU8)0x30;
+		fullHourTable[4] = ((tU8)RTC_MIN - (div * (tU8)10)) + (tU8)0x30;
+	}
+	
+	if (RTC_HOUR < 10){
+		fullHourTable[0] = 0x30;			// Ascii code for '0'.
+		fullHourTable[1] = RTC_HOUR + 0x30;	// Ascii code for '0'.
+	} else {
+		tU8 div = RTC_HOUR / 10;
+		fullHourTable[0] = div + (tU8)0x30;
+		fullHourTable[1] = ((tU8)RTC_HOUR - (div * (tU8)10)) + (tU8)0x30;
+	}
+
+	lcdPuts(fullHourTable);
 }
