@@ -12,8 +12,8 @@
 #include "additional.h"
 #include "lcd.h"
 
-tS8 measureTemperature(tU8 addr, tU8 *pBuf);
+tU16 measureBrightness();
 
-void calculateTemperatureValue(tU8 *byteArray);
+tU16 calculateBrightness(tU16 channel0, tU16 channel1);
 
 #endif
