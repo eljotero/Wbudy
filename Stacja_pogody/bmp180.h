@@ -5,8 +5,8 @@
 #include "additional.h"
 #include "i2c.h"
 
-tS64 measurePressure(void);
+tS32 measurePressure(void);
 
-tS64 calculatePressure(tS64 readPress, tS64 readTemp, tU16 *calibrationArray, tU8 pressureOss);
+tS32 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray, tU8 pressureOss)
 
 #endif

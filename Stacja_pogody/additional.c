@@ -5,15 +5,19 @@
 
 #include "additional.h"
 
-/******************************************************************************
-** Function name:		mdelay
-**
-** Descriptions:		
-**
-** parameters:			delay length
-** Returned value:		None
-** 
-******************************************************************************/
+/*
+ * @brief   Funkcja mdelay() służy do odmierzenia wskazanego w milisekundach okresu czasu, po upłynięciu
+ *          którego funkcja się kończy. Przed upłynięciem czasu, wykonywana jest zawartość pętli while, w wyniku czego
+ *          za pomocą tej funkcji można wstrzymać wykonywanie programu na pewien zadany czas.
+ *            
+ * @param   delayInMs  
+ *          Długość okresu oczekiwania, podana w milisekundach.
+ * @returns void
+ * 
+ * @side effects: 
+ *          Brak
+ */
+
 void mdelay(tU32 delayInMs)
 {
   /*
@@ -32,6 +36,19 @@ void mdelay(tU32 delayInMs)
     ;
   }
 }
+
+/*
+ * @brief   Funkcja sdelay() służy do odmierzenia wskazanego w sekundach okresu czasu, po upłynięciu
+ *          którego funkcja się kończy. Przed upłynięciem czasu, wykonywana jest zawartość pętli while, w wyniku czego
+ *          za pomocą tej funkcji można wstrzymać wykonywanie programu na pewien zadany czas.
+            
+ * @param   delayInS 
+ *          Długość okresu oczekiwania, podana w sekundach.
+ * @returns void    
+ * 
+ * @side effects: 
+ *          Brak
+ */
 
 void sdelay(tU32 delayInS)
 {

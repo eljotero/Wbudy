@@ -12,8 +12,6 @@
 #include "additional.h"
 #include "lcd.h"
 
-tS8 measureTemperature(tU8 addr, tU8 *pBuf);
-
-void calculateTemperatureValue(tU8 *byteArray);
+void measureTemperature(void);
 
 #endif

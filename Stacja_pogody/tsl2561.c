@@ -5,6 +5,18 @@
 
 #include "tsl2561.h"
 
+#define tsl2561AddressGND          0x29 // 0x29 = 0b 0010 1001
+#define tsl2561ReadAddressGND      0x53 // 0x53 = 0b 0101 0011
+#define tsl2561WriteAddressGND     0x52 // 0x52 = 0b 0101 0010
+
+#define tsl2561AddressFloat          0x39 // 0x39 = 0b 0011 1001
+#define tsl2561ReadAddressFloat      0x79 // 0x79 = 0b 0111 1001
+#define tsl2561WriteAddressFloat     0x78 // 0x78 = 0b 0111 1000
+
+#define tsl2561AddressVDD          0x49 // 0x39 = 0b 0100 1001
+#define tsl2561ReadAddressVDD      0x93 // 0x79 = 0b 1001 0011
+#define tsl2561WriteAddressVDD     0x92 // 0x78 = 0b 1001 0010
+
 // General constants
 
 #define LUX_SCALE       14 // scale by 2 ^ 14
@@ -78,6 +90,25 @@
 #define K8C 0x029a // 1.3000 * 2 ^ RATIO_SCALE
 #define B8C 0x0000 // 0.0000 * 2 ^ LUX_SCALE
 #define M8C 0x0000 // 0.0000 * 2 ^ LUX_SCALE
+
+/*
+ * @brief   Funkcja calculateBrightness() wykorzystywana jest do przeliczenia wartości 
+ *          z kanałów 0. oraz 1. na prawidłową wartość jasności wyrażoną w lux-ach.          
+ *           
+ * @param   channel0
+ *          Wartość odczytana z pary rejestrów po adresami 0xCh i 0xDh z urządzenia TSL2561
+ *          reprezentująca 16 - bitową wartość (2 rejestry po 8 bitów). Bajtem młodzszym jest
+ *          bajt z rejestru 0xCh, a starszym - z rejestru 0xDh.
+ * @param   channel1
+ *          Wartość odczytana z pary rejestrów po adresami 0xEh i 0xFh z urządzenia TSL2561
+ *          reprezentująca 16 - bitową wartość (2 rejestry po 8 bitów). Bajtem młodzszym jest
+ *          bajt z rejestru 0xDh, a starszym - z rejestru 0xFh.         
+ * @returns
+ *          Przeliczona, 64 - bitowa wartość jasności, wyrażona w lux-ach.
+ * 
+ * @side effects: 
+ *          Brak
+ */
 
 tU64 calculateBrightness(tU16 channel0, tU16 channel1)
 {
@@ -165,18 +196,52 @@ tU64 calculateBrightness(tU16 channel0, tU16 channel1)
     return resultInLux;
 }
 
+/*
+ * @brief   Funkcja measureBrightness() służy do odczytania wartości jasności z czujnika jasności TSL2561
+ *          co sprowadza się do odczytania wartości z obu kanałów urządzenia, a następnie wywołując funkcję
+ *          calculateBrightness(), ta funkcja otrzmuje prawidłową wartość jasności, która jest przez nią zwracana.
+ *          
+ * @param   void 
+ *          
+ * @returns
+ *          Wartość jasności obliczona przez funkcję calculateBrightness().
+ * 
+ * @side effects: 
+ *          Brak
+ */
+
+tU64 calculateBrightnessFloat(tU16 channel0, tU16 channel1) {
+    tU64 finalResult = 0;
+    float result = ((float)channel1 / channel0);
+    if ((0 < result) && (result <= 0.52)) {
+        finalResult = 0.0315 * channel0 - 0.0593 * channel0 * math.pow(result, 1.4);
+    }
+    else if ((0.52 < result) && (result <= 0.65)) {
+        finalResult = 0.0229 * channel0 - 0.0291 * channel1;
+    }
+    else if ((0.65 < result)  && (result <= 0.80)) {
+        finalResult = 0.0157 * channel0 - 0.0180 * channel1;
+    }
+    else if ((0.80 < result) && (result <= 1.30)) {
+        finalResult = 0.00338 * channel0 - 0.00260 * channel1;
+    }
+    else {
+        finalResult = 0;
+    }
+    return finalResult;
+}
+
 tU64 measureBrightness(void)
 {
     // Return code value for I2C operations.
-    tU8 retCode = 0;
+    tS8 retCode = 0;
     tU8 command[2] = {0};
     tU8 readValue[1] = {0};
-    // TSL2561 device general address.
-    tU8 deviceAddress = 0x39;
+
     // Write address for TLS2561
-    tU8 tslWriteAddress = ((deviceAddress << 1));
+    tU8 tslWriteAddress = tsl2561WriteAddressFloat;
     // Read address for TLS2561
-    tU8 tslReadAddress = ((deviceAddress << 1) | (tU8)1);
+    tU8 tslReadAddress = tsl2561ReadAddressFloat;
 
     // Variables for each channel value.
     tU16 channel0 = 0;
@@ -190,12 +255,12 @@ tU64 measureBrightness(void)
     // Debug:
     // retCode = i2cRead(tslReadAddress, readValue, 1);
     // if (readValue[0] == 0x03) {
-    //    lcdPuts("Odczyt prawidłowy.");
+    //    lcdPuts("OK.");
     // } else { 
-    //    lcdPuts("Odczyt nieprawidłowy.");
+    //    lcdPuts("Not OK.");
     // }
 
-    mdelay(401); // Waiting for 401 ms, since it takes 400 ms for both channels to integrate
+    mdelay(403); // Waiting for 403 ms, since it takes 402 ms for both channels to integrate
 
     // Command for reading low byte of 16 bit channel 0
     command[0] = (((tU8)0x09 << 4) | (tU8)0x0C);
@@ -226,7 +291,8 @@ tU64 measureBrightness(void)
     command[1] = (0x00);  // Wrtie 0x00 (so power down) the device
     retCode = i2cWrite(tslWriteAddress, command, 2);
 
-    tU64 brightnessValue = calculateBrightness(channel0, channel1);
+    // tU64 brightnessValue = calculateBrightnessFloat(channel0, channel1);
+    tU64 brightnessValue = calculateBrightnessFloat(channel0, channel1);
 
     return brightnessValue;
 }

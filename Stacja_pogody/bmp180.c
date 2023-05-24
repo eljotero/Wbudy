@@ -5,7 +5,33 @@
 
 #include "bmp180.h"
 
-tS64 calculatePressure(tS64 readPress, tS64 readTemp, tU16 *calibrationArray, tU8 pressureOss)
+#define bmp180Address       0x77 // 0x77 = 0b 0111 0111
+#define bmp180ReadAddress   0xEE // 0xEE = 0b 1110 1110
+#define bmp180WriteAddress  0xEF // 0xEF = 0b 1110 1111
+
+/*
+ * @brief   Funkcja calculatePressure() wykorzystywana jest do przeliczenia wartości ciśnienia, odczytanej z czujnika
+ *          ciśnienia BMP180 w oparciu o podany w dokumentacji algorytm przeliczający. W tym celu wykorzystywane są 
+ *          również wartości korygujące, odczytane z pamięci EEPROM urządzenia, a także wartość pomiaru temperatury.
+ *           
+ * @param   readPress
+ *          Nieprzeliczona wartość ciśnienia, odczytana z czujnika BMP180.
+ * @param   readTemp
+ *          Nieprzeliczona wartość tempertury, odczytana z czujnika BMP180.
+ * @param   calibrationArray
+ *          Wskaźnik do jedenastoelementowej tablicy, zawierajacej wartości korygujące, potrzebne do przeliczenia
+ *          wartości ciśnienia.
+ * @param   pressureOss
+ *          Jest to wartość oznaczająca liczbę próbek, które wykonuje czujnik przy pomiarze ciśnienia, w wyniku czego 
+ *          możliwe jest osiągnięcie większej dokładności pomiaru.
+ * @returns
+ *          Przeliczona wartość ciśnienia, która wyrażona jest w paskalach (Pa).
+ * 
+ * @side effects: 
+ *          Brak
+ */
+
+tS32 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray, tU8 pressureOss)
 {
     // Compensation data read from BMP180 EEPROM.
     tS16 AC1;
@@ -36,53 +62,64 @@ tS64 calculatePressure(tS64 readPress, tS64 readTemp, tU16 *calibrationArray, tU
 
     // Calculations for temperature.
 
-    tS64 X1 = ((tU64)((readTemp - (tS64)AC6) * (tS64)AC5) >> 15);
-    tS64 X2 = ((tS64)((tU64)MC << 11) / (X1 + (tS64)MD));
-    tS64 B5 = X1 + X2;
-    tS64 T = ((tU64)(B5 + (tS64)8) >> 4);
+    tS32 X1 = (((readTemp - AC6) * AC5) >> 15);
+    tS32 X2 = ((MC << 11) / (X1 + MD));
+    tS32 B5 = X1 + X2;
+    tS32 T = ((B5 + 8) >> 4);
 
     // Calculations for pressure.
 
-    tS64 B6 = B5 - (tS64)4000;
-    X1 = ((tU64)((tS64)B2 * (tS64)((tU64)(B6 * B6) >> 12)) >> 11);
-    X2 = ((tU64)((tS64)AC2 * B6) >> 11);
-    tS64 X3 = X1 + X2;
+    tS32 B6 = B5 - 4000;
+    X1 = (((tS32)B2 * ((B6 * B6) >> 12)) >> 11);
+    X2 = (((tS32)AC2 * B6) >> 11);
+    tS32 X3 = X1 + X2;
 
-    tS64 B3 = (((tU64)((tS64)((tU64)AC1 << 2) + X3) << pressureOss) + (tU64)2) >> 2;
-    X1 = ((tU64)((tS64)AC3 * B6) >> 13);
-    X2 = (((tU64)B1 * ((tU64)(B6 * B6) >> 12)) >> 16);
-    X3 = ((tU64)((X1 + X2) + (tS64)2) >> 2);
+    tS32 B3 = ((((tS32)AC1 * 4 + X3) << pressureOss) + 2) >> 2;
+    X1 = (tS32)AC3 * B6 >> 13;
+    X2 = (((tS32)B1 * (B6 * B6) >> 12)) >> 16;
+    X3 = (((X1 + X2) + 2) >> 2);
 
-    tU64 B4 = (((tU64)AC4 * (tU64)(X3 + (tS64)32768)) >> 15);
-    tU64 B7 = ((tU64)(readPress - B3) * (tU64)((tU64)50000 >> (tU64)pressureOss));
+    tU32 B4 = (((tS32)AC4 * (tU32)(X3 + 32768)) >> 15);
+    tU32 B7 = (((tU32)readPress - B3) * (tS32)(50000 >> (tU64)pressureOss));
 
-    tS64 p;
+    tS32 p;
     if (B7 < 0x80000000UL)
     {
-        p = ((tS64)((tU64)B7 << 1) / (tS64)B4);
+        p = ((B7 * 2) / B4);
     }
     else
     {
-        p = (tS64)((B7 / B4) << 1);
+        p = ((B7 / B4) * 2);
     }
 
-    X1 = ((tU64)p >> 8) * ((tU64)p >> 8);
-    X1 = (((tU64)X1 * (tU64)3038) >> 16);
-    X2 = ((tU64)((tS64)-7357 * p) >> 16);
+    X1 = (p >> 8) * (p >> 8);
+    X1 = ((X1 * 3038) >> 16);
+    X2 = ((-7357 * p) >> 16);
 
-    p = (tU64)(p + (X1 + X2 + (tS64)3791)) >> 4;
+    p = (p + (X1 + X2 + 3791)) >> 4;
 
     return p;
 }
 
-tS64 measurePressure(void)
+/*
+ * @brief   Funkcja measurePressure() wykorzystywana jest do odczytania z czujnika ciśnienia BMP180 wartości
+ *          ciśnienia. Bazowo wartość ta jest nieprzeliczona, lecz w wyniku przekazania jej do funkcji calculatePressure
+ *          jest ona przeliczana na wartość wyrażoną w paskalach (Pa), która jest następnie zwracana przez tą funkcję.
+ *           
+ * @param   void
+ *          
+ * @returns
+ *          Przeliczona wartość ciśnienia, wyrażona w paskalach (Pa).
+ * 
+ * @side effects: 
+ *          Brak
+ */
+
+tS32 measurePressure(void)
 {
     // Return code for I2C operations.
     tS8 retCode = 0;
-    // BMP180 read address: 7 bit address -> 1110111 and additional bit of value 1 for read operation.
-    tU8 bmpReadAddress = (((tU8)0x77 << 1) | (tU8)1); // Address: 0xEF
-    // BMP180 write address: 7 bit address -> 1110111 and additional bit of value 0 for write operation.
-    tU8 bmpWriteAddress = ((tU8)0x77 << 1); // Address: 0xEE
+
     // Array of bytes used for reading compensation values.
     tU8 registerContents[3] = {0};
 
@@ -95,10 +132,10 @@ tS64 measurePressure(void)
     // Reading calibration value for all coefficients
     tU8 iterator;
     // Making device "aware" we are going to read compenstaion data.
-    retCode = i2cWrite(bmpWriteAddress, staringRegister, 1);
+    retCode = i2cWrite(bmp180WriteAddress, staringRegister, 1);
     for (iterator = 0; iterator < (tU8)11; iterator = iterator + (tU8)1)
     {
-        retCode = i2cRead(bmpReadAddress, registerContents, 2);
+        retCode = i2cRead(bmp180ReadAddress, registerContents, 2);
         calibrationArray[iterator] = ((registerContents[0] << 8) | registerContents[1]);
         // We increment by 2 starting register to be able to read next calibration value.
         staringRegister = staringRegister + (tU8)2;
@@ -129,30 +166,30 @@ tS64 measurePressure(void)
     commandArr[1] = controlRegisterTemperatureValue;
 
     // I2C write to BMP180 for reading temperature value.
-    retCode = i2cWrite(bmpWriteAddress, commandArr, 2);
+    retCode = i2cWrite(bmp180WriteAddress, commandArr, 2);
     // Waiting for 5 ms to read temperature ; Minimum waiting time - 4.5 ms.
     mdelay(5);
     // I2C read to retrieve temperature value from slave.
-    retCode = i2cWrite(bmpWriteAddress, resultLocationAddress, 1);
-    retCode = i2cRead(bmpReadAddress, registerContents, 2);
-    tS16 readTemp = ((registerContents[0] << 8) | (registerContents[1]));
+    retCode = i2cWrite(bmp180WriteAddress, resultLocationAddress, 1);
+    retCode = i2cRead(bmp180ReadAddress, registerContents, 2);
+    tU16 readTemp = ((registerContents[0] << 8) | (registerContents[1]));
 
     // Command for getting pressure value with oversampling setting equal to 1.
     commandArr[0] = registerAddress;
     commandArr[1] = controlRegisterPressureValue;
 
     // I2C write to BMP180 for reading temperature value.
-    retCode = i2cWrite(bmpWriteAddress, commandArr, 2);
+    retCode = i2cWrite(bmp180WriteAddress, commandArr, 2);
     // Waiting for 26 ms to read pressure ; Minimum waiting time = 25.5 ms
     mdelay(26);
     // I2C read to retrieve presssure value from slave.
-    retCode = i2cWrite(bmpWriteAddress, resultLocationAddress, 1);
-    retCode = i2cRead(bmpReadAddress, registerContents, 3);
+    retCode = i2cWrite(bmp180WriteAddress, resultLocationAddress, 1);
+    retCode = i2cRead(bmp180ReadAddress, registerContents, 3);
 
-    tU64 readPress = ((registerContents[0] << 16) | (registerContents[1] << 8) | (registerContents[2]));
-    readPress = (readPress >> ((tU64)8 - (tU64)pressureOss));
+    tU32 readPress = ((registerContents[0] << 16) | (registerContents[1] << 8) | (registerContents[2]));
+    readPress = (readPress >> ((tU32)8 - (tU32)pressureOss));
 
-    tS64 calculatedPressure = calculatePressure(readPress, readTemp, calibrationArray, pressureOss);
+    tS32 calculatedPressure = calculatePressure(readPress, readTemp, calibrationArray, pressureOss);
 
     return calculatedPressure;
 }

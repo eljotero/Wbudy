@@ -64,87 +64,82 @@ int main(void)
 	if ((tU8)TRUE == pca9532Present)
 	{
 
-		lcdInit();
-		lcdColor(0xff, 0x00);
-		lcdClrscr();
-
 		/*
 			Inicjalizacja I2C
 		*/
 
+		lcdInit();
+
 		/*
-			Main loop containg enitre program logic. With every iteration, joystick position is checked
-			and based on that, appropriate measurement value.
+			Inicjalizacja ekranu LCD: kolor tła - biały, kolor czcionki - czarny.
 		*/
-		
-		// Address of the LM75 thermometer, when not soldered. 
-		// tU8 lm75Address = 0x9F;
-		// Address of the LM75 thermometer, when soldered.
-		tU8 lm75Address = (((tU8)0x48 << 1) | (tU8)1);
-		tU8 htu21dfaddress = 0x40;
-		tU8 readTemperature[2] = {0};
-		tU8 readHumidity[2] = {0};
+
+		lcdColor(0xff, 0x00);
+		lcdClrscr();
+
+		/*
+			Pętla zawierająca całą logikę programu. W ramach każdej iteracji sprawdzana jest pozycja joystikca / 
+			ewentualnie to, że nie został on naciśnięty i na podstawie tego wykonywane są odpowiednie operacje - np.
+			pomiar temperatury, ciśnienia, jasności, wyświetlenie godziny względem RTC itd.
+		*/
+
 		tU8 charArray[10] = {0};
-		tU16 humidityValue;
-		tU64 brightnessValue;
-		tS64 pressureValue;
 
 		tU8 helperValue = (tU8)1;
 		while (helperValue == (tU8)TRUE)
 		{
 
-			// Trzeba będzie napisać jak ustawiony ma być PINSEL.
+			// TODO: Trzeba będzie napisać jak ustawiony ma być PINSEL dla joysticka.
 
-			// Check if P0.8 center-key is pressed
 			if ((IOPIN & 0x00000100) == 0)
 			{
-				// Key P0.8 center-key is pressed
+				// Sytuacja, w której joystick jest skierowany do środka (P0.8 jest naciśnięty)
 				lcdGotoxy(0, 0);
 				lcdPuts("Aktualny czas: ");
 				lcdGotoxy(0, 15);
 			 	printCurrentTime();
 			}
-			else if (((IOPIN & 0x00000200) == 0) && (measureTemperature(lm75Address, readTemperature) != I2C_CODE_ERROR))
+			else if ((IOPIN & 0x00000200) == 0)
 			{
-				// Key P0.9 left-key is pressed
+				// Sytuacja, w której joystick jest skierowany w lewo (P0.9 jest naciśnięty)
 				lcdGotoxy(0, 0);
 				lcdPuts("Pomiar\ntemperatury: ");
 				lcdGotoxy(0, 30);
-				calculateTemperatureValue(readTemperature);
+				measureTemperature();
 			}
-			else if (((IOPIN & 0x00000400) == 0) && (measureHumidity(htu21dfaddress, readHumidity) != I2C_CODE_ERROR))
+			else if ((IOPIN & 0x00000400) == 0)
 			{
-				// Key P0.10 up-key is pressed
+				// Sytuacja, w której joystick jest skierowany w górę (P0.10 jest naciśnięty)
 				lcdGotoxy(0, 0);
 				lcdPuts("Pomiar\nwilgotnosci: ");
-				humidityValue = calculateHumidity(readHumidity);
+				tU16 humidityValue = measureHumidity();
 				sprintf(charArray, "%d", humidityValue);
 				lcdGotoxy(0, 30);
 				lcdPuts(charArray);
 			}
 			else if ((IOPIN & 0x00000800) == 0)
 			{
-				// Key P0.11 right-key is pressed
+				// Sytuacja, w której joystick jest skierowany w prawo (P0.11 jest naciśnięty)
 				lcdGotoxy(0, 0);
 				lcdPuts("Pomiar\njasnosci: ");
-				brightnessValue = measureBrightness();
+				tU64 brightnessValue = measureBrightness();
 				sprintf(charArray, "%d", brightnessValue);
 				lcdGotoxy(0, 30);
 				lcdPuts(charArray);
 			}
 			else if ((IOPIN & 0x00001000) == 0)
 			{
-				// Key P0.12 down-key is pressed
+				// Sytuacja, w której joystick jest skierowany do dołu (P0.12 jest naciśnięty)
 				lcdGotoxy(0, 0);
 				lcdPuts("Pomiar\ncisnienia: ");
-				pressureValue = measurePressure();
+				tS64 pressureValue = measurePressure();
 				sprintf(charArray, "%d", pressureValue);
 				lcdGotoxy(0, 30);
 				lcdPuts(charArray);
 			}
 			else
 			{
-				// Joystick is not pressed at all.
+				// Sytuacja, w której joystick w ogóle nie jest naciśnięty.
 				lcdGotoxy(0, 0);
 				lcdPuts("Stacja pogody.\nWybor funkcji\nprzy pomocy\njoystick'a:\nL - temperatura\nR - jasnosc\nG - wilgotnosc\nD - cisnienie");
 			}
@@ -153,6 +148,20 @@ int main(void)
 		}
 	}
 }
+
+/*
+ * @brief   Funkcja printCurrentTime() służy do wyświetlenia aktualnego czasu względem zegara 
+ * 			czasu rzeczywistego (RTC) w formacie HH:MM:SS (gdzie H - oznacza godzinę, M - minutę, 
+ *			a S - sekundę). 
+ *         
+ * @param   void   
+ *          
+ * @returns void
+ * 
+ * @side effects: 
+ *          Wyświetlany czas jest zależy od wartości inicjalizującej zegar czasu reczywistego (RTC), 
+ * 			gdzie w tym przypadku nie jest on inicjalizowany.
+ */
 
 void printCurrentTime(void)
 {

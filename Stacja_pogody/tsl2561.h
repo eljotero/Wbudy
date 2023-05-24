@@ -9,4 +9,6 @@ tU64 measureBrightness(void);
 
 tU64 calculateBrightness(tU16 channel0, tU16 channel1);
 
+tU64 calculateBrightnessFloat(tU16 channel0, tU16 channel1);
+
 #endif

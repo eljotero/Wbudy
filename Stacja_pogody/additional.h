@@ -11,6 +11,6 @@
 #include "config.h"
 
 void mdelay(tU32 delayInMs);
-void sdelay(tU32 seconds);
+void sdelay(tU32 delayInS);
 
 #endif
