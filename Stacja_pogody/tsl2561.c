@@ -287,7 +287,7 @@ tU64 measureBrightness(void)
     channel1 = channel1 + ((tU16)256 * (tU16)readValue[0]);
 
     // Sending a command to the device to power it down.
-    command[0] = (((tU8)0xA0 << 4) | (tU8)0x00);  // Change target register to control register
+    command[0] = (((tU8)0x09 << 4) | (tU8)0x00);  // Change target register to control register
     command[1] = (0x00);  // Wrtie 0x00 (so power down) the device
     retCode = i2cWrite(tslWriteAddress, command, 2);
 
