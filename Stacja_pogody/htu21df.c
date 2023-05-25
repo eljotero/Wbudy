@@ -1,36 +1,52 @@
-/*
-    Plik z kodem źródłowym funkcji do obsługi
-    czujnika wilgotności HTU21D(F)
-*/
+/******************************************************************************
+ *  Obsługa pomiaru wilgotności przy pomocy czujnika wilgotności HTU21D(F).
+ * 
+ *  Plik z kodem źródłowym funkcji.
+ *****************************************************************************/
+
+/******************************************************************************
+ * Includes
+ *****************************************************************************/
 
 #include "htu21df.h"
+
+/******************************************************************************
+ * Defines and typedefs
+ *****************************************************************************/
+
+#define htu21Address        0x40; // 0x40 = 0b 0100 0000
+#define htu21ReadAddress    0x81; // 0x81 = 0b 1000 0001
+#define htu21WriteAddress   0x80; // 0x80 = 0b 1000 0000
+
+/*****************************************************************************
+ * Global variables
+ ****************************************************************************/
+
+/*****************************************************************************
+ * Local variables
+ ****************************************************************************/
+
+/*****************************************************************************
+ * Local prototypes
+ ****************************************************************************/
 
 /*
  * @brief   Funkcja measureHumidity() wykorzystywana jest do odczytania z czujnika wilgotności
  *          nieprzeliczonej wartości wilgotności i następnie jej przeliczenie, tak aby reprezentowała
  *          wilgotność wyrażoną w procentach.
- *         
- * @param   void  
- *          
- * @returns 
+ *
+ * @param   void
+ *
+ * @returns
  *          Przeliczona wartość ciśnienia, która wyrażona jest w procentach.
- * 
- * @side effects: 
+ *
+ * @side effects:
  *          Brak
  */
 
 tS8 measureHumidity(void)
 {
-    // Adres urządzenia HTU21DF
-    tU8 htu21Address = 0x40;
-
-    // Adres do zapisu do urządzenia HTU21DF
-    tU8 htu21WriteAddress = ((tU8)htu21Address << 1);
-
-    // Adres do odczytu do urządzenia HTU21DF
-    tU8 htu21ReadAddress = ((tU8)htu21Address << 1 | (tU8)1);
-
-    // Bufor 2-bajtowy do przechowania wartości odczytanej z czujnika HTU21DF 
+    // Bufor 2-bajtowy do przechowania wartości odczytanej z czujnika HTU21DF
     tU8 readHumidity[2] = {0};
 
     /*
@@ -46,7 +62,7 @@ tS8 measureHumidity(void)
     retCode = i2cWrite(htu21WriteAddress, commandNoHoldMaster, 1);
     mdelay(16);
     retCode = i2cRead(htu21ReadAddress, readHumidity, 2);
-    
+
     /*
         Konwersja tablicy 2 bajtów na jedną zmienną 16 bitową.
         Wyłączenie bitów stanu - dla wilgotności są to ostatnie 4 bity.
@@ -66,7 +82,7 @@ tS8 measureHumidity(void)
     {
         humidityValue = 100;
     }
-    
+
 
     return humidityValue;
 }

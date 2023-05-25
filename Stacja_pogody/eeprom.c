@@ -1,6 +1,7 @@
 /******************************************************************************
  * Includes
  *****************************************************************************/
+
 #include "general.h"
 #include "i2c.h"
 
@@ -17,9 +18,21 @@
 #define I2C_EEPROM_SND    (EEPROM_ADDR + (LOCAL_EEPROM_ADDR << 1) + 0x00)
 
 
-/******************************************************************************
- * Implementation of public functions
- *****************************************************************************/
+/*****************************************************************************
+ * Global variables
+ ****************************************************************************/
+
+// None
+
+/*****************************************************************************
+ * Local variables
+ ****************************************************************************/
+
+// None
+
+/*****************************************************************************
+ * Local prototypes
+ ****************************************************************************/
 
 /******************************************************************************
  *
@@ -33,8 +46,8 @@
  *    I2C_CODE_OK or I2C_CODE_ERROR
  *
  *****************************************************************************/
-tS8 
-eepromPoll(void)
+
+tS8 eepromPoll(void)
 {
   tS8 retCode  = I2C_CODE_OK;
   tU8 status   = 0;
@@ -104,9 +117,8 @@ eepromPoll(void)
  *    I2C_CODE_OK or I2C_CODE_ERROR
  *
  *****************************************************************************/
-tS8 
-eepromStartRead(tU8  devAddr, 
-                tU16 address)
+
+tS8 eepromStartRead(tU8  devAddr, tU16 address)
 {
   tS8 retCode = 0;
   tU8 status  = 0;
@@ -263,10 +275,8 @@ eepromStartRead(tU8  devAddr,
 //      MA_OK or I2C status code
 //
 //-------------------------------------------------------------
-tS8 
-eepromPageRead(tU16 address, 
-               tU8* pBuf, 
-               tU16 len) 
+
+tS8 eepromPageRead(tU16 address, tU8* pBuf, tU16 len) 
 {
   tS8  retCode = 0;
   tU8  status  = 0;
@@ -330,10 +340,7 @@ eepromPageRead(tU16 address,
 }
 
 
-tS8
-eepromWrite(tU16 addr,
-            tU8* pData,
-            tU16 len)
+tS8 eepromWrite(tU16 addr, tU8* pData, tU16 len)
 {
   tS8 retCode = 0;
   tU8 status  = 0;
@@ -393,8 +400,8 @@ eepromWrite(tU16 addr,
  *    Second pBuf2/len2 = bytes to read
  *
  *****************************************************************************/
-tS8
-pca9532(tU8* pBuf, tU16 len, tU8* pBuf2, tU16 len2) 
+
+tS8 pca9532(tU8* pBuf, tU16 len, tU8* pBuf2, tU16 len2) 
 {
   tS8  retCode = 0;
   tU8  status  = 0;
@@ -511,5 +518,4 @@ pca9532(tU8* pBuf, tU16 len, tU8* pBuf2, tU16 len2)
   i2cStop();
 
   return retCode;
-
 }

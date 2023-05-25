@@ -1,13 +1,39 @@
-/*
-    Plik, zawierajcy kod źródłowy funkcji przeznaczonych
-    do obsługi czujnika ciśnienia BMP180.
-*/
+/******************************************************************************
+ *  Obsługa pomiaru ciśnienia przy pomocy czujnika BMP180.
+ * 
+ *  Plik z kodem źródłowym funkcji.
+ *****************************************************************************/
+
+/******************************************************************************
+ * Includes
+ *****************************************************************************/
 
 #include "bmp180.h"
 
+/******************************************************************************
+ * Defines and typedefs
+ *****************************************************************************/
+
+// 7 - bit address of BMP180 device.
 #define bmp180Address       0x77 // 0x77 = 0b 0111 0111
-#define bmp180ReadAddress   0xEE // 0xEE = 0b 1110 1110
-#define bmp180WriteAddress  0xEF // 0xEF = 0b 1110 1111
+
+// ((bmp180Address << 1) | 1) (east significant bit is 1 for read operation).
+#define bmp180ReadAddress   0xEF // 0xEE = 0b 1110 1111
+
+// (bmp180Address << 1) (least significant bit is 0 for write operation).
+#define bmp180WriteAddress  0xEE // 0xEE = 0b 1110 1110
+
+/*****************************************************************************
+ * Global variables
+ ****************************************************************************/
+
+/*****************************************************************************
+ * Local variables
+ ****************************************************************************/
+
+/*****************************************************************************
+ * Local prototypes
+ ****************************************************************************/
 
 /*
  * @brief   Funkcja calculatePressure() wykorzystywana jest do przeliczenia wartości ciśnienia, odczytanej z czujnika
@@ -124,7 +150,7 @@ tS32 measurePressure(void)
     tU8 registerContents[3] = {0};
 
     // Array holding calibration values
-    tU16 calibrationArray[11] = {0};
+    tS16 calibrationArray[11] = {0};
 
     // Address of register, where calibration data starts.
     tU8 staringRegister = (tU8)0xAA; // From 0xAA to 0xBF
@@ -172,7 +198,7 @@ tS32 measurePressure(void)
     // I2C read to retrieve temperature value from slave.
     retCode = i2cWrite(bmp180WriteAddress, resultLocationAddress, 1);
     retCode = i2cRead(bmp180ReadAddress, registerContents, 2);
-    tU16 readTemp = ((registerContents[0] << 8) | (registerContents[1]));
+    tS32 readTemp = ((registerContents[0] << 8) | (registerContents[1]));
 
     // Command for getting pressure value with oversampling setting equal to 1.
     commandArr[0] = registerAddress;
@@ -186,10 +212,12 @@ tS32 measurePressure(void)
     retCode = i2cWrite(bmp180WriteAddress, resultLocationAddress, 1);
     retCode = i2cRead(bmp180ReadAddress, registerContents, 3);
 
-    tU32 readPress = ((registerContents[0] << 16) | (registerContents[1] << 8) | (registerContents[2]));
-    readPress = (readPress >> ((tU32)8 - (tU32)pressureOss));
+    tU64 readPress = ((registerContents[0] << 16) | (registerContents[1] << 8) | (registerContents[2]));
+    readPress = (readPress >> ((tU64)8 - (tU64)pressureOss));
 
-    tS32 calculatedPressure = calculatePressure(readPress, readTemp, calibrationArray, pressureOss);
+    tS64 calculatedPressure = calculatePressure(readPress, readTemp, calibrationArray, pressureOss);
 
     return calculatedPressure;
 }
+
+// TODO: Załatwić kwestię przeliczania ciśnienia, tak aby było prawidłowo.

@@ -1,23 +1,32 @@
 /*************************************************************************************
  *
  * @Description:
- * Lista sta≥ych uøywanych do programowania 
- * Wektoryzowanego kontrolera przerwaÒ (VIC)
- * Wskazane jest uzupe≥nienie listy
+ * Lista sta≈Çych u≈ºywanych do programowania 
+ * Wektoryzowanego kontrolera przerwa≈Ñ (VIC)
+ * Wskazane jest uzupe≈Çnienie listy
  *
- * @Authors: Micha≥ Morawski, 
+ * @Authors: Micha≈Ç Morawski, 
  *           Daniel Arendt, 
- *           Przemys≥aw Ignaciuk,
+ *           Przemys≈Çaw Ignaciuk,
  *           Marcin Kwapisz
  *
  * @Change log:
  *           2016.12.01: Wersja oryginalna.
  *
  ******************************************************************************/
+
 #ifndef __VIC_H__
 #define __VIC_H__
 
+/******************************************************************************
+ * Includes
+ *****************************************************************************/
+
 #include "general.h"
+
+/******************************************************************************
+ * Typedefs and defines
+ *****************************************************************************/
 
 #define WATCHDOG_IRQ_NO (0)
 #define WATCHDOG_IRQ    _BIT(WATCHDOG_IRQ_NO)
@@ -66,5 +75,22 @@
 
 typedef void (__attribute__ ((interrupt("IRQ"))) *IRQ_Handler)(void) ;
 
-// ListÍ sta≥ych warto rozszerzyÊ
+/*****************************************************************************
+ * Global variables
+ ****************************************************************************/
+
+// None
+
+/*****************************************************************************
+ * Local variables
+ ****************************************************************************/
+
+// None
+
+/*****************************************************************************
+ * Local prototypes
+ ****************************************************************************/
+
+// Listƒô sta≈Çych warto≈õƒá rozszerzyƒá
+
 #endif //__VIC_H__

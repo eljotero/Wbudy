@@ -1,7 +1,3 @@
-
-
-
-
 /******************************************************************************
  * Includes
  *****************************************************************************/
@@ -33,6 +29,18 @@
 #define I2C_REG_SCLH_MASK   0x0000FFFF /* Used bits                    */
 #define I2C_REG_SCLL        0x00000100 /* SCL Duty Cycle low register  */
 #define I2C_REG_SCLL_MASK   0x0000FFFF /* Used bits                    */
+
+/*****************************************************************************
+ * Global variables
+ ****************************************************************************/
+
+/*****************************************************************************
+ * Local variables
+ ****************************************************************************/
+
+/*****************************************************************************
+ * Local prototypes
+ ****************************************************************************/
 
 /******************************************************************************
  *
@@ -71,8 +79,8 @@
  *      FFh Channel error
  *
  *****************************************************************************/
-tU8
-i2cCheckStatus(void)
+
+tU8 i2cCheckStatus(void)
 {
   tU8 status = 0;
 
@@ -96,8 +104,8 @@ i2cCheckStatus(void)
  *    Reset the I2C module.
  *
  *****************************************************************************/
-void
-i2cInit(void)
+
+void i2cInit(void)
 {
   PINSEL0  |= 0x50;
 
@@ -124,8 +132,8 @@ i2cInit(void)
  *    I2C_CODE_OK or I2C status code
  *
  *****************************************************************************/
-tS8
-i2cStart(void)
+
+tS8 i2cStart(void)
 {
   tU8   status  = 0;
   tS8   retCode = 0;
@@ -178,8 +186,8 @@ i2cStart(void)
  *    I2C_CODE_OK or I2C status code
  *
  *****************************************************************************/
-tS8
-i2cRepeatStart(void)
+
+tS8 i2cRepeatStart(void)
 {
   tU8   status  = 0;
   tS8   retCode = 0;
@@ -233,8 +241,8 @@ i2cRepeatStart(void)
  *    I2C_CODE_OK
  *
  *****************************************************************************/
-tS8
-i2cStop(void)
+
+tS8 i2cStop(void)
 {
   I2C_CONSET |= 0x10; /* STO = 1, set stop flag */ 
   I2C_CONCLR = 0x08;  /* clear SI flag          */ 
@@ -262,8 +270,8 @@ i2cStop(void)
  *    I2C_CODE_BUSY - data register is not ready -> byte was not sent
  *
  *****************************************************************************/
-tS8
-i2cPutChar(tU8 data)
+
+tS8 i2cPutChar(tU8 data)
 {
   tS8 retCode = 0;
 
@@ -302,9 +310,8 @@ i2cPutChar(tU8 data)
  *    I2C_CODE_EMPTY - no data is available
  *
  *****************************************************************************/
-tS8
-i2cGetChar(tU8  mode,
-           tU8* pData)
+
+tS8 i2cGetChar(tU8  mode, tU8* pData)
 {
   tS8 retCode = I2C_CODE_OK;
 
@@ -359,10 +366,8 @@ i2cGetChar(tU8  mode,
  *    I2C_CODE_ERROR - an error occured
  *
  *****************************************************************************/
-tS8
-i2cWrite(tU8  addr,
-         tU8* pData,
-         tU16 len)
+
+tS8 i2cWrite(tU8  addr, tU8* pData, tU16 len)
 {
   tS8 retCode = 0;
   tU8 status  = 0;
@@ -457,8 +462,7 @@ i2cWrite(tU8  addr,
   return retCode;
 }
 
-tS8
-i2cWaitTransmit(void)
+tS8 i2cWaitTransmit(void)
 {
   tU8 status = 0;
 
@@ -488,8 +492,7 @@ i2cWaitTransmit(void)
   }
 }
 
-tS8
-i2cWriteWithWait(tU8 data)
+tS8 i2cWriteWithWait(tU8 data)
 {
   tS8 retCode = 0;
   
@@ -505,10 +508,7 @@ i2cWriteWithWait(tU8 data)
   return retCode;
 }
 
-tS8
-i2cMyWrite(tU8  addr,
-           tU8* pData,
-           tU16 len)
+tS8 i2cMyWrite(tU8  addr, tU8* pData, tU16 len)
 {
   tS8 retCode = 0;
   tU8 i       = 0;
@@ -561,10 +561,8 @@ i2cMyWrite(tU8  addr,
  *    I2C_CODE_OK or I2C status code
  *
  *****************************************************************************/
-tS8
-i2cRead(tU8  addr,
-        tU8* pBuf,
-        tU16 len)
+
+tS8 i2cRead(tU8  addr, tU8* pBuf, tU16 len)
 {
   tS8 retCode = 0;
   tU8 status  = 0;
@@ -642,6 +640,3 @@ i2cRead(tU8  addr,
 
   return retCode;
 }
-
-
-

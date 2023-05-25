@@ -14,6 +14,7 @@
 /******************************************************************************
  * Includes
  *****************************************************************************/
+
 #include "general.h"
 #include "lcd.h"
 #include "lcd_hw.h"
@@ -22,6 +23,7 @@
 /******************************************************************************
  * Typedefs and defines
  *****************************************************************************/
+
 #define LCD_CMD_SWRESET   0x01
 #define LCD_CMD_BSTRON    0x03
 #define LCD_CMD_SLEEPIN   0x10
@@ -41,8 +43,13 @@
 
 
 /*****************************************************************************
+ * Global variables
+ ****************************************************************************/
+
+/*****************************************************************************
  * Local variables
  ****************************************************************************/
+
 static tU8 lcd_x;
 static tU8 lcd_y;
 static tU8 bkgColor;
@@ -52,8 +59,8 @@ static tU8 setcolmark;
 /*****************************************************************************
  * Local prototypes
  ****************************************************************************/
-static void lcdWindow1(tU8 xp, tU8 yp, tU8 xe, tU8 ye);
 
+static void lcdWindow1(tU8 xp, tU8 yp, tU8 xe, tU8 ye);
 
 /*****************************************************************************
  *
@@ -63,8 +70,8 @@ static void lcdWindow1(tU8 xp, tU8 yp, tU8 xe, tU8 ye);
  *    8 bits Color mode uses RRRGGGBB layout
  *
  ****************************************************************************/
-void
-lcdInit(void)
+
+void lcdInit(void)
 {
   bkgColor  = 0;
   textColor = 0;
@@ -119,15 +126,14 @@ lcdInit(void)
 	lcdClrscr();
 }
 
-
 /*****************************************************************************
  *
  * Description:
  *    Clear screen (with current background color)
  *
  ****************************************************************************/
-void
-lcdClrscr(void)
+
+void lcdClrscr(void)
 {
   tU32 i;
 
@@ -148,15 +154,14 @@ lcdClrscr(void)
   selectLCD(FALSE);
 }
 
-
 /*****************************************************************************
  *
  * Description:
  *    Shut down the LCD controller
  *
  ****************************************************************************/
-void
-lcdOff(void)
+
+void lcdOff(void)
 {
   lcdClrscr();
 
@@ -169,20 +174,18 @@ lcdOff(void)
   selectLCD(FALSE);
 }
 
-
 /*****************************************************************************
  *
  * Description:
  *    Set current foreground and background color
  *
  ****************************************************************************/
-void
-lcdColor(tU8 bkg, tU8 text)
+
+void lcdColor(tU8 bkg, tU8 text)
 {
   bkgColor  = bkg;
   textColor = text;
 }
-
 
 /*****************************************************************************
  *
@@ -190,8 +193,8 @@ lcdColor(tU8 bkg, tU8 text)
  *    Set display contrast
  *
  ****************************************************************************/
-void
-lcdContrast(tU8 cont) //vary between 0 - 127
+
+void lcdContrast(tU8 cont) //vary between 0 - 127
 {
   //select controller
   selectLCD(TRUE);
@@ -204,15 +207,14 @@ lcdContrast(tU8 cont) //vary between 0 - 127
   selectLCD(FALSE);
 }
 
-
 /*****************************************************************************
  *
  * Description:
  *    Draw a rectangular area with specified color.
  *
  ****************************************************************************/
-void
-lcdRect(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 color)
+
+void lcdRect(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 color)
 {
   tU32 i;
   tU32 len;
@@ -232,7 +234,6 @@ lcdRect(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 color)
   selectLCD(FALSE);
 }
 
-
 /*****************************************************************************
  *
  * Description:
@@ -240,8 +241,8 @@ lcdRect(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 color)
  *    by example game.
  *
  ****************************************************************************/
-void
-lcdRectBrd(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 color1, tU8 color2, tU8 color3)
+
+void lcdRectBrd(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 color1, tU8 color2, tU8 color3)
 {
   tU32 i,j;
 
@@ -268,7 +269,6 @@ lcdRectBrd(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 color1, tU8 color2, tU8 color3)
   selectLCD(FALSE);
 }
 
-
 /*****************************************************************************
  *
  * Description:
@@ -283,8 +283,8 @@ lcdRectBrd(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 color1, tU8 color2, tU8 color3)
  *    equals the escape value in a compressed string.
  *
  ****************************************************************************/
-void
-lcdIcon(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 compressionOn, tU8 escapeChar, const tU8* pData)
+
+void lcdIcon(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 compressionOn, tU8 escapeChar, const tU8* pData)
 {
   tU32 i,j;
   tS32 len;
@@ -325,21 +325,19 @@ lcdIcon(tU8 x, tU8 y, tU8 xLen, tU8 yLen, tU8 compressionOn, tU8 escapeChar, con
   selectLCD(FALSE);
 }
 
-
 /*****************************************************************************
  *
  * Description:
  *    Update xy-position (by also creating a window).
  *
  ****************************************************************************/
-void
-lcdGotoxy(tU8 x, tU8 y)
+
+void lcdGotoxy(tU8 x, tU8 y)
 {
   lcd_x = x;
   lcd_y = y;
   lcdWindow(x, y, 129, 129);
 }
-
 
 /*****************************************************************************
  *
@@ -349,8 +347,8 @@ lcdGotoxy(tU8 x, tU8 y)
  *    Selects/deselects LCD controller.
  *
  ****************************************************************************/
-void
-lcdWindow(tU8 xp, tU8 yp, tU8 xe, tU8 ye)
+
+void lcdWindow(tU8 xp, tU8 yp, tU8 xe, tU8 ye)
 {
   //select controller
   selectLCD(TRUE);
@@ -361,7 +359,6 @@ lcdWindow(tU8 xp, tU8 yp, tU8 xe, tU8 ye)
   selectLCD(FALSE);
 }
 
-
 /*****************************************************************************
  *
  * Description:
@@ -370,8 +367,8 @@ lcdWindow(tU8 xp, tU8 yp, tU8 xe, tU8 ye)
  *    No select/deselect of LCD controller.
  *
  ****************************************************************************/
-static void
-lcdWindow1(tU8 xp, tU8 yp, tU8 xe, tU8 ye)
+
+static void lcdWindow1(tU8 xp, tU8 yp, tU8 xe, tU8 ye)
 {
   lcdWrcmd(LCD_CMD_CASET);    //set X
   lcdWrdata(xp+2);
@@ -382,22 +379,20 @@ lcdWindow1(tU8 xp, tU8 yp, tU8 xe, tU8 ye)
 	lcdWrdata(ye+2);
 }
 
-
 /*****************************************************************************
  *
  * Description:
  *    Update xy-position for newline situation.
  *
  ****************************************************************************/
-static void
-lcdNewline(void)
+
+static void lcdNewline(void)
 {
   lcd_x  = 0;
   lcd_y	+= 14;
   if (lcd_y >= 126)
     lcd_y = 126;
 }
-
 
 /*****************************************************************************
  *
@@ -406,8 +401,8 @@ lcdNewline(void)
  *    at current xy position on display. Update x-position (+8).
  *
  ****************************************************************************/
-void
-lcdData(tU8 data)
+
+void lcdData(tU8 data)
 {
   //select controller
   selectLCD(TRUE);
@@ -448,7 +443,6 @@ lcdData(tU8 data)
   lcd_x += 8;
 }
 
-
 /*****************************************************************************
  *
  * Description:
@@ -456,8 +450,8 @@ lcdData(tU8 data)
  *    The xy-position is updated afterwards
  *
  ****************************************************************************/
-void
-lcdPutchar(tU8 data)
+
+void lcdPutchar(tU8 data)
 {
   if (data == '\n')
     lcdNewline();
@@ -483,13 +477,12 @@ lcdPutchar(tU8 data)
  *    Write/draw (null-terminated) string of character at current xy-position
  *
  ****************************************************************************/
-void
-lcdPuts(char *s)
+
+void lcdPuts(char *s)
 {
   while(*s != '\0')
     lcdPutchar(*s++);
 }
-
 
 /*****************************************************************************
  *
@@ -497,12 +490,11 @@ lcdPuts(char *s)
  *    Send command data to LCD controller
  *
  ****************************************************************************/
-void
-lcdWrcmd(tU8 data)
+
+void lcdWrcmd(tU8 data)
 {
   sendToLCD(0, data);
 }
-
 
 /*****************************************************************************
  *
@@ -510,10 +502,8 @@ lcdWrcmd(tU8 data)
  *    Send data byte to LCD controller
  *
  ****************************************************************************/
-void
-lcdWrdata(tU8 data)
+
+void lcdWrdata(tU8 data)
 {
   sendToLCD(1, data);
 }
-
-

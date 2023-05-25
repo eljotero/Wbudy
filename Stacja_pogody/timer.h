@@ -1,12 +1,12 @@
 /*************************************************************************************
  *
  * @Description:
- * Lista sta≥ych uøywanych do programowania timerÛw/licznikÛw
- * Wskazane jest uzupe≥nienie listy
+ * Lista sta≈Çych u≈ºywanych do programowania timer√≥w / licznik√≥w
+ * Wskazane jest uzupe≈Çnienie listy
  *
- * @Authors: Micha≥ Morawski, 
+ * @Authors: Micha≈Ç Morawski, 
  *           Daniel Arendt, 
- *           Przemys≥aw Ignaciuk,
+ *           Przemys≈Çaw Ignaciuk,
  *           Marcin Kwapisz
  *
  * @Change log:
@@ -16,9 +16,17 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
+/******************************************************************************
+ * Includes
+ *****************************************************************************/
+
 #include "general.h"
 
-//Sta≥e dla TimerÛw
+/******************************************************************************
+ * Typedefs and defines
+ *****************************************************************************/
+
+//Sta≈Çe dla Timer√≥w
 #define TIMER_RESET     _BIT(1)
 #define TIMER_RUN       _BIT(0)
 #define MR0_I           _BIT(0)
@@ -44,6 +52,18 @@
 #define TIMER_CR3_INT	_BIT(7)
 #define TIMER_ALL_INT	(TIMER_MR0_INT | TIMER_MR1_INT | TIMER_MR2_INT | TIMER_MR3_INT | TIMER_CR0_INT | TIMER_CR1_INT | TIMER_CR2_INT | TIMER_CR3_INT)
 
-// ListÍ sta≥ych warto rozszerzyÊ
+// Listƒô sta≈Çych warto rozszerzyƒá
+
+/*****************************************************************************
+ * Global variables
+ ****************************************************************************/
+
+/*****************************************************************************
+ * Local variables
+ ****************************************************************************/
+
+/*****************************************************************************
+ * Local prototypes
+ ****************************************************************************/
 
 #endif //__TIMER_H__

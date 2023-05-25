@@ -14,6 +14,7 @@
 /******************************************************************************
  * Includes
  *****************************************************************************/
+
 #include "general.h"
 #include <lpc2xxx.h>
 #include "lcd_hw.h"
@@ -21,7 +22,6 @@
 /******************************************************************************
  * Typedefs and defines
  *****************************************************************************/
-
 
 /*****************************************************************************
  * Global variables
@@ -35,15 +35,14 @@
  * Local prototypes
  ****************************************************************************/
 
-
 /*****************************************************************************
  *
  * Description:
  *    Send 9-bit data to LCD controller
  *
  ****************************************************************************/
-void
-sendToLCD(tU8 firstBit, tU8 data)
+
+void sendToLCD(tU8 firstBit, tU8 data)
 {
   //disable SPI
   IOCLR = LCD_CLK;
@@ -76,15 +75,14 @@ sendToLCD(tU8 firstBit, tU8 data)
     ;
 }
 
-
 /*****************************************************************************
  *
  * Description:
  *    Initialize the SPI interface for the LCD controller
  *
  ****************************************************************************/
-void
-initSpiForLcd(void)
+
+void initSpiForLcd(void)
 {
   //make SPI slave chip select an output and set signal high
   IODIR |= (LCD_CS | LCD_CLK | LCD_MOSI);
@@ -106,8 +104,8 @@ initSpiForLcd(void)
  *    Select/deselect LCD controller (by controlling chip select signal)
  *
  ****************************************************************************/
-void
-selectLCD(tBool select)
+
+void selectLCD(tBool select)
 {
   if (TRUE == select)
     IOCLR = LCD_CS;
