@@ -268,7 +268,8 @@ tU64 calculateBrightness(tU16 channel0, tU16 channel1)
  *          Wartość jasności obliczona przez funkcję calculateBrightness().
  *
  * @side effects:
- *          Brak
+ *          Zmiana stanu czujnika TSL2561 (poprzez jego włączanie i wyłączanie), a także zapis 
+ *          adresu rejestrów, z których czytana jest zawartość.
  */
 
 tU64 measureBrightness(void)
