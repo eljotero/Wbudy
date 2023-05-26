@@ -23,6 +23,9 @@
 // (bmp180Address << 1) (least significant bit is 0 for write operation).
 #define bmp180WriteAddress  0xEE // 0xEE = 0b 1110 1110
 
+// Defines oversampling ratio of the pressure measurement
+#define pressureOss 0x03    // 0x03 = 0b 11
+
 /*****************************************************************************
  * Global variables
  ****************************************************************************/
@@ -86,14 +89,18 @@ tS32 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray, tU
     MC = calibrationArray[9];
     MD = calibrationArray[10];
 
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
     // Calculations for temperature.
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
     tS32 X1 = (((readTemp - AC6) * AC5) >> 15);
     tS32 X2 = ((MC << 11) / (X1 + MD));
     tS32 B5 = X1 + X2;
     tS32 T = ((B5 + 8) >> 4);
 
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
     // Calculations for pressure.
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
     tS32 B6 = B5 - 4000;
     X1 = (((tS32)B2 * ((B6 * B6) >> 12)) >> 11);
@@ -138,7 +145,8 @@ tS32 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray, tU
  *          Przeliczona wartość ciśnienia, wyrażona w paskalach (Pa).
  * 
  * @side effects: 
- *          Brak
+ *          Stan czujnika BMP180 ulega zmianie jako, że są do niego zapisywane wartości np. wartości próbkowania 
+ *          (oversampling).
  */
 
 tS32 measurePressure(void)
@@ -155,10 +163,16 @@ tS32 measurePressure(void)
     // Address of register, where calibration data starts.
     tU8 staringRegister = (tU8)0xAA; // From 0xAA to 0xBF
 
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
     // Reading calibration value for all coefficients
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
+    //  Definition of iterator used later in a for loop.
     tU8 iterator;
+
     // Making device "aware" we are going to read compenstaion data.
     retCode = i2cWrite(bmp180WriteAddress, staringRegister, 1);
+
     for (iterator = 0; iterator < (tU8)11; iterator = iterator + (tU8)1)
     {
         retCode = i2cRead(bmp180ReadAddress, registerContents, 2);
@@ -167,14 +181,11 @@ tS32 measurePressure(void)
         staringRegister = staringRegister + (tU8)2;
     }
 
-    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
     // Temperature / pressure value location registers: 0xF6 (MSB), 0xF7 (LSB), 0xF8 (XLSB)
     tU8 resultLocationAddress[1];
     resultLocationAddress[0] = 0xF6;
-
-    // Value for pressure oversampling setting.
-    tU8 pressureOss = 0x03;
 
     // Control register value for measuring temperature
     tU8 controlRegisterTemperatureValue = 0x2E;
@@ -187,37 +198,65 @@ tS32 measurePressure(void)
 
     tU8 commandArr[2] = {0};
 
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+    // Setting oversampling ratio of pressure measurement to 3. (Which means that pressure will be
+    // measure 8 times before estimating final measured value).
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
+    // Command for setting oversampling value to 0x03.
+    commandArr[0] = registerAddress;
+    commandArr[1] = (pressureOss << 6);
+
+    retCode = i2cWrite(bmp180WriteAddress, commandArr, 2);
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+    // Getting temperature value 
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
     // Command for getting temperature value
     commandArr[0] = registerAddress;
     commandArr[1] = controlRegisterTemperatureValue;
 
     // I2C write to BMP180 for reading temperature value.
     retCode = i2cWrite(bmp180WriteAddress, commandArr, 2);
+
     // Waiting for 5 ms to read temperature ; Minimum waiting time - 4.5 ms.
     mdelay(5);
+
     // I2C read to retrieve temperature value from slave.
     retCode = i2cWrite(bmp180WriteAddress, resultLocationAddress, 1);
     retCode = i2cRead(bmp180ReadAddress, registerContents, 2);
-    tS32 readTemp = ((registerContents[0] << 8) | (registerContents[1]));
 
-    // Command for getting pressure value with oversampling setting equal to 1.
+    // Creating a single 16 bit unsigned variable out of read 2 bytes of data.
+    tU16 readTemp = ((registerContents[0] << 8) | (registerContents[1]));
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+    // Getting pressure value
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
+    // Command for getting pressure value..
     commandArr[0] = registerAddress;
     commandArr[1] = controlRegisterPressureValue;
 
     // I2C write to BMP180 for reading temperature value.
     retCode = i2cWrite(bmp180WriteAddress, commandArr, 2);
+
     // Waiting for 26 ms to read pressure ; Minimum waiting time = 25.5 ms
     mdelay(26);
+
     // I2C read to retrieve presssure value from slave.
     retCode = i2cWrite(bmp180WriteAddress, resultLocationAddress, 1);
     retCode = i2cRead(bmp180ReadAddress, registerContents, 3);
 
-    tU64 readPress = ((registerContents[0] << 16) | (registerContents[1] << 8) | (registerContents[2]));
+    // Creating a single 32 bit unsigned variable out of 3 read bytes of data.
+    tU32 readPress = ((registerContents[0] << 16) | (registerContents[1] << 8) | (registerContents[2]));
     readPress = (readPress >> ((tU64)8 - (tU64)pressureOss));
+
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+    // Calculating value of real pressure
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
     tS64 calculatedPressure = calculatePressure(readPress, readTemp, calibrationArray, pressureOss);
 
     return calculatedPressure;
 }
-
-// TODO: Załatwić kwestię przeliczania ciśnienia, tak aby było prawidłowo.

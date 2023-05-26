@@ -112,5 +112,3 @@ void sdelay(tU32 delayInS)
 
   T1TCR = 0x00;         // Resetting entire TCR register of Timer 1.
 }
-
-// TODO: Poprawić funkcje sdelay oraz mdelay w opraciu o dokumentację.
