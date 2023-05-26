@@ -32,37 +32,37 @@
 
 /*
 
-#define pca9532Address000 		0x60 // 0x60 = 0b 0110 0000
-#define pca9532ReadAddress000 	0xC1 // 0xC1 = 0b 1100 0001
-#define pca9532WriteAddress000 	0xC0 // 0xC0 = 0b 1100 0000
+#define pca9532Address000 		0x60
+#define pca9532ReadAddress000 	0xC1
+#define pca9532WriteAddress000 	0xC0
 
-#define pca9532Address001 		0x61 // 0x61 = 0b 0110 0001
-#define pca9532ReadAddress001 	0xC3 // 0xC3 = 0b 1100 0011
-#define pca9532WriteAddress001 	0xC2 // 0xC2 = 0b 1100 0010
+#define pca9532Address001 		0x61
+#define pca9532ReadAddress001 	0xC3
+#define pca9532WriteAddress001 	0xC2
 
-#define pca9532Address010 		0x62 // 0x62 = 0b 0110 0010
-#define pca9532ReadAddress010 	0xC5 // 0xC5 = 0b 1100 0101
-#define pca9532WriteAddress010 	0xC4 // 0xC4 = 0b 1100 0100
+#define pca9532Address010 		0x62
+#define pca9532ReadAddress010 	0xC5
+#define pca9532WriteAddress010 	0xC4
 
-#define pca9532Address100 		0x64 // 0x64 = 0b 0110 0100
-#define pca9532ReadAddress100 	0xC9 // 0xC9 = 0b 1100 1001
-#define pca9532WriteAddress100 	0xC8 // 0xC8 = 0b 1100 1000
+#define pca9532Address100 		0x64
+#define pca9532ReadAddress100 	0xC9
+#define pca9532WriteAddress100 	0xC8
 
-#define pca9532Address011 		0x63 // 0x63 = 0b 0110 0011
-#define pca9532ReadAddress011 	0xC7 // 0xC7 = 0b 1100 0111
-#define pca9532WriteAddress011 	0xC6 // 0xC6 = 0b 1100 0110
+#define pca9532Address011 		0x63
+#define pca9532ReadAddress011 	0xC7
+#define pca9532WriteAddress011 	0xC6
 
-#define pca9532Address101 		0x65 // 0x65 = 0b 0110 0101
-#define pca9532ReadAddress101 	0xCB // 0xCB = 0b 1100 1011
-#define pca9532WriteAddress101 	0xCA // 0xCA = 0b 1100 1010
+#define pca9532Address101 		0x65
+#define pca9532ReadAddress101 	0xCB
+#define pca9532WriteAddress101 	0xCA
 
-#define pca9532Address110 		0x66 // 0x66 = 0b 0110 0110
-#define pca9532ReadAddress110 	0xCD // 0xCD = 0b 1100 1101
-#define pca9532WriteAddress110 	0xCC // 0xCC = 0b 1100 1100
+#define pca9532Address110 		0x66
+#define pca9532ReadAddress110 	0xCD
+#define pca9532WriteAddress110 	0xCC
 
-#define pca9532Address111 		0x67 // 0x67 = 0b 0110 0111
-#define pca9532ReadAddress111 	0xCF // 0xCF = 0b 1100 1111
-#define pca9532WriteAddress111 	0xCE // 0xCE = 0b 1100 1110
+#define pca9532Address111 		0x67
+#define pca9532ReadAddress111 	0xCF
+#define pca9532WriteAddress111 	0xCE
 
 */
 
@@ -106,11 +106,18 @@ tBool pca9532Init(void)
 	//                                                         04 = LCD_RST# low
 	//                                                         10 = BT_RST# low
 
-	//initialize PCA9532
+	tBool result;
+
+	// Initialize PCA9532
 	if (I2C_CODE_OK == pca9532(initCommand, sizeof(initCommand), NULL, 0))
-		return TRUE;
+	{
+		result = TRUE;
+	}
 	else
-		return FALSE;
+	{
+		result = FALSE;
+	}
+	return result;
 }
 
 /*****************************************************************************
@@ -125,31 +132,45 @@ void setPca9532Pin(tU8 pinNum, tU8 value)
 	tU8 regValue;
 	tU8 mask;
 
-	if (pinNum < 4)
+	tS8 retCode;
+
+	if (pinNum < (tU8)4)
+	{
 		command[0] = 0x06;
-	else if (pinNum < 8)
+	}
+	else if (pinNum < (tU8)8)
+	{
 		command[0] = 0x07;
-	else if (pinNum < 12)
+	}
+	else if (pinNum < (tU8)12)
+	{
 		command[0] = 0x08;
+	}
 	else
+	{
 		command[0] = 0x09;
+	}
 
-	pca9532(command, 1, &regValue, 1);
+	retCode = pca9532(command, 1, &regValue, 1);
 
-	mask = (3 << 2 * (pinNum % 4));
+	mask = (tU8)((tU8)((tU8)3 << (tU8)2) * (pinNum % (tU8)4));
 
 	regValue &= ~mask;
 
-	if (value == 0)
+	if (value == (tU8)0)
+	{
 		command[1] = 0x02;
+	}
 	else
+	{
 		command[1] = 0x00;
+	}
 
-	command[1] <<= 2 * (pinNum % 4);
+	command[1] = command[1] << ((tU8)2 * (pinNum % (tU8)4));
 
-	command[1] |= regValue;
+	command[1] = command[1] | regValue;
 
-	pca9532(command, sizeof(command), NULL, 0);
+	retCode = pca9532(command, sizeof(command), NULL, 0);
 }
 
 /*****************************************************************************
@@ -162,8 +183,9 @@ tU16 getPca9532Pin(void)
 {
 	tU8 command[] = { 0x19 };
 	tU8 regValue[3];
+	tS8 retCode;
 
-	pca9532(command, 1, regValue, 3);
+	retCode = pca9532(command, 1, regValue, 3);
 
 	return (tU16) regValue[1] | ((tU16) regValue[2] << 8);
 }
@@ -209,31 +231,32 @@ void manageLED(tU8 pca9532Present)
 	tU8 commandToPCA[2] = {0};
 
 	tU8 regValue;
+	tS8 retCode;
 
 	tU16 keys;
-	if (TRUE == pca9532Present)
+	if ((tU8)TRUE == pca9532Present)
 	{
 		tU8 i;
-		for (i = 0; i < 16; i++) {
+		for (i = (tU8)0; i < (tU8)NUM_OF_LEDS; i = i + (tU8)1) {
 			commandToPCA[0] = PSC0Address;
 			commandToPCA[1] = blinkRateHalfSecond;
-			pca9532(commandToPCA, 2, NULL, 0);
-			if (i % 2 == 0) {
+			retCode = pca9532(commandToPCA, 2, NULL, 0);
+			if ((i % (tU8)2) == (tU8)0) {
 				commandToPCA[0] = PWM0Address;
 				commandToPCA[1] = duty75Percent;
-				pca9532(commandToPCA, 2, NULL, 0);
+				retCode = pca9532(commandToPCA, 2, NULL, 0);
 			}
 			else 
 			{
 				commandToPCA[0] = PWM0Address;
 				commandToPCA[1] = duty25Percent;
-				pca9532(commandToPCA, 2, NULL, 0);
+				retCode = pca9532(commandToPCA, 2, NULL, 0);
 			}
 			setPca9532Pin(i, 0);
 			mdelay(30);
 		}
 		sdelay(3);
-		for (i = 0; i < 16; i++) {
+		for (i = (tU8)0; i < (tU8)NUM_OF_LEDS; i = i + (tU8)1) {
 			setPca9532Pin(i, 1);
 			mdelay(30);
 		}

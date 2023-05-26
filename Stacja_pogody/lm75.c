@@ -90,7 +90,7 @@ void measureTemperature(void)
 	tU8 i = 0;
 
     // Parsing calculatedValue into charArray to change it accroding to appendHalf flag value
-    sprintf(charArray, "%d", calculatedValue);
+    retCode = sprintf(charArray, "%d", calculatedValue);
 
     while(charArray[i] != (tU8)0) {
         i = i + (tU8)1;

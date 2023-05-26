@@ -60,7 +60,7 @@
  *          Brak
  */
 
-tS32 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray, tU8 pressureOss)
+tS64 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray)
 {
     // Compensation data read from BMP180 EEPROM.
     tS16 AC1;
@@ -93,43 +93,52 @@ tS32 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray, tU
     // Calculations for temperature.
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
-    tS32 X1 = (((readTemp - AC6) * AC5) >> 15);
-    tS32 X2 = ((MC << 11) / (X1 + MD));
-    tS32 B5 = X1 + X2;
-    tS32 T = ((B5 + 8) >> 4);
+    tS64 X1 = ((tS64)(((tS64)readTemp - (tS64)AC6) * (tS64)AC5) / (tS64)32768);
+    tS64 X2 = ((tS64)((tS64)MC * (tS64)2048) / (tS64)(X1 + (tS64)MD));
+    tS64 B5 = X1 + X2;
+    tS64 T = ((tS64)(B5 + (tS64)8) / (tS64)16);
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
     // Calculations for pressure.
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
-    tS32 B6 = B5 - 4000;
-    X1 = (((tS32)B2 * ((B6 * B6) >> 12)) >> 11);
-    X2 = (((tS32)AC2 * B6) >> 11);
-    tS32 X3 = X1 + X2;
+    tU64 helperValue = 0;
+    tS64 helperValueSigned = 0;
 
-    tS32 B3 = ((((tS32)AC1 * 4 + X3) << pressureOss) + 2) >> 2;
-    X1 = (tS32)AC3 * B6 >> 13;
-    X2 = (((tS32)B1 * (B6 * B6) >> 12)) >> 16;
-    X3 = (((X1 + X2) + 2) >> 2);
+    tS64 B6 = B5 - 4000;
+    X1 = ((tS64)((tS64)B2 * ((tS64)(B6 * B6) / (tS64)4096)) / (tS64)2048);
+    X2 = ((tS64)((tS64)AC2 * B6) / (tS64)2048);
+    tS64 X3 = X1 + X2;
 
-    tU32 B4 = (((tS32)AC4 * (tU32)(X3 + 32768)) >> 15);
-    tU32 B7 = (((tU32)readPress - B3) * (tS32)(50000 >> (tU64)pressureOss));
+    helperValue = ((tU64)1 << (tU64)pressureOss);
+    tS64 B3 = (tS64)(((tS64)((tS64)((tS64)AC1 * (tS64)4) + X3) / (tS64)helperValue) + (tS64)2) / (tS64)4;
+    X1 = (tS64)((tS64)AC3 * B6) / (tS64)8192;
+    X2 = (tS64)(((tS64)B1 * (tS64)((B6 * B6) / (tS64)4096))) / (tS64)65536;
+    X3 = (((X1 + X2) + (tS64)2) / (tS64)4);
 
-    tS32 p;
+    helperValueSigned = (tS64)((tS64)((tS64)((tS64)AC4 * (X3 + (tS64)32768))) / (tS64)32768); 
+    tU64 B4 = (tU64)helperValueSigned;
+    helperValue = ((tU64)50000 >> (tU64)pressureOss);
+    helperValueSigned = (((tS64)readPress - B3) * (tS64)helperValue);
+    tU64 B7 = (tU64)helperValueSigned;
+
+    tS64 p;
     if (B7 < 0x80000000UL)
     {
-        p = ((B7 * 2) / B4);
+        helperValue = (B7 * (tU64)2) / B4;
+        p = (tS64)helperValue;
     }
     else
     {
-        p = ((B7 / B4) * 2);
+        helperValue = (B7 / B4) * (tU64)2;
+        p = (tS64)helperValue;
     }
 
-    X1 = (p >> 8) * (p >> 8);
-    X1 = ((X1 * 3038) >> 16);
-    X2 = ((-7357 * p) >> 16);
+    X1 = (tS64)(p / (tS64)256) * (tS64)(p / (tS64)256);
+    X1 = ((tS64)(X1 * (tS64)3038) / (tS64)65536);
+    X2 = ((tS64)((tS64)-7357 * p) / (tS64)65536);
 
-    p = (p + (X1 + X2 + 3791)) >> 4;
+    p = p + ((tS64)(X1 + X2 + (tS64)3791) / (tS64)16);
 
     return p;
 }
@@ -191,7 +200,7 @@ tS32 measurePressure(void)
     tU8 controlRegisterTemperatureValue = 0x2E;
 
     // Control register value for measuring pressure
-    tU8 controlRegisterPressureValue = ((tU8)0x34 + (pressureOss << 6));
+    tU8 controlRegisterPressureValue = ((tU8)0x34 + (tU8)((tU8)pressureOss << (tU8)6));
 
     // Measurement control register address
     tU8 registerAddress = (tU8)0xF4;
@@ -205,7 +214,7 @@ tS32 measurePressure(void)
 
     // Command for setting oversampling value to 0x03.
     commandArr[0] = registerAddress;
-    commandArr[1] = (pressureOss << 6);
+    commandArr[1] = (tU8)((tU8)pressureOss << (tU8)6);
 
     retCode = i2cWrite(bmp180WriteAddress, commandArr, 2);
 
@@ -250,7 +259,7 @@ tS32 measurePressure(void)
 
     // Creating a single 32 bit unsigned variable out of 3 read bytes of data.
     tU32 readPress = ((registerContents[0] << 16) | (registerContents[1] << 8) | (registerContents[2]));
-    readPress = (readPress >> ((tU64)8 - (tU64)pressureOss));
+    readPress = (readPress >> ((tU32)8 - (tU32)pressureOss));
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
     // Calculating value of real pressure

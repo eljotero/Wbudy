@@ -14,9 +14,9 @@
  * Defines and typedefs
  *****************************************************************************/
 
-#define htu21Address        0x40; // 0x40 = 0b 0100 0000
-#define htu21ReadAddress    0x81; // 0x81 = 0b 1000 0001
-#define htu21WriteAddress   0x80; // 0x80 = 0b 1000 0000
+#define htu21Address        0x40 // 0x40 = 0b 0100 0000
+#define htu21ReadAddress    0x81 // 0x81 = 0b 1000 0001
+#define htu21WriteAddress   0x80 // 0x80 = 0b 1000 0000
 
 /*****************************************************************************
  * Global variables
@@ -72,8 +72,8 @@ tS8 measureHumidity(void)
 	readHumidity[1] = (readHumidity[1] & mask);
     tU16 readData = ((readHumidity[0] << 8) | readHumidity[1]);
 
-    tU32 upperValue = ((tU32)125 * (tU32)readData);
-    tS8 humidityValue = ((tS8)(upperValue / (tU32)65536) - (tS8)6);
+    tU32 upperValue = (((tU32)125 * (tU32)readData) / (tU32)65536);
+    tS8 humidityValue = ((tS8)(upperValue) - (tS8)6);
 
     if (humidityValue < 0) {
         humidityValue = 0;
@@ -82,7 +82,10 @@ tS8 measureHumidity(void)
     {
         humidityValue = 100;
     }
-
+    else 
+    {
+        ;
+    }
 
     return humidityValue;
 }

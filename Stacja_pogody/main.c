@@ -4,19 +4,12 @@
 #include <printf_init.h>
 #include <consol.h>
 #include <config.h>
-#include "irq/irq_handler.h"
-#include "timer.h"
-#include "VIC.h"
 #include "i2c.h"
-
-// Include'y do urządzeń peryferyjnych
 
 #include "lm75.h"
 #include "htu21df.h"
 #include "bmp180.h"
 #include "tsl2561.h"
-
-// End
 
 #include "lcd.h"
 #include "pca9532.h"
@@ -24,53 +17,25 @@
 
 #include "Common_Def.h"
 
-/************************************************************************
- * @Description: uruchomienie obsługi przerwań
- * @Parameter:
- *    [in] period    : okres generatora przerwań
- *    [in] duty_cycle: wypełnienie w %
- * @Returns: Nic
- * @Side effects:
- *    przeprogramowany timer #1
- *************************************************************************/
-/*
-static void init_irq (tU32 period, tU8 duty_cycle)
-{
-	//Zainicjuj VIC dla przerwań od Timera #1
-	VICIntSelect &= ~TIMER_1_IRQ;           //Przerwanie od Timera #1 przypisane do IRQ (nie do FIQ)
-	VICVectAddr5  = (tU32)IRQ_Test;         //adres procedury przerwania
-	VICVectCntl5  = VIC_ENABLE_SLOT | TIMER_1_IRQ_NO;
-	VICIntEnable  = TIMER_1_IRQ;            // Przypisanie i odblokowanie slotu w VIC od Timera #1
-
-	T1TCR = TIMER_RESET;                    //Zatrzymaj i zresetuj
-	T1PR  = 0;                              //Preskaler nieużywany
-	T1MR0 = ((tU64)period)*((tU64)PERIPHERAL_CLOCK)/1000;
-	T1MR1 = (tU64)T1MR0 * duty_cycle / 100; //Wypełnienie
-	T1IR  = TIMER_ALL_INT;                  //Resetowanie flag przerwań
-	T1MCR = MR0_I | MR1_I | MR0_R;          //Generuj okresowe przerwania dla MR0 i dodatkowo dla MR1
-	T1TCR = TIMER_RUN;                      //Uruchom timer
-}
-*/
-
 void printCurrentTime(void);
 
 int main(void)
 {
+	tS8 retCode = 0;
 	tU8 pca9532Present = FALSE;
-	// check if connection with PCA9532
+	// Check if connection with PCA9532 is established
 	i2cInit();
 	pca9532Present = pca9532Init();
 	printf_init();
 	if ((tU8)TRUE == pca9532Present)
 	{
+		/*
+			Inicjalizacja I2C
+		*/
 
 		lcdInit();
 		lcdColor(0xff, 0x00);
 		lcdClrscr();
-
-		/*
-			Inicjalizacja I2C
-		*/
 
 		/*
 			Main loop containg enitre program logic. With every iteration, joystick position is checked
@@ -81,19 +46,17 @@ int main(void)
 		// tU8 lm75Address = 0x9F;
 		// Address of the LM75 thermometer, when soldered.
 		tU8 charArray[10] = {0};
+		tU8 amountOfLettersCopied = 0;
 
 		tU8 helperValue = (tU8)1;
 		while (helperValue == (tU8)TRUE)
 		{
-
-			// Trzeba będzie napisać jak ustawiony ma być PINSEL.
-
-			// Check if P0.8 center-key is pressed
 			if ((IOPIN & 0x00000100) == 0)
 			{
 				// Key P0.8 center-key is pressed
 				lcdGotoxy(0, 0);
-				lcdPuts("Aktualny czas: ");
+				const tU8 textToBeWritten[] = "Aktualny czas: ";
+				lcdPuts(textToBeWritten);
 				lcdGotoxy(0, 15);
 			 	printCurrentTime();
 			 	manageLED(pca9532Present);
@@ -102,7 +65,8 @@ int main(void)
 			{
 				// Key P0.9 left-key is pressed
 				lcdGotoxy(0, 0);
-				lcdPuts("Pomiar\ntemperatury: ");
+				const tU8 textToBeWritten[] = "Pomiar\ntemperatury: ";
+				lcdPuts(textToBeWritten);
 				lcdGotoxy(0, 30);
 				measureTemperature();
 				manageLED(pca9532Present);
@@ -111,9 +75,10 @@ int main(void)
 			{
 				// Key P0.10 up-key is pressed
 				lcdGotoxy(0, 0);
-				lcdPuts("Pomiar\nwilgotnosci: ");
+				const tU8 textToBeWritten[] = "Pomiar\nwilgotnosci: ";
+				lcdPuts(textToBeWritten);
 				tU16 humidityValue = measureHumidity();
-				sprintf(charArray, "%d", humidityValue);
+				retCode = sprintf(charArray, "%d", humidityValue);
 				lcdGotoxy(0, 30);
 				lcdPuts(charArray);
 				manageLED(pca9532Present);
@@ -122,9 +87,10 @@ int main(void)
 			{
 				// Key P0.11 right-key is pressed
 				lcdGotoxy(0, 0);
-				lcdPuts("Pomiar\njasnosci: ");
+				const tU8 textToBeWritten[] = "Pomiar\njasnosci: ";
+				lcdPuts(textToBeWritten);
 				tU64 brightnessValue = measureBrightness();
-				sprintf(charArray, "%d", brightnessValue);
+				retCode = sprintf(charArray, "%d", brightnessValue);
 				lcdGotoxy(0, 30);
 				lcdPuts(charArray);
 				manageLED(pca9532Present);
@@ -133,9 +99,10 @@ int main(void)
 			{
 				// Key P0.12 down-key is pressed
 				lcdGotoxy(0, 0);
-				lcdPuts("Pomiar\ncisnienia: ");
+				const tU8 textToBeWritten[] = "Pomiar\ncisnienia: ";
+				lcdPuts(textToBeWritten);
 				tS64 pressureValue = measurePressure();
-				sprintf(charArray, "%d", pressureValue);
+				retCode = sprintf(charArray, "%d", pressureValue);
 				lcdGotoxy(0, 30);
 				lcdPuts(charArray);
 				manageLED(pca9532Present);
@@ -144,7 +111,8 @@ int main(void)
 			{
 				// Joystick is not pressed at all.
 				lcdGotoxy(0, 0);
-				lcdPuts("Stacja pogody.\nWybor funkcji\nprzy pomocy\njoystick'a:\nL - temperatura\nR - jasnosc\nG - wilgotnosc\nD - cisnienie");
+				const tU8 textToBeWritten[] = "Stacja pogody.\nWybor funkcji\nprzy pomocy\njoystick'a:\nL - temperatura\nR - jasnosc\nG - wilgotnosc\nD - cisnienie";
+				lcdPuts(textToBeWritten);
 			}
 			sdelay(1);
 			lcdClrscr();
@@ -181,30 +149,30 @@ void printCurrentTime(void)
 	fullHourTable[2] = ':';
 	fullHourTable[5] = ':';
 	if (RTC_SEC < 10) {
-		fullHourTable[6] = '0'; 			// Ascii code for '0'.
-		fullHourTable[7] = RTC_SEC + '0'; 	// Ascii code for '0'.
+		fullHourTable[6] = (tU8)0x30; 				// Ascii code for '0'.
+		fullHourTable[7] = RTC_SEC + (tU8)0x30; 	// Ascii code for '0'.
 	} else {
 		tU8 div = RTC_SEC / 10;
-		fullHourTable[6] = div + '0';
-		fullHourTable[7] = ((tU8)RTC_SEC - (div * (tU8)10)) + '0';
+		fullHourTable[6] = div + (tU8)0x30;
+		fullHourTable[7] = ((tU8)RTC_SEC - (div * (tU8)10)) + (tU8)0x30;
 	}
 	
 	if (RTC_MIN < 10) {
-		fullHourTable[3] = '0';				// Ascii code for '0'.
-		fullHourTable[4] = RTC_MIN + '0';	// Ascii code for '0'.
+		fullHourTable[3] = (tU8)0x30;				// Ascii code for '0'.
+		fullHourTable[4] = RTC_MIN + (tU8)0x30;		// Ascii code for '0'.
 	} else {
 		tU8 div = RTC_MIN / 10;
-		fullHourTable[3] = div + '0';
-		fullHourTable[4] = ((tU8)RTC_MIN - (div * (tU8)10)) + '0';
+		fullHourTable[3] = div + (tU8)0x30;
+		fullHourTable[4] = ((tU8)RTC_MIN - (div * (tU8)10)) + (tU8)0x30;
 	}
 	
 	if (RTC_HOUR < 10){
-		fullHourTable[0] = '0';			// Ascii code for '0'.
-		fullHourTable[1] = RTC_HOUR + '0';	// Ascii code for '0'.
+		fullHourTable[0] = (tU8)0x30;				// Ascii code for '0'.
+		fullHourTable[1] = RTC_HOUR + (tU8)0x30;	// Ascii code for '0'.
 	} else {
 		tU8 div = RTC_HOUR / 10;
-		fullHourTable[0] = div + '0';
-		fullHourTable[1] = ((tU8)RTC_HOUR - (div * (tU8)10)) + '0';
+		fullHourTable[0] = div + (tU8)0x30;
+		fullHourTable[1] = ((tU8)RTC_HOUR - (div * (tU8)10)) + (tU8)0x30;
 	}
 
 	lcdPuts(fullHourTable);

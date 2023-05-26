@@ -32,6 +32,6 @@
  ****************************************************************************/
 
 tS32 measurePressure(void);
-tS32 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray, tU8 pressureOss);
+tS32 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray);
 
 #endif
