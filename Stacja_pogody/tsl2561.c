@@ -1,6 +1,6 @@
 /******************************************************************************
  *  Obsługa pomiaru jasności przy pomocy jasnościomierza TSL2561.
- * 
+ *
  *  Plik z kodem źródłowym funkcji.
  *****************************************************************************/
 
@@ -14,21 +14,21 @@
  * Defines and typedefs
  *****************************************************************************/
 
-#define LUX_SCALE       14 // scale by 2 ^ 14
-#define RATIO_SCALE     9  // scale ratio by 2 ^ 9
-#define CH_SCALE        10 // scale channel values by 2 ^ 10
+#define LUX_SCALE 14  // scale by 2 ^ 14
+#define RATIO_SCALE 9 // scale ratio by 2 ^ 9
+#define CH_SCALE 10   // scale channel values by 2 ^ 10
 
-#define tsl2561AddressGND          0x29 // 0x29 = 0b 0010 1001
-#define tsl2561ReadAddressGND      0x53 // 0x53 = 0b 0101 0011
-#define tsl2561WriteAddressGND     0x52 // 0x52 = 0b 0101 0010
+#define tsl2561AddressGND 0x29      // 0x29 = 0b 0010 1001
+#define tsl2561ReadAddressGND 0x53  // 0x53 = 0b 0101 0011
+#define tsl2561WriteAddressGND 0x52 // 0x52 = 0b 0101 0010
 
-#define tsl2561AddressFloat          0x39 // 0x39 = 0b 0011 1001
-#define tsl2561ReadAddressFloat      0x79 // 0x79 = 0b 0111 1001
-#define tsl2561WriteAddressFloat     0x78 // 0x78 = 0b 0111 1000
+#define tsl2561AddressFloat 0x39      // 0x39 = 0b 0011 1001
+#define tsl2561ReadAddressFloat 0x79  // 0x79 = 0b 0111 1001
+#define tsl2561WriteAddressFloat 0x78 // 0x78 = 0b 0111 1000
 
-#define tsl2561AddressVDD          0x49 // 0x39 = 0b 0100 1001
-#define tsl2561ReadAddressVDD      0x93 // 0x79 = 0b 1001 0011
-#define tsl2561WriteAddressVDD     0x92 // 0x78 = 0b 1001 0010
+#define tsl2561AddressVDD 0x49      // 0x39 = 0b 0100 1001
+#define tsl2561ReadAddressVDD 0x93  // 0x79 = 0b 1001 0011
+#define tsl2561WriteAddressVDD 0x92 // 0x78 = 0b 1001 0010
 
 // Constants for T, FN and CL package
 
@@ -111,9 +111,9 @@
  ****************************************************************************/
 
 /*
- * @brief   Funkcja calculateBrightness() wykorzystywana jest do przeliczenia wartości 
- *          z kanałów 0. oraz 1. na prawidłową wartość jasności wyrażoną w lux-ach.          
- *           
+ * @brief   Funkcja calculateBrightness() wykorzystywana jest do przeliczenia wartości
+ *          z kanałów 0. oraz 1. na prawidłową wartość jasności wyrażoną w lux-ach.
+ *
  * @param   channel0
  *          Wartość odczytana z pary rejestrów po adresami 0xCh i 0xDh z urządzenia TSL2561
  *          reprezentująca 16 - bitową wartość (2 rejestry po 8 bitów). Bajtem młodzszym jest
@@ -121,132 +121,153 @@
  * @param   channel1
  *          Wartość odczytana z pary rejestrów po adresami 0xEh i 0xFh z urządzenia TSL2561
  *          reprezentująca 16 - bitową wartość (2 rejestry po 8 bitów). Bajtem młodzszym jest
- *          bajt z rejestru 0xDh, a starszym - z rejestru 0xFh.         
+ *          bajt z rejestru 0xDh, a starszym - z rejestru 0xFh.
  * @returns
  *          Przeliczona, 64 - bitowa wartość jasności, wyrażona w lux-ach.
- * 
- * @side effects: 
+ *
+ * @side effects:
  *          Brak
  */
 
-tU64 calculateBrightness(tU16 channel0, tU16 channel1) {
-    tU64 finalResult = 0;
-    float result = ((float)channel1 / channel0);
-    if ((0 < result) && (result <= 0.52)) {
-        finalResult = 0.0315 * channel0 - 0.0593 * channel0 * pow(result, 1.4);
-    }
-    else if ((0.52 < result) && (result <= 0.65)) {
-        finalResult = 0.0229 * channel0 - 0.0291 * channel1;
-    }
-    else if ((0.65 < result)  && (result <= 0.80)) {
-        finalResult = 0.0157 * channel0 - 0.0180 * channel1;
-    }
-    else if ((0.80 < result) && (result <= 1.30)) {
-        finalResult = 0.00338 * channel0 - 0.00260 * channel1;
-    }
-    else {
-        finalResult = 0;
-    }
-    return finalResult;
-}
-/*
 tU64 calculateBrightness(tU16 channel0, tU16 channel1)
 {
     tU64 chScale = ((tU64)1 << CH_SCALE); // Assume no scaling
+
     // Scale the channel values
     tU64 ch0 = ((tU64)channel0 * chScale) >> CH_SCALE;
     tU64 ch1 = ((tU64)channel1 * chScale) >> CH_SCALE;
+
     // Find the ratio of the channel values (ch1 / ch0)
     // Protect against divide by zero
     tU64 channelsRatio = 0;
-    if (channel0 != (tU16)0) {
+    if (channel0 != (tU16)0)
+    {
         channelsRatio = (ch1 << ((tU64)RATIO_SCALE + (tU64)1)) / ch0;
     }
+
     // Round the ratio value
     tU64 roundedRatio = (channelsRatio + (tU64)1) >> 1;
     tU32 bValue = 0;
     tU32 mValue = 0;
 
-     Case for T, FN and CL package.
-        if ((roundedRatio >= (tU64)0) && (roundedRatio <= (tU64)K1T)) {
-            bValue = B1T; 
-            mValue = M1T;
-        } else if (roundedRatio <= (tU64)K2T) {
-            bValue = B2T; 
-            mValue = M2T;
-        } else if (roundedRatio <= (tU64)K3T) {
-            bValue = B3T; 
-            mValue = M3T;
-        } else if (roundedRatio <= (tU64)K4T) {
-            bValue = B4T; 
-            mValue = M4T;
-        } else if (roundedRatio <= (tU64)K5T) {
-            bValue = B5T; 
-            mValue = M5T;
-        } else if (roundedRatio <= (tU64)K6T) {
-            bValue = B6T; 
-            mValue = M6T;
-        } else if (roundedRatio <= (tU64)K7T) {
-            bValue = B7T; 
-            mValue = M7T;
-        } else if (roundedRatio > (tU64)K8T) {
-            bValue = B8T; 
-            mValue = M8T;
-        } else {
-            ;
-        }
+    // Case for T, FN and CL package.
+    /*
+    if ((roundedRatio >= (tU64)0) && (roundedRatio <= (tU64)K1T))
+    {
+        bValue = B1T;
+        mValue = M1T;
+    }
+    else if (roundedRatio <= (tU64)K2T)
+    {
+        bValue = B2T;
+        mValue = M2T;
+    }
+    else if (roundedRatio <= (tU64)K3T)
+    {
+        bValue = B3T;
+        mValue = M3T;
+    }
+    else if (roundedRatio <= (tU64)K4T)
+    {
+        bValue = B4T;
+        mValue = M4T;
+    }
+    else if (roundedRatio <= (tU64)K5T)
+    {
+        bValue = B5T;
+        mValue = M5T;
+    }
+    else if (roundedRatio <= (tU64)K6T)
+    {
+        bValue = B6T;
+        mValue = M6T;
+    }
+    else if (roundedRatio <= (tU64)K7T)
+    {
+        bValue = B7T;
+        mValue = M7T;
+    }
+    else if (roundedRatio > (tU64)K8T)
+    {
+        bValue = B8T;
+        mValue = M8T;
+    }
+    else
+    {
+        ;
+    }
+    */
 
     // Case for CS package
-    if ((roundedRatio >= (tU64)0) && (roundedRatio <= (tU64)K1C)) {
-        bValue = B1C; 
+    if ((roundedRatio >= (tU64)0) && (roundedRatio <= (tU64)K1C))
+    {
+        bValue = B1C;
         mValue = M1C;
-    } else if (roundedRatio <= (tU64)K2C) {
+    }
+    else if (roundedRatio <= (tU64)K2C)
+    {
         bValue = B2C;
         mValue = M2C;
-    } else if (roundedRatio <= (tU64)K3C) {
-        bValue = B3C; 
+    }
+    else if (roundedRatio <= (tU64)K3C)
+    {
+        bValue = B3C;
         mValue = M3C;
-    } else if (roundedRatio <= (tU64)K4C) {
-        bValue = B4C; 
+    }
+    else if (roundedRatio <= (tU64)K4C)
+    {
+        bValue = B4C;
         mValue = M4C;
-    } else if (roundedRatio <= (tU64)K5C) {
-        bValue = B5C; 
+    }
+    else if (roundedRatio <= (tU64)K5C)
+    {
+        bValue = B5C;
         mValue = M5C;
-    } else if (roundedRatio <= (tU64)K6C) {
-        bValue = B6C; 
+    }
+    else if (roundedRatio <= (tU64)K6C)
+    {
+        bValue = B6C;
         mValue = M6C;
-    } else if (roundedRatio <= (tU64)K7C) {
+    }
+    else if (roundedRatio <= (tU64)K7C)
+    {
         bValue = B7C;
         mValue = M7C;
-    } else {
+    }
+    else
+    {
         ;
     }
 
     tU64 temporary;
     temporary = ((ch0 * (tU64)bValue) - (ch1 * (tU64)mValue));
+
     // Do not allow negative lux value
-    if (temporary < (tU64)0) {
+    if (temporary < (tU64)0)
+    {
         temporary = 0;
     }
+
     // Round LSB (2 ^ (LUX_SCALE − 1))
     temporary = temporary + ((tU64)1 << ((tU64)LUX_SCALE - (tU64)1));
+
     // Strip off fractional portion
     tU64 resultInLux = temporary >> LUX_SCALE;
+
     return resultInLux;
 }
-*/
 
 /*
  * @brief   Funkcja measureBrightness() służy do odczytania wartości jasności z czujnika jasności TSL2561
  *          co sprowadza się do odczytania wartości z obu kanałów urządzenia, a następnie wywołując funkcję
  *          calculateBrightness(), ta funkcja otrzmuje prawidłową wartość jasności, która jest przez nią zwracana.
- *          
- * @param   void 
- *          
+ *
+ * @param   void
+ *
  * @returns
  *          Wartość jasności obliczona przez funkcję calculateBrightness().
- * 
- * @side effects: 
+ *
+ * @side effects:
  *          Brak
  */
 
@@ -257,59 +278,53 @@ tU64 measureBrightness(void)
     tU8 command[2] = {0};
     tU8 readValue[1] = {0};
 
-    // Write address for TLS2561
-    tU8 tslWriteAddress = tsl2561WriteAddressFloat;
-    // Read address for TLS2561
-    tU8 tslReadAddress = tsl2561ReadAddressFloat;
-
     // Variables for each channel value.
     tU16 channel0 = 0;
     tU16 channel1 = 0;
 
     // Sending a command to the device to power it up.
-    command[0] = (((tU8)0x08 << 4) | (tU8)0x00);  	// Change target register to control register
-    command[1] = 0x03;  							// Write 0x03 (so power up) the device
-    retCode = i2cWrite(tslWriteAddress, command, 2);
-    retCode = i2cRead(tslReadAddress, readValue, 1);
+    command[0] = 0x80;      // Change target register to control register (0x80 = 0b 1000 0000)
+    command[1] = 0x03;      // Write 0x03 (so power up) the device
+    retCode = i2cWrite(tsl2561WriteAddressFloat, command, 2);
 
     // Debug:
-    // retCode = i2cRead(tslReadAddress, readValue, 1);
+    // retCode = i2cRead(tsl2561ReadAddressFloat, readValue, 1);
     // if (readValue[0] == 0x03) {
     //    lcdPuts("OK.");
     // } else {
     //    lcdPuts("Not OK.");
     // }
-	  sdelay(1);
-//    mdelay(403); // Waiting for 403 ms, since it takes 402 ms for both channels to integrate
+
+    mdelay(403); // Waiting for 403 ms, since it takes 402 ms for both channels to integrate
 
     // Command for reading low byte of 16 bit channel 0
-    command[0] = (((tU8)0x09 << 4) | (tU8)0x0C);
-    retCode = i2cWrite(tslWriteAddress, command, 1);
-    retCode = i2cRead(tslReadAddress, readValue, 1);
+    command[0] = (((tU8)0x08 << 4) | (tU8)0x0C);
+    retCode = i2cWrite(tsl2561WriteAddressFloat, command, 1);
+    retCode = i2cRead(tsl2561ReadAddressFloat, readValue, 1);
     channel0 = channel0 + (tU16)readValue[0];
 
     // Command for reading high byte of 16 bit channel 0
-    command[0] = (((tU8)0x09 << 4) | (tU8)0x0D);
-    retCode = i2cWrite(tslWriteAddress, command, 1);
-    retCode = i2cRead(tslReadAddress, readValue, 1);
+    command[0] = (((tU8)0x08 << 4) | (tU8)0x0D);
+    retCode = i2cWrite(tsl2561WriteAddressFloat, command, 1);
+    retCode = i2cRead(tsl2561ReadAddressFloat, readValue, 1);
     channel0 = channel0 + ((tU16)256 * (tU16)readValue[0]);
 
     // Command for reading low byte of 16 bit channel 1
-    command[0] = (((tU8)0x09 << 4) | (tU8)0x0E);
-    retCode = i2cWrite(tslWriteAddress, command, 1);
-    retCode = i2cRead(tslReadAddress, readValue, 1);
+    command[0] = (((tU8)0x08 << 4) | (tU8)0x0E);
+    retCode = i2cWrite(tsl2561WriteAddressFloat, command, 1);
+    retCode = i2cRead(tsl2561ReadAddressFloat, readValue, 1);
     channel1 = channel1 + (tU16)readValue[0];
 
     // Command for reading high byte of 16 bit channel 1
-    command[0] = (((tU8)0x09 << 4) | (tU8)0x0F);
-    retCode = i2cWrite(tslWriteAddress, command, 1);
-    retCode = i2cRead(tslReadAddress, readValue, 1);
+    command[0] = (((tU8)0x08 << 4) | (tU8)0x0F);
+    retCode = i2cWrite(tsl2561WriteAddressFloat, command, 1);
+    retCode = i2cRead(tsl2561ReadAddressFloat, readValue, 1);
     channel1 = channel1 + ((tU16)256 * (tU16)readValue[0]);
 
     // Sending a command to the device to power it down.
-    command[0] = (((tU8)0x09 << 4) | (tU8)0x00);  // Change target register to control register
-    command[1] = (0x00);  // Write 0x00 (so power down) the device
-    retCode = i2cWrite(tslWriteAddress, command, 2);
+    command[0] = 0x80;      // Change target register to control register (0x80 = 0b 1000 0000)
+    command[0] = 0x00;      // Write 0x00 (so power down) the device
+    retCode = i2cWrite(tsl2561WriteAddressFloat, command, 2);
 
     // tU64 brightnessValue = calculateBrightnessFloat(channel0, channel1);
     tU64 brightnessValue = calculateBrightness(channel0, channel1);

@@ -13,7 +13,6 @@
 
 #include "general.h"
 #include "i2c.h"
-#include "math.h"
 
 /******************************************************************************
  * Defines and typedefs
