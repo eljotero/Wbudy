@@ -50,9 +50,6 @@
  * @param   calibrationArray
  *          Wskaźnik do jedenastoelementowej tablicy, zawierajacej wartości korygujące, potrzebne do przeliczenia
  *          wartości ciśnienia.
- * @param   pressureOss
- *          Jest to wartość oznaczająca liczbę próbek, które wykonuje czujnik przy pomiarze ciśnienia, w wyniku czego 
- *          możliwe jest osiągnięcie większej dokładności pomiaru.
  * @returns
  *          Przeliczona wartość ciśnienia, która wyrażona jest w paskalach (Pa).
  * 
@@ -60,7 +57,7 @@
  *          Brak
  */
 
-tS64 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray)
+tS32 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray)
 {
     // Compensation data read from BMP180 EEPROM.
     tS16 AC1;
@@ -265,7 +262,7 @@ tS32 measurePressure(void)
     // Calculating value of real pressure
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
-    tS64 calculatedPressure = calculatePressure(readPress, readTemp, calibrationArray, pressureOss);
+    tS32 calculatedPressure = calculatePressure(readPress, readTemp, calibrationArray);
 
     return calculatedPressure;
 }
