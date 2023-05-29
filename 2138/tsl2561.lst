@@ -1,0 +1,1754 @@
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 1
+
+
+   1              		.cpu arm7tdmi
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 0
+  10              		.eabi_attribute 18, 4
+  11              		.file	"tsl2561.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.global	__aeabi_lmul
+  16              		.global	__aeabi_uldivmod
+  17              		.align	1
+  18              		.global	calculateBrightness
+  19              		.syntax unified
+  20              		.code	16
+  21              		.thumb_func
+  22              		.fpu softvfp
+  23              		.type	calculateBrightness, %function
+  24              	calculateBrightness:
+  25              	.LFB0:
+  26              		.file 1 "tsl2561.c"
+   1:tsl2561.c     **** /******************************************************************************
+   2:tsl2561.c     ****  *  Obsługa pomiaru jasności przy pomocy jasnościomierza TSL2561.
+   3:tsl2561.c     ****  *
+   4:tsl2561.c     ****  *  Plik z kodem źródłowym funkcji.
+   5:tsl2561.c     ****  *****************************************************************************/
+   6:tsl2561.c     **** 
+   7:tsl2561.c     **** /******************************************************************************
+   8:tsl2561.c     ****  * Includes
+   9:tsl2561.c     ****  *****************************************************************************/
+  10:tsl2561.c     **** 
+  11:tsl2561.c     **** #include "tsl2561.h"
+  12:tsl2561.c     **** 
+  13:tsl2561.c     **** /******************************************************************************
+  14:tsl2561.c     ****  * Defines and typedefs
+  15:tsl2561.c     ****  *****************************************************************************/
+  16:tsl2561.c     **** 
+  17:tsl2561.c     **** #define LUX_SCALE 14  // scale by 2 ^ 14
+  18:tsl2561.c     **** #define RATIO_SCALE 9 // scale ratio by 2 ^ 9
+  19:tsl2561.c     **** #define CH_SCALE 10   // scale channel values by 2 ^ 10
+  20:tsl2561.c     **** 
+  21:tsl2561.c     **** #define tsl2561AddressGND 0x29      // 0x29 = 0b 0010 1001
+  22:tsl2561.c     **** #define tsl2561ReadAddressGND 0x53  // 0x53 = 0b 0101 0011
+  23:tsl2561.c     **** #define tsl2561WriteAddressGND 0x52 // 0x52 = 0b 0101 0010
+  24:tsl2561.c     **** 
+  25:tsl2561.c     **** #define tsl2561AddressFloat 0x39      // 0x39 = 0b 0011 1001
+  26:tsl2561.c     **** #define tsl2561ReadAddressFloat 0x73  // 0x73 = 0b 0111 0011
+  27:tsl2561.c     **** #define tsl2561WriteAddressFloat 0x72 // 0x72 = 0b 0111 0010
+  28:tsl2561.c     **** 
+  29:tsl2561.c     **** #define tsl2561AddressVDD 0x49      // 0x39 = 0b 0100 1001
+  30:tsl2561.c     **** #define tsl2561ReadAddressVDD 0x93  // 0x79 = 0b 1001 0011
+  31:tsl2561.c     **** #define tsl2561WriteAddressVDD 0x92 // 0x78 = 0b 1001 0010
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 2
+
+
+  32:tsl2561.c     **** 
+  33:tsl2561.c     **** // Constants for T, FN and CL package
+  34:tsl2561.c     **** 
+  35:tsl2561.c     **** #define K1T 0x0040 // 0.1250 * 2 ^ RATIO_SCALE
+  36:tsl2561.c     **** #define B1T 0x01f2 // 0.0304 * 2 ^ LUX_SCALE
+  37:tsl2561.c     **** #define M1T 0x01be // 0.0272 * 2 ^ LUX_SCALE
+  38:tsl2561.c     **** 
+  39:tsl2561.c     **** #define K2T 0x0080 // 0.2500 * 2 ^ RATIO_SCALE
+  40:tsl2561.c     **** #define B2T 0x0214 // 0.0325 * 2 ^ LUX_SCALE
+  41:tsl2561.c     **** #define M2T 0x02d1 // 0.0440 * 2 ^ LUX_SCALE
+  42:tsl2561.c     **** 
+  43:tsl2561.c     **** #define K3T 0x00c0 // 0.3750 * 2 ^ RATIO_SCALE
+  44:tsl2561.c     **** #define B3T 0x023f // 0.0351 * 2 ^ LUX_SCALE
+  45:tsl2561.c     **** #define M3T 0x037b // 0.0544 * 2 ^ LUX_SCALE
+  46:tsl2561.c     **** 
+  47:tsl2561.c     **** #define K4T 0x0100 // 0.5000 * 2 ^ RATIO_SCALE
+  48:tsl2561.c     **** #define B4T 0x0270 // 0.0381 * 2 ^ LUX_SCALE
+  49:tsl2561.c     **** #define M4T 0x03fe // 0.0624 * 2 ^ LUX_SCALE
+  50:tsl2561.c     **** 
+  51:tsl2561.c     **** #define K5T 0x0138 // 0.6100 * 2 ^ RATIO_SCALE
+  52:tsl2561.c     **** #define B5T 0x016f // 0.0224 * 2 ^ LUX_SCALE
+  53:tsl2561.c     **** #define M5T 0x01fc // 0.0310 * 2 ^ LUX_SCALE
+  54:tsl2561.c     **** 
+  55:tsl2561.c     **** #define K6T 0x019a // 0.8000 * 2 ^ RATIO_SCALE
+  56:tsl2561.c     **** #define B6T 0x00d2 // 0.0128 * 2 ^ LUX_SCALE
+  57:tsl2561.c     **** #define M6T 0x00fb // 0.0153 * 2 ^ LUX_SCALE
+  58:tsl2561.c     **** 
+  59:tsl2561.c     **** #define K7T 0x029a // 1.30000 * 2 ^ RATIO_SCALE
+  60:tsl2561.c     **** #define B7T 0x0018 // 0.00146 * 2 ^ LUX_SCALE
+  61:tsl2561.c     **** #define M7T 0x0012 // 0.00112 * 2 ^ LUX_SCALE
+  62:tsl2561.c     **** 
+  63:tsl2561.c     **** #define K8T 0x029a // 1.300 * 2 ^ RATIO_SCALE
+  64:tsl2561.c     **** #define B8T 0x0000 // 0.000 * 2 ^ LUX_SCALE
+  65:tsl2561.c     **** #define M8T 0x0000 // 0.000 * 2 ^ LUX_SCALE
+  66:tsl2561.c     **** 
+  67:tsl2561.c     **** // Constants for CS package
+  68:tsl2561.c     **** 
+  69:tsl2561.c     **** #define K1C 0x0043 // 0.1300 * 2 ^ RATIO_SCALE
+  70:tsl2561.c     **** #define B1C 0x0204 // 0.0315 * 2 ^ LUX_SCALE
+  71:tsl2561.c     **** #define M1C 0x01ad // 0.0262 * 2 ^ LUX_SCALE
+  72:tsl2561.c     **** 
+  73:tsl2561.c     **** #define K2C 0x0085 // 0.2600 * 2 ^ RATIO_SCALE
+  74:tsl2561.c     **** #define B2C 0x0228 // 0.0337 * 2 ^ LUX_SCALE
+  75:tsl2561.c     **** #define M2C 0x02c1 // 0.0430 * 2 ^ LUX_SCALE
+  76:tsl2561.c     **** 
+  77:tsl2561.c     **** #define K3C 0x00c8 // 0.3900 * 2 ^ RATIO_SCALE
+  78:tsl2561.c     **** #define B3C 0x0253 // 0.0363 * 2 ^ LUX_SCALE
+  79:tsl2561.c     **** #define M3C 0x0363 // 0.0529 * 2 ^ LUX_SCALE
+  80:tsl2561.c     **** 
+  81:tsl2561.c     **** #define K4C 0x010a // 0.5200 * 2 ^ RATIO_SCALE
+  82:tsl2561.c     **** #define B4C 0x0282 // 0.0392 * 2 ^ LUX_SCALE
+  83:tsl2561.c     **** #define M4C 0x03df // 0.0605 * 2 ^ LUX_SCALE
+  84:tsl2561.c     **** 
+  85:tsl2561.c     **** #define K5C 0x014d // 0.6500 * 2 ^ RATIO_SCALE
+  86:tsl2561.c     **** #define B5C 0x0177 // 0.0229 * 2 ^ LUX_SCALE
+  87:tsl2561.c     **** #define M5C 0x01dd // 0.0291 * 2 ^ LUX_SCALE
+  88:tsl2561.c     **** 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 3
+
+
+  89:tsl2561.c     **** #define K6C 0x019a // 0.8000 * 2 ^ RATIO_SCALE
+  90:tsl2561.c     **** #define B6C 0x0101 // 0.0157 * 2 ^ LUX_SCALE
+  91:tsl2561.c     **** #define M6C 0x0127 // 0.0180 * 2 ^ LUX_SCALE
+  92:tsl2561.c     **** 
+  93:tsl2561.c     **** #define K7C 0x029a // 1.30000 * 2 ^ RATIO_SCALE
+  94:tsl2561.c     **** #define B7C 0x0037 // 0.00338 * 2 ^ LUX_SCALE
+  95:tsl2561.c     **** #define M7C 0x002b // 0.00260 * 2 ^ LUX_SCALE
+  96:tsl2561.c     **** 
+  97:tsl2561.c     **** #define K8C 0x029a // 1.3000 * 2 ^ RATIO_SCALE
+  98:tsl2561.c     **** #define B8C 0x0000 // 0.0000 * 2 ^ LUX_SCALE
+  99:tsl2561.c     **** #define M8C 0x0000 // 0.0000 * 2 ^ LUX_SCALE
+ 100:tsl2561.c     **** 
+ 101:tsl2561.c     **** /*****************************************************************************
+ 102:tsl2561.c     ****  * Global variables
+ 103:tsl2561.c     ****  ****************************************************************************/
+ 104:tsl2561.c     **** 
+ 105:tsl2561.c     **** /*****************************************************************************
+ 106:tsl2561.c     ****  * Local variables
+ 107:tsl2561.c     ****  ****************************************************************************/
+ 108:tsl2561.c     **** 
+ 109:tsl2561.c     **** /*****************************************************************************
+ 110:tsl2561.c     ****  * Local prototypes
+ 111:tsl2561.c     ****  ****************************************************************************/
+ 112:tsl2561.c     **** 
+ 113:tsl2561.c     **** /*
+ 114:tsl2561.c     ****  * @brief   Funkcja calculateBrightness() wykorzystywana jest do przeliczenia wartości
+ 115:tsl2561.c     ****  *          z kanałów 0. oraz 1. na prawidłową wartość jasności wyrażoną w lux-ach.
+ 116:tsl2561.c     ****  *
+ 117:tsl2561.c     ****  * @param   channel0
+ 118:tsl2561.c     ****  *          Wartość odczytana z pary rejestrów po adresami 0xCh i 0xDh z urządzenia TSL2561
+ 119:tsl2561.c     ****  *          reprezentująca 16 - bitową wartość (2 rejestry po 8 bitów). Bajtem młodzszym jest
+ 120:tsl2561.c     ****  *          bajt z rejestru 0xCh, a starszym - z rejestru 0xDh.
+ 121:tsl2561.c     ****  * @param   channel1
+ 122:tsl2561.c     ****  *          Wartość odczytana z pary rejestrów po adresami 0xEh i 0xFh z urządzenia TSL2561
+ 123:tsl2561.c     ****  *          reprezentująca 16 - bitową wartość (2 rejestry po 8 bitów). Bajtem młodzszym jest
+ 124:tsl2561.c     ****  *          bajt z rejestru 0xDh, a starszym - z rejestru 0xFh.
+ 125:tsl2561.c     ****  * @returns
+ 126:tsl2561.c     ****  *          Przeliczona, 64 - bitowa wartość jasności, wyrażona w lux-ach.
+ 127:tsl2561.c     ****  *
+ 128:tsl2561.c     ****  * @side effects:
+ 129:tsl2561.c     ****  *          Brak
+ 130:tsl2561.c     ****  */
+ 131:tsl2561.c     **** 
+ 132:tsl2561.c     **** tU64 calculateBrightness(tU16 channel0, tU16 channel1)
+ 133:tsl2561.c     **** {
+  27              		.loc 1 133 0
+  28              		.cfi_startproc
+  29              		@ Function supports interworking.
+  30              		@ args = 0, pretend = 0, frame = 104
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 20
+  35              		.cfi_offset 4, -20
+  36              		.cfi_offset 5, -16
+  37              		.cfi_offset 6, -12
+  38              		.cfi_offset 7, -8
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 4
+
+
+  39              		.cfi_offset 14, -4
+  40 0002 9BB0     		sub	sp, sp, #108
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 128
+  43 0004 00AF     		add	r7, sp, #0
+  44              	.LCFI2:
+  45              		.cfi_def_cfa_register 7
+  46 0006 0300     		movs	r3, r0
+  47 0008 2620     		movs	r0, #38
+  48 000a 3A18     		adds	r2, r7, r0
+  49 000c 1380     		strh	r3, [r2]
+  50 000e 2423     		movs	r3, #36
+  51 0010 FB18     		adds	r3, r7, r3
+  52 0012 0A1C     		adds	r2, r1, #0
+  53 0014 1A80     		strh	r2, [r3]
+ 134:tsl2561.c     ****     tU64 chScale = ((tU64)1 << CH_SCALE); // Assume no scaling
+  54              		.loc 1 134 0
+  55 0016 8023     		movs	r3, #128
+  56 0018 DB00     		lsls	r3, r3, #3
+  57 001a 0024     		movs	r4, #0
+  58 001c 3B65     		str	r3, [r7, #80]
+  59 001e 7C65     		str	r4, [r7, #84]
+ 135:tsl2561.c     **** 
+ 136:tsl2561.c     ****     // Scale the channel values
+ 137:tsl2561.c     ****     tU64 ch0 = ((tU64)channel0 * chScale) >> CH_SCALE;
+  60              		.loc 1 137 0
+  61 0020 3B18     		adds	r3, r7, r0
+  62 0022 1B88     		ldrh	r3, [r3]
+  63 0024 1B04     		lsls	r3, r3, #16
+  64 0026 1B0C     		lsrs	r3, r3, #16
+  65 0028 BB61     		str	r3, [r7, #24]
+  66 002a 0023     		movs	r3, #0
+  67 002c FB61     		str	r3, [r7, #28]
+  68 002e 3A6D     		ldr	r2, [r7, #80]
+  69 0030 7B6D     		ldr	r3, [r7, #84]
+  70 0032 B869     		ldr	r0, [r7, #24]
+  71 0034 F969     		ldr	r1, [r7, #28]
+  72 0036 FFF7FEFF 		bl	__aeabi_lmul
+  73              	.LVL0:
+  74 003a 0300     		movs	r3, r0
+  75 003c 0C00     		movs	r4, r1
+  76 003e A205     		lsls	r2, r4, #22
+  77 0040 990A     		lsrs	r1, r3, #10
+  78 0042 0A43     		orrs	r2, r1
+  79 0044 BA64     		str	r2, [r7, #72]
+  80 0046 A30A     		lsrs	r3, r4, #10
+  81 0048 FB64     		str	r3, [r7, #76]
+ 138:tsl2561.c     ****     tU64 ch1 = ((tU64)channel1 * chScale) >> CH_SCALE;
+  82              		.loc 1 138 0
+  83 004a 2423     		movs	r3, #36
+  84 004c FB18     		adds	r3, r7, r3
+  85 004e 1B88     		ldrh	r3, [r3]
+  86 0050 1B04     		lsls	r3, r3, #16
+  87 0052 1B0C     		lsrs	r3, r3, #16
+  88 0054 3B61     		str	r3, [r7, #16]
+  89 0056 0023     		movs	r3, #0
+  90 0058 7B61     		str	r3, [r7, #20]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 5
+
+
+  91 005a 3A6D     		ldr	r2, [r7, #80]
+  92 005c 7B6D     		ldr	r3, [r7, #84]
+  93 005e 3869     		ldr	r0, [r7, #16]
+  94 0060 7969     		ldr	r1, [r7, #20]
+  95 0062 FFF7FEFF 		bl	__aeabi_lmul
+  96              	.LVL1:
+  97 0066 0300     		movs	r3, r0
+  98 0068 0C00     		movs	r4, r1
+  99 006a A205     		lsls	r2, r4, #22
+ 100 006c 990A     		lsrs	r1, r3, #10
+ 101 006e 0A43     		orrs	r2, r1
+ 102 0070 3A64     		str	r2, [r7, #64]
+ 103 0072 A30A     		lsrs	r3, r4, #10
+ 104 0074 7B64     		str	r3, [r7, #68]
+ 139:tsl2561.c     **** 
+ 140:tsl2561.c     ****     // Find the ratio of the channel values (ch1 / ch0)
+ 141:tsl2561.c     ****     // Protect against divide by zero
+ 142:tsl2561.c     ****     tU64 channelsRatio = 0;
+ 105              		.loc 1 142 0
+ 106 0076 0023     		movs	r3, #0
+ 107 0078 0024     		movs	r4, #0
+ 108 007a 3B66     		str	r3, [r7, #96]
+ 109 007c 7C66     		str	r4, [r7, #100]
+ 143:tsl2561.c     ****     if (channel0 != (tU16)0)
+ 110              		.loc 1 143 0
+ 111 007e 2620     		movs	r0, #38
+ 112 0080 3B18     		adds	r3, r7, r0
+ 113 0082 1B88     		ldrh	r3, [r3]
+ 114 0084 002B     		cmp	r3, #0
+ 115 0086 10D0     		beq	.L2
+ 144:tsl2561.c     ****     {
+ 145:tsl2561.c     ****         channelsRatio = (ch1 << ((tU64)RATIO_SCALE + (tU64)1)) / ch0;
+ 116              		.loc 1 145 0
+ 117 0088 3B6C     		ldr	r3, [r7, #64]
+ 118 008a 9B0D     		lsrs	r3, r3, #22
+ 119 008c 7A6C     		ldr	r2, [r7, #68]
+ 120 008e 9602     		lsls	r6, r2, #10
+ 121 0090 1E43     		orrs	r6, r3
+ 122 0092 3B6C     		ldr	r3, [r7, #64]
+ 123 0094 9D02     		lsls	r5, r3, #10
+ 124 0096 BA6C     		ldr	r2, [r7, #72]
+ 125 0098 FB6C     		ldr	r3, [r7, #76]
+ 126 009a 2800     		movs	r0, r5
+ 127 009c 3100     		movs	r1, r6
+ 128 009e FFF7FEFF 		bl	__aeabi_uldivmod
+ 129              	.LVL2:
+ 130 00a2 0300     		movs	r3, r0
+ 131 00a4 0C00     		movs	r4, r1
+ 132 00a6 3B66     		str	r3, [r7, #96]
+ 133 00a8 7C66     		str	r4, [r7, #100]
+ 134              	.L2:
+ 146:tsl2561.c     ****     }
+ 147:tsl2561.c     **** 
+ 148:tsl2561.c     ****     // Round the ratio value
+ 149:tsl2561.c     ****     tU64 roundedRatio = (channelsRatio + (tU64)1) >> 1;
+ 135              		.loc 1 149 0
+ 136 00aa 3B6E     		ldr	r3, [r7, #96]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 6
+
+
+ 137 00ac 7C6E     		ldr	r4, [r7, #100]
+ 138 00ae 0121     		movs	r1, #1
+ 139 00b0 0022     		movs	r2, #0
+ 140 00b2 5B18     		adds	r3, r3, r1
+ 141 00b4 5441     		adcs	r4, r4, r2
+ 142 00b6 E207     		lsls	r2, r4, #31
+ 143 00b8 5908     		lsrs	r1, r3, #1
+ 144 00ba 0A43     		orrs	r2, r1
+ 145 00bc BA63     		str	r2, [r7, #56]
+ 146 00be 6308     		lsrs	r3, r4, #1
+ 147 00c0 FB63     		str	r3, [r7, #60]
+ 150:tsl2561.c     ****     tU32 bValue = 0;
+ 148              		.loc 1 150 0
+ 149 00c2 0023     		movs	r3, #0
+ 150 00c4 FB65     		str	r3, [r7, #92]
+ 151:tsl2561.c     ****     tU32 mValue = 0;
+ 151              		.loc 1 151 0
+ 152 00c6 0023     		movs	r3, #0
+ 153 00c8 BB65     		str	r3, [r7, #88]
+ 152:tsl2561.c     **** 
+ 153:tsl2561.c     ****     // Case for T, FN and CL package.
+ 154:tsl2561.c     ****     /*
+ 155:tsl2561.c     ****     if ((roundedRatio >= (tU64)0) && (roundedRatio <= (tU64)K1T))
+ 156:tsl2561.c     ****     {
+ 157:tsl2561.c     ****         bValue = B1T;
+ 158:tsl2561.c     ****         mValue = M1T;
+ 159:tsl2561.c     ****     }
+ 160:tsl2561.c     ****     else if (roundedRatio <= (tU64)K2T)
+ 161:tsl2561.c     ****     {
+ 162:tsl2561.c     ****         bValue = B2T;
+ 163:tsl2561.c     ****         mValue = M2T;
+ 164:tsl2561.c     ****     }
+ 165:tsl2561.c     ****     else if (roundedRatio <= (tU64)K3T)
+ 166:tsl2561.c     ****     {
+ 167:tsl2561.c     ****         bValue = B3T;
+ 168:tsl2561.c     ****         mValue = M3T;
+ 169:tsl2561.c     ****     }
+ 170:tsl2561.c     ****     else if (roundedRatio <= (tU64)K4T)
+ 171:tsl2561.c     ****     {
+ 172:tsl2561.c     ****         bValue = B4T;
+ 173:tsl2561.c     ****         mValue = M4T;
+ 174:tsl2561.c     ****     }
+ 175:tsl2561.c     ****     else if (roundedRatio <= (tU64)K5T)
+ 176:tsl2561.c     ****     {
+ 177:tsl2561.c     ****         bValue = B5T;
+ 178:tsl2561.c     ****         mValue = M5T;
+ 179:tsl2561.c     ****     }
+ 180:tsl2561.c     ****     else if (roundedRatio <= (tU64)K6T)
+ 181:tsl2561.c     ****     {
+ 182:tsl2561.c     ****         bValue = B6T;
+ 183:tsl2561.c     ****         mValue = M6T;
+ 184:tsl2561.c     ****     }
+ 185:tsl2561.c     ****     else if (roundedRatio <= (tU64)K7T)
+ 186:tsl2561.c     ****     {
+ 187:tsl2561.c     ****         bValue = B7T;
+ 188:tsl2561.c     ****         mValue = M7T;
+ 189:tsl2561.c     ****     }
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 7
+
+
+ 190:tsl2561.c     ****     else if (roundedRatio > (tU64)K8T)
+ 191:tsl2561.c     ****     {
+ 192:tsl2561.c     ****         bValue = B8T;
+ 193:tsl2561.c     ****         mValue = M8T;
+ 194:tsl2561.c     ****     }
+ 195:tsl2561.c     ****     else
+ 196:tsl2561.c     ****     {
+ 197:tsl2561.c     ****         ;
+ 198:tsl2561.c     ****     }
+ 199:tsl2561.c     ****     */
+ 200:tsl2561.c     **** 
+ 201:tsl2561.c     ****     // Case for CS package
+ 202:tsl2561.c     ****     if ((roundedRatio >= (tU64)0) && (roundedRatio <= (tU64)K1C))
+ 154              		.loc 1 202 0
+ 155 00ca FB6B     		ldr	r3, [r7, #60]
+ 156 00cc 002B     		cmp	r3, #0
+ 157 00ce 0CD1     		bne	.L3
+ 158 00d0 FB6B     		ldr	r3, [r7, #60]
+ 159 00d2 002B     		cmp	r3, #0
+ 160 00d4 02D1     		bne	.L18
+ 161 00d6 BB6B     		ldr	r3, [r7, #56]
+ 162 00d8 432B     		cmp	r3, #67
+ 163 00da 06D8     		bhi	.L3
+ 164              	.L18:
+ 203:tsl2561.c     ****     {
+ 204:tsl2561.c     ****         bValue = B1C;
+ 165              		.loc 1 204 0
+ 166 00dc 8123     		movs	r3, #129
+ 167 00de 9B00     		lsls	r3, r3, #2
+ 168 00e0 FB65     		str	r3, [r7, #92]
+ 205:tsl2561.c     ****         mValue = M1C;
+ 169              		.loc 1 205 0
+ 170 00e2 AE23     		movs	r3, #174
+ 171 00e4 FF33     		adds	r3, r3, #255
+ 172 00e6 BB65     		str	r3, [r7, #88]
+ 173 00e8 5EE0     		b	.L5
+ 174              	.L3:
+ 206:tsl2561.c     ****     }
+ 207:tsl2561.c     ****     else if (roundedRatio <= (tU64)K2C)
+ 175              		.loc 1 207 0
+ 176 00ea FB6B     		ldr	r3, [r7, #60]
+ 177 00ec 002B     		cmp	r3, #0
+ 178 00ee 0BD1     		bne	.L6
+ 179 00f0 FB6B     		ldr	r3, [r7, #60]
+ 180 00f2 002B     		cmp	r3, #0
+ 181 00f4 02D1     		bne	.L19
+ 182 00f6 BB6B     		ldr	r3, [r7, #56]
+ 183 00f8 852B     		cmp	r3, #133
+ 184 00fa 05D8     		bhi	.L6
+ 185              	.L19:
+ 208:tsl2561.c     ****     {
+ 209:tsl2561.c     ****         bValue = B2C;
+ 186              		.loc 1 209 0
+ 187 00fc 8A23     		movs	r3, #138
+ 188 00fe 9B00     		lsls	r3, r3, #2
+ 189 0100 FB65     		str	r3, [r7, #92]
+ 210:tsl2561.c     ****         mValue = M2C;
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 8
+
+
+ 190              		.loc 1 210 0
+ 191 0102 474B     		ldr	r3, .L25
+ 192 0104 BB65     		str	r3, [r7, #88]
+ 193 0106 4FE0     		b	.L5
+ 194              	.L6:
+ 211:tsl2561.c     ****     }
+ 212:tsl2561.c     ****     else if (roundedRatio <= (tU64)K3C)
+ 195              		.loc 1 212 0
+ 196 0108 FB6B     		ldr	r3, [r7, #60]
+ 197 010a 002B     		cmp	r3, #0
+ 198 010c 0AD1     		bne	.L8
+ 199 010e FB6B     		ldr	r3, [r7, #60]
+ 200 0110 002B     		cmp	r3, #0
+ 201 0112 02D1     		bne	.L20
+ 202 0114 BB6B     		ldr	r3, [r7, #56]
+ 203 0116 C82B     		cmp	r3, #200
+ 204 0118 04D8     		bhi	.L8
+ 205              	.L20:
+ 213:tsl2561.c     ****     {
+ 214:tsl2561.c     ****         bValue = B3C;
+ 206              		.loc 1 214 0
+ 207 011a 424B     		ldr	r3, .L25+4
+ 208 011c FB65     		str	r3, [r7, #92]
+ 215:tsl2561.c     ****         mValue = M3C;
+ 209              		.loc 1 215 0
+ 210 011e 424B     		ldr	r3, .L25+8
+ 211 0120 BB65     		str	r3, [r7, #88]
+ 212 0122 41E0     		b	.L5
+ 213              	.L8:
+ 216:tsl2561.c     ****     }
+ 217:tsl2561.c     ****     else if (roundedRatio <= (tU64)K4C)
+ 214              		.loc 1 217 0
+ 215 0124 FB6B     		ldr	r3, [r7, #60]
+ 216 0126 002B     		cmp	r3, #0
+ 217 0128 0CD1     		bne	.L10
+ 218 012a FB6B     		ldr	r3, [r7, #60]
+ 219 012c 002B     		cmp	r3, #0
+ 220 012e 04D1     		bne	.L21
+ 221 0130 BA6B     		ldr	r2, [r7, #56]
+ 222 0132 8523     		movs	r3, #133
+ 223 0134 5B00     		lsls	r3, r3, #1
+ 224 0136 9A42     		cmp	r2, r3
+ 225 0138 04D8     		bhi	.L10
+ 226              	.L21:
+ 218:tsl2561.c     ****     {
+ 219:tsl2561.c     ****         bValue = B4C;
+ 227              		.loc 1 219 0
+ 228 013a 3C4B     		ldr	r3, .L25+12
+ 229 013c FB65     		str	r3, [r7, #92]
+ 220:tsl2561.c     ****         mValue = M4C;
+ 230              		.loc 1 220 0
+ 231 013e 3C4B     		ldr	r3, .L25+16
+ 232 0140 BB65     		str	r3, [r7, #88]
+ 233 0142 31E0     		b	.L5
+ 234              	.L10:
+ 221:tsl2561.c     ****     }
+ 222:tsl2561.c     ****     else if (roundedRatio <= (tU64)K5C)
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 9
+
+
+ 235              		.loc 1 222 0
+ 236 0144 FB6B     		ldr	r3, [r7, #60]
+ 237 0146 002B     		cmp	r3, #0
+ 238 0148 0ED1     		bne	.L12
+ 239 014a FB6B     		ldr	r3, [r7, #60]
+ 240 014c 002B     		cmp	r3, #0
+ 241 014e 04D1     		bne	.L22
+ 242 0150 BA6B     		ldr	r2, [r7, #56]
+ 243 0152 4E23     		movs	r3, #78
+ 244 0154 FF33     		adds	r3, r3, #255
+ 245 0156 9A42     		cmp	r2, r3
+ 246 0158 06D8     		bhi	.L12
+ 247              	.L22:
+ 223:tsl2561.c     ****     {
+ 224:tsl2561.c     ****         bValue = B5C;
+ 248              		.loc 1 224 0
+ 249 015a 7823     		movs	r3, #120
+ 250 015c FF33     		adds	r3, r3, #255
+ 251 015e FB65     		str	r3, [r7, #92]
+ 225:tsl2561.c     ****         mValue = M5C;
+ 252              		.loc 1 225 0
+ 253 0160 DE23     		movs	r3, #222
+ 254 0162 FF33     		adds	r3, r3, #255
+ 255 0164 BB65     		str	r3, [r7, #88]
+ 256 0166 1FE0     		b	.L5
+ 257              	.L12:
+ 226:tsl2561.c     ****     }
+ 227:tsl2561.c     ****     else if (roundedRatio <= (tU64)K6C)
+ 258              		.loc 1 227 0
+ 259 0168 FB6B     		ldr	r3, [r7, #60]
+ 260 016a 002B     		cmp	r3, #0
+ 261 016c 0ED1     		bne	.L14
+ 262 016e FB6B     		ldr	r3, [r7, #60]
+ 263 0170 002B     		cmp	r3, #0
+ 264 0172 04D1     		bne	.L23
+ 265 0174 BA6B     		ldr	r2, [r7, #56]
+ 266 0176 CD23     		movs	r3, #205
+ 267 0178 5B00     		lsls	r3, r3, #1
+ 268 017a 9A42     		cmp	r2, r3
+ 269 017c 06D8     		bhi	.L14
+ 270              	.L23:
+ 228:tsl2561.c     ****     {
+ 229:tsl2561.c     ****         bValue = B6C;
+ 271              		.loc 1 229 0
+ 272 017e 0223     		movs	r3, #2
+ 273 0180 FF33     		adds	r3, r3, #255
+ 274 0182 FB65     		str	r3, [r7, #92]
+ 230:tsl2561.c     ****         mValue = M6C;
+ 275              		.loc 1 230 0
+ 276 0184 2823     		movs	r3, #40
+ 277 0186 FF33     		adds	r3, r3, #255
+ 278 0188 BB65     		str	r3, [r7, #88]
+ 279 018a 0DE0     		b	.L5
+ 280              	.L14:
+ 231:tsl2561.c     ****     }
+ 232:tsl2561.c     ****     else if (roundedRatio <= (tU64)K7C)
+ 281              		.loc 1 232 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 10
+
+
+ 282 018c FB6B     		ldr	r3, [r7, #60]
+ 283 018e 002B     		cmp	r3, #0
+ 284 0190 0AD1     		bne	.L5
+ 285 0192 FB6B     		ldr	r3, [r7, #60]
+ 286 0194 002B     		cmp	r3, #0
+ 287 0196 03D1     		bne	.L24
+ 288 0198 BB6B     		ldr	r3, [r7, #56]
+ 289 019a 264A     		ldr	r2, .L25+20
+ 290 019c 9342     		cmp	r3, r2
+ 291 019e 03D8     		bhi	.L5
+ 292              	.L24:
+ 233:tsl2561.c     ****     {
+ 234:tsl2561.c     ****         bValue = B7C;
+ 293              		.loc 1 234 0
+ 294 01a0 3723     		movs	r3, #55
+ 295 01a2 FB65     		str	r3, [r7, #92]
+ 235:tsl2561.c     ****         mValue = M7C;
+ 296              		.loc 1 235 0
+ 297 01a4 2B23     		movs	r3, #43
+ 298 01a6 BB65     		str	r3, [r7, #88]
+ 299              	.L5:
+ 236:tsl2561.c     ****     }
+ 237:tsl2561.c     ****     else
+ 238:tsl2561.c     ****     {
+ 239:tsl2561.c     ****         ;
+ 240:tsl2561.c     ****     }
+ 241:tsl2561.c     **** 
+ 242:tsl2561.c     ****     tU64 temporary;
+ 243:tsl2561.c     ****     temporary = ((ch0 * (tU64)bValue) - (ch1 * (tU64)mValue));
+ 300              		.loc 1 243 0
+ 301 01a8 FB6D     		ldr	r3, [r7, #92]
+ 302 01aa BB60     		str	r3, [r7, #8]
+ 303 01ac 0023     		movs	r3, #0
+ 304 01ae FB60     		str	r3, [r7, #12]
+ 305 01b0 BA6C     		ldr	r2, [r7, #72]
+ 306 01b2 FB6C     		ldr	r3, [r7, #76]
+ 307 01b4 B868     		ldr	r0, [r7, #8]
+ 308 01b6 F968     		ldr	r1, [r7, #12]
+ 309 01b8 FFF7FEFF 		bl	__aeabi_lmul
+ 310              	.LVL3:
+ 311 01bc 0300     		movs	r3, r0
+ 312 01be 0C00     		movs	r4, r1
+ 313 01c0 1D00     		movs	r5, r3
+ 314 01c2 2600     		movs	r6, r4
+ 315 01c4 BB6D     		ldr	r3, [r7, #88]
+ 316 01c6 3B60     		str	r3, [r7]
+ 317 01c8 0023     		movs	r3, #0
+ 318 01ca 7B60     		str	r3, [r7, #4]
+ 319 01cc 3A6C     		ldr	r2, [r7, #64]
+ 320 01ce 7B6C     		ldr	r3, [r7, #68]
+ 321 01d0 3868     		ldr	r0, [r7]
+ 322 01d2 7968     		ldr	r1, [r7, #4]
+ 323 01d4 FFF7FEFF 		bl	__aeabi_lmul
+ 324              	.LVL4:
+ 325 01d8 0300     		movs	r3, r0
+ 326 01da 0C00     		movs	r4, r1
+ 327 01dc ED1A     		subs	r5, r5, r3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 11
+
+
+ 328 01de A641     		sbcs	r6, r6, r4
+ 329 01e0 2B00     		movs	r3, r5
+ 330 01e2 3400     		movs	r4, r6
+ 331 01e4 3B63     		str	r3, [r7, #48]
+ 332 01e6 7C63     		str	r4, [r7, #52]
+ 244:tsl2561.c     **** 
+ 245:tsl2561.c     ****     // Do not allow negative lux value
+ 246:tsl2561.c     ****     if (temporary < (tU64)0)
+ 247:tsl2561.c     ****     {
+ 248:tsl2561.c     ****         temporary = 0;
+ 249:tsl2561.c     ****     }
+ 250:tsl2561.c     **** 
+ 251:tsl2561.c     ****     // Round LSB (2 ^ (LUX_SCALE − 1))
+ 252:tsl2561.c     ****     temporary = temporary + ((tU64)1 << ((tU64)LUX_SCALE - (tU64)1));
+ 333              		.loc 1 252 0
+ 334 01e8 3B6B     		ldr	r3, [r7, #48]
+ 335 01ea 7C6B     		ldr	r4, [r7, #52]
+ 336 01ec 8021     		movs	r1, #128
+ 337 01ee 8901     		lsls	r1, r1, #6
+ 338 01f0 0022     		movs	r2, #0
+ 339 01f2 5B18     		adds	r3, r3, r1
+ 340 01f4 5441     		adcs	r4, r4, r2
+ 341 01f6 3B63     		str	r3, [r7, #48]
+ 342 01f8 7C63     		str	r4, [r7, #52]
+ 253:tsl2561.c     **** 
+ 254:tsl2561.c     ****     // Strip off fractional portion
+ 255:tsl2561.c     ****     tU64 resultInLux = temporary >> LUX_SCALE;
+ 343              		.loc 1 255 0
+ 344 01fa 7B6B     		ldr	r3, [r7, #52]
+ 345 01fc 9B04     		lsls	r3, r3, #18
+ 346 01fe 3A6B     		ldr	r2, [r7, #48]
+ 347 0200 920B     		lsrs	r2, r2, #14
+ 348 0202 1343     		orrs	r3, r2
+ 349 0204 BB62     		str	r3, [r7, #40]
+ 350 0206 7B6B     		ldr	r3, [r7, #52]
+ 351 0208 9B0B     		lsrs	r3, r3, #14
+ 352 020a FB62     		str	r3, [r7, #44]
+ 256:tsl2561.c     **** 
+ 257:tsl2561.c     ****     return resultInLux;
+ 353              		.loc 1 257 0
+ 354 020c BB6A     		ldr	r3, [r7, #40]
+ 355 020e FC6A     		ldr	r4, [r7, #44]
+ 258:tsl2561.c     **** }
+ 356              		.loc 1 258 0
+ 357 0210 1800     		movs	r0, r3
+ 358 0212 2100     		movs	r1, r4
+ 359 0214 BD46     		mov	sp, r7
+ 360 0216 1BB0     		add	sp, sp, #108
+ 361              		@ sp needed
+ 362 0218 F0BC     		pop	{r4, r5, r6, r7}
+ 363 021a 04BC     		pop	{r2}
+ 364 021c 1047     		bx	r2
+ 365              	.L26:
+ 366 021e C046     		.align	2
+ 367              	.L25:
+ 368 0220 C1020000 		.word	705
+ 369 0224 53020000 		.word	595
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 12
+
+
+ 370 0228 63030000 		.word	867
+ 371 022c 82020000 		.word	642
+ 372 0230 DF030000 		.word	991
+ 373 0234 9A020000 		.word	666
+ 374              		.cfi_endproc
+ 375              	.LFE0:
+ 376              		.size	calculateBrightness, .-calculateBrightness
+ 377              		.align	1
+ 378              		.global	measureBrightness
+ 379              		.syntax unified
+ 380              		.code	16
+ 381              		.thumb_func
+ 382              		.fpu softvfp
+ 383              		.type	measureBrightness, %function
+ 384              	measureBrightness:
+ 385              	.LFB1:
+ 259:tsl2561.c     **** 
+ 260:tsl2561.c     **** /*
+ 261:tsl2561.c     ****  * @brief   Funkcja measureBrightness() służy do odczytania wartości jasności z czujnika jasno�
+ 262:tsl2561.c     ****  *          co sprowadza się do odczytania wartości z obu kanałów urządzenia, a następnie wyw
+ 263:tsl2561.c     ****  *          calculateBrightness(), ta funkcja otrzmuje prawidłową wartość jasności, która jes
+ 264:tsl2561.c     ****  *
+ 265:tsl2561.c     ****  * @param   void
+ 266:tsl2561.c     ****  *
+ 267:tsl2561.c     ****  * @returns
+ 268:tsl2561.c     ****  *          Wartość jasności obliczona przez funkcję calculateBrightness().
+ 269:tsl2561.c     ****  *
+ 270:tsl2561.c     ****  * @side effects:
+ 271:tsl2561.c     ****  *          Zmiana stanu czujnika TSL2561 (poprzez jego włączanie i wyłączanie), a także zapis
+ 272:tsl2561.c     ****  *          adresu rejestrów, z których czytana jest zawartość.
+ 273:tsl2561.c     ****  */
+ 274:tsl2561.c     **** 
+ 275:tsl2561.c     **** tU64 measureBrightness(void)
+ 276:tsl2561.c     **** {
+ 386              		.loc 1 276 0
+ 387              		.cfi_startproc
+ 388              		@ Function supports interworking.
+ 389              		@ args = 0, pretend = 0, frame = 24
+ 390              		@ frame_needed = 1, uses_anonymous_args = 0
+ 391 0238 F0B5     		push	{r4, r5, r6, r7, lr}
+ 392              	.LCFI3:
+ 393              		.cfi_def_cfa_offset 20
+ 394              		.cfi_offset 4, -20
+ 395              		.cfi_offset 5, -16
+ 396              		.cfi_offset 6, -12
+ 397              		.cfi_offset 7, -8
+ 398              		.cfi_offset 14, -4
+ 399 023a 87B0     		sub	sp, sp, #28
+ 400              	.LCFI4:
+ 401              		.cfi_def_cfa_offset 48
+ 402 023c 00AF     		add	r7, sp, #0
+ 403              	.LCFI5:
+ 404              		.cfi_def_cfa_register 7
+ 277:tsl2561.c     ****     // Return code value for I2C operations.
+ 278:tsl2561.c     ****     tS8 retCode = 0;
+ 405              		.loc 1 278 0
+ 406 023e 1725     		movs	r5, #23
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 13
+
+
+ 407 0240 7B19     		adds	r3, r7, r5
+ 408 0242 0022     		movs	r2, #0
+ 409 0244 1A70     		strb	r2, [r3]
+ 279:tsl2561.c     ****     tU8 command[2] = {0};
+ 410              		.loc 1 279 0
+ 411 0246 3B1D     		adds	r3, r7, #4
+ 412 0248 0022     		movs	r2, #0
+ 413 024a 1A80     		strh	r2, [r3]
+ 280:tsl2561.c     ****     tU8 readValue[1] = {0};
+ 414              		.loc 1 280 0
+ 415 024c 3B00     		movs	r3, r7
+ 416 024e 0022     		movs	r2, #0
+ 417 0250 1A70     		strb	r2, [r3]
+ 281:tsl2561.c     **** 
+ 282:tsl2561.c     ****     // Variables for each channel value.
+ 283:tsl2561.c     ****     tU16 channel0 = 0;
+ 418              		.loc 1 283 0
+ 419 0252 1426     		movs	r6, #20
+ 420 0254 BB19     		adds	r3, r7, r6
+ 421 0256 0022     		movs	r2, #0
+ 422 0258 1A80     		strh	r2, [r3]
+ 284:tsl2561.c     ****     tU16 channel1 = 0;
+ 423              		.loc 1 284 0
+ 424 025a 1222     		movs	r2, #18
+ 425 025c BB18     		adds	r3, r7, r2
+ 426 025e 0022     		movs	r2, #0
+ 427 0260 1A80     		strh	r2, [r3]
+ 285:tsl2561.c     **** 
+ 286:tsl2561.c     ****     // Sending a command to the device to power it up.
+ 287:tsl2561.c     ****     command[0] = 0x80;      // Change target register to control register (0x80 = 0b 1000 0000)
+ 428              		.loc 1 287 0
+ 429 0262 3B1D     		adds	r3, r7, #4
+ 430 0264 8022     		movs	r2, #128
+ 431 0266 1A70     		strb	r2, [r3]
+ 288:tsl2561.c     ****     command[1] = 0x03;      // Write 0x03 (so power up) the device
+ 432              		.loc 1 288 0
+ 433 0268 3B1D     		adds	r3, r7, #4
+ 434 026a 0322     		movs	r2, #3
+ 435 026c 5A70     		strb	r2, [r3, #1]
+ 289:tsl2561.c     ****     retCode = i2cWrite(tsl2561WriteAddressFloat, command, 2);
+ 436              		.loc 1 289 0
+ 437 026e 7C19     		adds	r4, r7, r5
+ 438 0270 3B1D     		adds	r3, r7, #4
+ 439 0272 0222     		movs	r2, #2
+ 440 0274 1900     		movs	r1, r3
+ 441 0276 7220     		movs	r0, #114
+ 442 0278 FFF7FEFF 		bl	i2cWrite
+ 443 027c 0300     		movs	r3, r0
+ 444 027e 2370     		strb	r3, [r4]
+ 290:tsl2561.c     **** 
+ 291:tsl2561.c     ****     // Debug:
+ 292:tsl2561.c     ****     // retCode = i2cRead(tsl2561ReadAddressFloat, readValue, 1);
+ 293:tsl2561.c     ****     // if (readValue[0] == 0x03) {
+ 294:tsl2561.c     ****     //    lcdPuts("OK.");
+ 295:tsl2561.c     ****     // } else {
+ 296:tsl2561.c     ****     //    lcdPuts("Not OK.");
+ 297:tsl2561.c     ****     // }
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 14
+
+
+ 298:tsl2561.c     **** 
+ 299:tsl2561.c     ****     mdelay(403); // Waiting for 403 ms, since it takes 402 ms for both channels to integrate
+ 445              		.loc 1 299 0
+ 446 0280 9423     		movs	r3, #148
+ 447 0282 FF33     		adds	r3, r3, #255
+ 448 0284 1800     		movs	r0, r3
+ 449 0286 FFF7FEFF 		bl	mdelay
+ 300:tsl2561.c     **** 
+ 301:tsl2561.c     ****     // Command for reading low byte of 16 bit channel 0
+ 302:tsl2561.c     ****     command[0] = (((tU8)0x08 << 4) | (tU8)0x0C);
+ 450              		.loc 1 302 0
+ 451 028a 3B1D     		adds	r3, r7, #4
+ 452 028c 8C22     		movs	r2, #140
+ 453 028e 1A70     		strb	r2, [r3]
+ 303:tsl2561.c     ****     retCode = i2cWrite(tsl2561WriteAddressFloat, command, 1);
+ 454              		.loc 1 303 0
+ 455 0290 7C19     		adds	r4, r7, r5
+ 456 0292 3B1D     		adds	r3, r7, #4
+ 457 0294 0122     		movs	r2, #1
+ 458 0296 1900     		movs	r1, r3
+ 459 0298 7220     		movs	r0, #114
+ 460 029a FFF7FEFF 		bl	i2cWrite
+ 461 029e 0300     		movs	r3, r0
+ 462 02a0 2370     		strb	r3, [r4]
+ 304:tsl2561.c     ****     retCode = i2cRead(tsl2561ReadAddressFloat, readValue, 1);
+ 463              		.loc 1 304 0
+ 464 02a2 7C19     		adds	r4, r7, r5
+ 465 02a4 3B00     		movs	r3, r7
+ 466 02a6 0122     		movs	r2, #1
+ 467 02a8 1900     		movs	r1, r3
+ 468 02aa 7320     		movs	r0, #115
+ 469 02ac FFF7FEFF 		bl	i2cRead
+ 470 02b0 0300     		movs	r3, r0
+ 471 02b2 2370     		strb	r3, [r4]
+ 305:tsl2561.c     ****     channel0 = channel0 + (tU16)readValue[0];
+ 472              		.loc 1 305 0
+ 473 02b4 3B00     		movs	r3, r7
+ 474 02b6 1B78     		ldrb	r3, [r3]
+ 475 02b8 1B04     		lsls	r3, r3, #16
+ 476 02ba 190C     		lsrs	r1, r3, #16
+ 477 02bc BB19     		adds	r3, r7, r6
+ 478 02be BA19     		adds	r2, r7, r6
+ 479 02c0 1288     		ldrh	r2, [r2]
+ 480 02c2 8A18     		adds	r2, r1, r2
+ 481 02c4 1A80     		strh	r2, [r3]
+ 306:tsl2561.c     **** 
+ 307:tsl2561.c     ****     // Command for reading high byte of 16 bit channel 0
+ 308:tsl2561.c     ****     command[0] = (((tU8)0x08 << 4) | (tU8)0x0D);
+ 482              		.loc 1 308 0
+ 483 02c6 3B1D     		adds	r3, r7, #4
+ 484 02c8 8D22     		movs	r2, #141
+ 485 02ca 1A70     		strb	r2, [r3]
+ 309:tsl2561.c     ****     retCode = i2cWrite(tsl2561WriteAddressFloat, command, 1);
+ 486              		.loc 1 309 0
+ 487 02cc 7C19     		adds	r4, r7, r5
+ 488 02ce 3B1D     		adds	r3, r7, #4
+ 489 02d0 0122     		movs	r2, #1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 15
+
+
+ 490 02d2 1900     		movs	r1, r3
+ 491 02d4 7220     		movs	r0, #114
+ 492 02d6 FFF7FEFF 		bl	i2cWrite
+ 493 02da 0300     		movs	r3, r0
+ 494 02dc 2370     		strb	r3, [r4]
+ 310:tsl2561.c     ****     retCode = i2cRead(tsl2561ReadAddressFloat, readValue, 1);
+ 495              		.loc 1 310 0
+ 496 02de 7C19     		adds	r4, r7, r5
+ 497 02e0 3B00     		movs	r3, r7
+ 498 02e2 0122     		movs	r2, #1
+ 499 02e4 1900     		movs	r1, r3
+ 500 02e6 7320     		movs	r0, #115
+ 501 02e8 FFF7FEFF 		bl	i2cRead
+ 502 02ec 0300     		movs	r3, r0
+ 503 02ee 2370     		strb	r3, [r4]
+ 311:tsl2561.c     ****     channel0 = channel0 + ((tU16)256 * (tU16)readValue[0]);
+ 504              		.loc 1 311 0
+ 505 02f0 3B00     		movs	r3, r7
+ 506 02f2 1B78     		ldrb	r3, [r3]
+ 507 02f4 1B04     		lsls	r3, r3, #16
+ 508 02f6 1B0C     		lsrs	r3, r3, #16
+ 509 02f8 1B02     		lsls	r3, r3, #8
+ 510 02fa 1B04     		lsls	r3, r3, #16
+ 511 02fc 190C     		lsrs	r1, r3, #16
+ 512 02fe BB19     		adds	r3, r7, r6
+ 513 0300 BA19     		adds	r2, r7, r6
+ 514 0302 1288     		ldrh	r2, [r2]
+ 515 0304 8A18     		adds	r2, r1, r2
+ 516 0306 1A80     		strh	r2, [r3]
+ 312:tsl2561.c     **** 
+ 313:tsl2561.c     ****     // Command for reading low byte of 16 bit channel 1
+ 314:tsl2561.c     ****     command[0] = (((tU8)0x08 << 4) | (tU8)0x0E);
+ 517              		.loc 1 314 0
+ 518 0308 3B1D     		adds	r3, r7, #4
+ 519 030a 8E22     		movs	r2, #142
+ 520 030c 1A70     		strb	r2, [r3]
+ 315:tsl2561.c     ****     retCode = i2cWrite(tsl2561WriteAddressFloat, command, 1);
+ 521              		.loc 1 315 0
+ 522 030e 7C19     		adds	r4, r7, r5
+ 523 0310 3B1D     		adds	r3, r7, #4
+ 524 0312 0122     		movs	r2, #1
+ 525 0314 1900     		movs	r1, r3
+ 526 0316 7220     		movs	r0, #114
+ 527 0318 FFF7FEFF 		bl	i2cWrite
+ 528 031c 0300     		movs	r3, r0
+ 529 031e 2370     		strb	r3, [r4]
+ 316:tsl2561.c     ****     retCode = i2cRead(tsl2561ReadAddressFloat, readValue, 1);
+ 530              		.loc 1 316 0
+ 531 0320 7C19     		adds	r4, r7, r5
+ 532 0322 3B00     		movs	r3, r7
+ 533 0324 0122     		movs	r2, #1
+ 534 0326 1900     		movs	r1, r3
+ 535 0328 7320     		movs	r0, #115
+ 536 032a FFF7FEFF 		bl	i2cRead
+ 537 032e 0300     		movs	r3, r0
+ 538 0330 2370     		strb	r3, [r4]
+ 317:tsl2561.c     ****     channel1 = channel1 + (tU16)readValue[0];
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 16
+
+
+ 539              		.loc 1 317 0
+ 540 0332 3B00     		movs	r3, r7
+ 541 0334 1B78     		ldrb	r3, [r3]
+ 542 0336 1B04     		lsls	r3, r3, #16
+ 543 0338 190C     		lsrs	r1, r3, #16
+ 544 033a 1222     		movs	r2, #18
+ 545 033c BB18     		adds	r3, r7, r2
+ 546 033e BA18     		adds	r2, r7, r2
+ 547 0340 1288     		ldrh	r2, [r2]
+ 548 0342 8A18     		adds	r2, r1, r2
+ 549 0344 1A80     		strh	r2, [r3]
+ 318:tsl2561.c     **** 
+ 319:tsl2561.c     ****     // Command for reading high byte of 16 bit channel 1
+ 320:tsl2561.c     ****     command[0] = (((tU8)0x08 << 4) | (tU8)0x0F);
+ 550              		.loc 1 320 0
+ 551 0346 3B1D     		adds	r3, r7, #4
+ 552 0348 8F22     		movs	r2, #143
+ 553 034a 1A70     		strb	r2, [r3]
+ 321:tsl2561.c     ****     retCode = i2cWrite(tsl2561WriteAddressFloat, command, 1);
+ 554              		.loc 1 321 0
+ 555 034c 7C19     		adds	r4, r7, r5
+ 556 034e 3B1D     		adds	r3, r7, #4
+ 557 0350 0122     		movs	r2, #1
+ 558 0352 1900     		movs	r1, r3
+ 559 0354 7220     		movs	r0, #114
+ 560 0356 FFF7FEFF 		bl	i2cWrite
+ 561 035a 0300     		movs	r3, r0
+ 562 035c 2370     		strb	r3, [r4]
+ 322:tsl2561.c     ****     retCode = i2cRead(tsl2561ReadAddressFloat, readValue, 1);
+ 563              		.loc 1 322 0
+ 564 035e 7C19     		adds	r4, r7, r5
+ 565 0360 3B00     		movs	r3, r7
+ 566 0362 0122     		movs	r2, #1
+ 567 0364 1900     		movs	r1, r3
+ 568 0366 7320     		movs	r0, #115
+ 569 0368 FFF7FEFF 		bl	i2cRead
+ 570 036c 0300     		movs	r3, r0
+ 571 036e 2370     		strb	r3, [r4]
+ 323:tsl2561.c     ****     channel1 = channel1 + ((tU16)256 * (tU16)readValue[0]);
+ 572              		.loc 1 323 0
+ 573 0370 3B00     		movs	r3, r7
+ 574 0372 1B78     		ldrb	r3, [r3]
+ 575 0374 1B04     		lsls	r3, r3, #16
+ 576 0376 1B0C     		lsrs	r3, r3, #16
+ 577 0378 1B02     		lsls	r3, r3, #8
+ 578 037a 1B04     		lsls	r3, r3, #16
+ 579 037c 190C     		lsrs	r1, r3, #16
+ 580 037e 1222     		movs	r2, #18
+ 581 0380 BB18     		adds	r3, r7, r2
+ 582 0382 BA18     		adds	r2, r7, r2
+ 583 0384 1288     		ldrh	r2, [r2]
+ 584 0386 8A18     		adds	r2, r1, r2
+ 585 0388 1A80     		strh	r2, [r3]
+ 324:tsl2561.c     **** 
+ 325:tsl2561.c     ****     // Sending a command to the device to power it down.
+ 326:tsl2561.c     ****     command[0] = 0x80;      // Change target register to control register (0x80 = 0b 1000 0000)
+ 586              		.loc 1 326 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 17
+
+
+ 587 038a 3B1D     		adds	r3, r7, #4
+ 588 038c 8022     		movs	r2, #128
+ 589 038e 1A70     		strb	r2, [r3]
+ 327:tsl2561.c     ****     command[0] = 0x00;      // Write 0x00 (so power down) the device
+ 590              		.loc 1 327 0
+ 591 0390 3B1D     		adds	r3, r7, #4
+ 592 0392 0022     		movs	r2, #0
+ 593 0394 1A70     		strb	r2, [r3]
+ 328:tsl2561.c     ****     retCode = i2cWrite(tsl2561WriteAddressFloat, command, 2);
+ 594              		.loc 1 328 0
+ 595 0396 7C19     		adds	r4, r7, r5
+ 596 0398 3B1D     		adds	r3, r7, #4
+ 597 039a 0222     		movs	r2, #2
+ 598 039c 1900     		movs	r1, r3
+ 599 039e 7220     		movs	r0, #114
+ 600 03a0 FFF7FEFF 		bl	i2cWrite
+ 601 03a4 0300     		movs	r3, r0
+ 602 03a6 2370     		strb	r3, [r4]
+ 329:tsl2561.c     **** 
+ 330:tsl2561.c     ****     // tU64 brightnessValue = calculateBrightnessFloat(channel0, channel1);
+ 331:tsl2561.c     ****     tU64 brightnessValue = calculateBrightness(channel0, channel1);
+ 603              		.loc 1 331 0
+ 604 03a8 1222     		movs	r2, #18
+ 605 03aa BB18     		adds	r3, r7, r2
+ 606 03ac 1A88     		ldrh	r2, [r3]
+ 607 03ae BB19     		adds	r3, r7, r6
+ 608 03b0 1B88     		ldrh	r3, [r3]
+ 609 03b2 1100     		movs	r1, r2
+ 610 03b4 1800     		movs	r0, r3
+ 611 03b6 FFF7FEFF 		bl	calculateBrightness
+ 612 03ba 0300     		movs	r3, r0
+ 613 03bc 0C00     		movs	r4, r1
+ 614 03be BB60     		str	r3, [r7, #8]
+ 615 03c0 FC60     		str	r4, [r7, #12]
+ 332:tsl2561.c     **** 
+ 333:tsl2561.c     ****     return brightnessValue;
+ 616              		.loc 1 333 0
+ 617 03c2 BB68     		ldr	r3, [r7, #8]
+ 618 03c4 FC68     		ldr	r4, [r7, #12]
+ 334:tsl2561.c     **** }
+ 619              		.loc 1 334 0
+ 620 03c6 1800     		movs	r0, r3
+ 621 03c8 2100     		movs	r1, r4
+ 622 03ca BD46     		mov	sp, r7
+ 623 03cc 07B0     		add	sp, sp, #28
+ 624              		@ sp needed
+ 625 03ce F0BC     		pop	{r4, r5, r6, r7}
+ 626 03d0 04BC     		pop	{r2}
+ 627 03d2 1047     		bx	r2
+ 628              		.cfi_endproc
+ 629              	.LFE1:
+ 630              		.size	measureBrightness, .-measureBrightness
+ 631              	.Letext0:
+ 632              		.file 2 "general.h"
+ 633              		.section	.debug_info,"",%progbits
+ 634              	.Ldebug_info0:
+ 635 0000 F9010000 		.4byte	0x1f9
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 18
+
+
+ 636 0004 0200     		.2byte	0x2
+ 637 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 638 000a 04       		.byte	0x4
+ 639 000b 01       		.uleb128 0x1
+ 640 000c C4000000 		.4byte	.LASF23
+ 641 0010 0C       		.byte	0xc
+ 642 0011 4C010000 		.4byte	.LASF24
+ 643 0015 66010000 		.4byte	.LASF25
+ 644 0019 00000000 		.4byte	.Ltext0
+ 645 001d D4030000 		.4byte	.Letext0
+ 646 0021 00000000 		.4byte	.Ldebug_line0
+ 647 0025 02       		.uleb128 0x2
+ 648 0026 74553800 		.ascii	"tU8\000"
+ 649 002a 02       		.byte	0x2
+ 650 002b 20       		.byte	0x20
+ 651 002c 30000000 		.4byte	0x30
+ 652 0030 03       		.uleb128 0x3
+ 653 0031 01       		.byte	0x1
+ 654 0032 08       		.byte	0x8
+ 655 0033 8F000000 		.4byte	.LASF1
+ 656 0037 04       		.uleb128 0x4
+ 657 0038 A3010000 		.4byte	.LASF0
+ 658 003c 02       		.byte	0x2
+ 659 003d 21       		.byte	0x21
+ 660 003e 42000000 		.4byte	0x42
+ 661 0042 03       		.uleb128 0x3
+ 662 0043 02       		.byte	0x2
+ 663 0044 07       		.byte	0x7
+ 664 0045 84010000 		.4byte	.LASF2
+ 665 0049 04       		.uleb128 0x4
+ 666 004a C2010000 		.4byte	.LASF3
+ 667 004e 02       		.byte	0x2
+ 668 004f 22       		.byte	0x22
+ 669 0050 54000000 		.4byte	0x54
+ 670 0054 03       		.uleb128 0x3
+ 671 0055 04       		.byte	0x4
+ 672 0056 07       		.byte	0x7
+ 673 0057 0E000000 		.4byte	.LASF4
+ 674 005b 04       		.uleb128 0x4
+ 675 005c 5B000000 		.4byte	.LASF5
+ 676 0060 02       		.byte	0x2
+ 677 0061 23       		.byte	0x23
+ 678 0062 66000000 		.4byte	0x66
+ 679 0066 03       		.uleb128 0x3
+ 680 0067 08       		.byte	0x8
+ 681 0068 07       		.byte	0x7
+ 682 0069 78000000 		.4byte	.LASF6
+ 683 006d 02       		.uleb128 0x2
+ 684 006e 74533800 		.ascii	"tS8\000"
+ 685 0072 02       		.byte	0x2
+ 686 0073 24       		.byte	0x24
+ 687 0074 78000000 		.4byte	0x78
+ 688 0078 03       		.uleb128 0x3
+ 689 0079 01       		.byte	0x1
+ 690 007a 06       		.byte	0x6
+ 691 007b 97010000 		.4byte	.LASF7
+ 692 007f 03       		.uleb128 0x3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 19
+
+
+ 693 0080 02       		.byte	0x2
+ 694 0081 05       		.byte	0x5
+ 695 0082 B1010000 		.4byte	.LASF8
+ 696 0086 05       		.uleb128 0x5
+ 697 0087 04       		.byte	0x4
+ 698 0088 05       		.byte	0x5
+ 699 0089 696E7400 		.ascii	"int\000"
+ 700 008d 03       		.uleb128 0x3
+ 701 008e 08       		.byte	0x8
+ 702 008f 05       		.byte	0x5
+ 703 0090 00000000 		.4byte	.LASF9
+ 704 0094 06       		.uleb128 0x6
+ 705 0095 01       		.byte	0x1
+ 706 0096 1B000000 		.4byte	.LASF26
+ 707 009a 01       		.byte	0x1
+ 708 009b 1301     		.2byte	0x113
+ 709 009d 01       		.byte	0x1
+ 710 009e 5B000000 		.4byte	0x5b
+ 711 00a2 38020000 		.4byte	.LFB1
+ 712 00a6 D4030000 		.4byte	.LFE1
+ 713 00aa 00000000 		.4byte	.LLST1
+ 714 00ae 01       		.byte	0x1
+ 715 00af 22010000 		.4byte	0x122
+ 716 00b3 07       		.uleb128 0x7
+ 717 00b4 34000000 		.4byte	.LASF10
+ 718 00b8 01       		.byte	0x1
+ 719 00b9 1601     		.2byte	0x116
+ 720 00bb 6D000000 		.4byte	0x6d
+ 721 00bf 02       		.byte	0x2
+ 722 00c0 91       		.byte	0x91
+ 723 00c1 67       		.sleb128 -25
+ 724 00c2 07       		.uleb128 0x7
+ 725 00c3 44010000 		.4byte	.LASF11
+ 726 00c7 01       		.byte	0x1
+ 727 00c8 1701     		.2byte	0x117
+ 728 00ca 22010000 		.4byte	0x122
+ 729 00ce 02       		.byte	0x2
+ 730 00cf 91       		.byte	0x91
+ 731 00d0 54       		.sleb128 -44
+ 732 00d1 07       		.uleb128 0x7
+ 733 00d2 60000000 		.4byte	.LASF12
+ 734 00d6 01       		.byte	0x1
+ 735 00d7 1801     		.2byte	0x118
+ 736 00d9 32010000 		.4byte	0x132
+ 737 00dd 02       		.byte	0x2
+ 738 00de 91       		.byte	0x91
+ 739 00df 50       		.sleb128 -48
+ 740 00e0 07       		.uleb128 0x7
+ 741 00e1 A8010000 		.4byte	.LASF13
+ 742 00e5 01       		.byte	0x1
+ 743 00e6 1B01     		.2byte	0x11b
+ 744 00e8 37000000 		.4byte	0x37
+ 745 00ec 02       		.byte	0x2
+ 746 00ed 91       		.byte	0x91
+ 747 00ee 64       		.sleb128 -28
+ 748 00ef 07       		.uleb128 0x7
+ 749 00f0 C7010000 		.4byte	.LASF14
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 20
+
+
+ 750 00f4 01       		.byte	0x1
+ 751 00f5 1C01     		.2byte	0x11c
+ 752 00f7 37000000 		.4byte	0x37
+ 753 00fb 02       		.byte	0x2
+ 754 00fc 91       		.byte	0x91
+ 755 00fd 62       		.sleb128 -30
+ 756 00fe 08       		.uleb128 0x8
+ 757 00ff 01       		.byte	0x1
+ 758 0100 2D000000 		.4byte	.LASF27
+ 759 0104 01       		.byte	0x1
+ 760 0105 2B01     		.2byte	0x12b
+ 761 0107 86000000 		.4byte	0x86
+ 762 010b 01       		.byte	0x1
+ 763 010c 12010000 		.4byte	0x112
+ 764 0110 09       		.uleb128 0x9
+ 765 0111 00       		.byte	0
+ 766 0112 07       		.uleb128 0x7
+ 767 0113 56010000 		.4byte	.LASF15
+ 768 0117 01       		.byte	0x1
+ 769 0118 4B01     		.2byte	0x14b
+ 770 011a 5B000000 		.4byte	0x5b
+ 771 011e 02       		.byte	0x2
+ 772 011f 91       		.byte	0x91
+ 773 0120 58       		.sleb128 -40
+ 774 0121 00       		.byte	0
+ 775 0122 0A       		.uleb128 0xa
+ 776 0123 25000000 		.4byte	0x25
+ 777 0127 32010000 		.4byte	0x132
+ 778 012b 0B       		.uleb128 0xb
+ 779 012c 54000000 		.4byte	0x54
+ 780 0130 01       		.byte	0x1
+ 781 0131 00       		.byte	0
+ 782 0132 0A       		.uleb128 0xa
+ 783 0133 25000000 		.4byte	0x25
+ 784 0137 42010000 		.4byte	0x142
+ 785 013b 0B       		.uleb128 0xb
+ 786 013c 54000000 		.4byte	0x54
+ 787 0140 00       		.byte	0
+ 788 0141 00       		.byte	0
+ 789 0142 0C       		.uleb128 0xc
+ 790 0143 01       		.byte	0x1
+ 791 0144 9D000000 		.4byte	.LASF28
+ 792 0148 01       		.byte	0x1
+ 793 0149 84       		.byte	0x84
+ 794 014a 01       		.byte	0x1
+ 795 014b 5B000000 		.4byte	0x5b
+ 796 014f 00000000 		.4byte	.LFB0
+ 797 0153 38020000 		.4byte	.LFE0
+ 798 0157 38000000 		.4byte	.LLST0
+ 799 015b 01       		.byte	0x1
+ 800 015c 0D       		.uleb128 0xd
+ 801 015d A8010000 		.4byte	.LASF13
+ 802 0161 01       		.byte	0x1
+ 803 0162 84       		.byte	0x84
+ 804 0163 37000000 		.4byte	0x37
+ 805 0167 03       		.byte	0x3
+ 806 0168 91       		.byte	0x91
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 21
+
+
+ 807 0169 A67F     		.sleb128 -90
+ 808 016b 0D       		.uleb128 0xd
+ 809 016c C7010000 		.4byte	.LASF14
+ 810 0170 01       		.byte	0x1
+ 811 0171 84       		.byte	0x84
+ 812 0172 37000000 		.4byte	0x37
+ 813 0176 03       		.byte	0x3
+ 814 0177 91       		.byte	0x91
+ 815 0178 A47F     		.sleb128 -92
+ 816 017a 0E       		.uleb128 0xe
+ 817 017b 3C000000 		.4byte	.LASF16
+ 818 017f 01       		.byte	0x1
+ 819 0180 86       		.byte	0x86
+ 820 0181 5B000000 		.4byte	0x5b
+ 821 0185 02       		.byte	0x2
+ 822 0186 91       		.byte	0x91
+ 823 0187 50       		.sleb128 -48
+ 824 0188 0F       		.uleb128 0xf
+ 825 0189 63683000 		.ascii	"ch0\000"
+ 826 018d 01       		.byte	0x1
+ 827 018e 89       		.byte	0x89
+ 828 018f 5B000000 		.4byte	0x5b
+ 829 0193 02       		.byte	0x2
+ 830 0194 91       		.byte	0x91
+ 831 0195 48       		.sleb128 -56
+ 832 0196 0F       		.uleb128 0xf
+ 833 0197 63683100 		.ascii	"ch1\000"
+ 834 019b 01       		.byte	0x1
+ 835 019c 8A       		.byte	0x8a
+ 836 019d 5B000000 		.4byte	0x5b
+ 837 01a1 02       		.byte	0x2
+ 838 01a2 91       		.byte	0x91
+ 839 01a3 40       		.sleb128 -64
+ 840 01a4 0E       		.uleb128 0xe
+ 841 01a5 6A000000 		.4byte	.LASF17
+ 842 01a9 01       		.byte	0x1
+ 843 01aa 8E       		.byte	0x8e
+ 844 01ab 5B000000 		.4byte	0x5b
+ 845 01af 02       		.byte	0x2
+ 846 01b0 91       		.byte	0x91
+ 847 01b1 60       		.sleb128 -32
+ 848 01b2 0E       		.uleb128 0xe
+ 849 01b3 44000000 		.4byte	.LASF18
+ 850 01b7 01       		.byte	0x1
+ 851 01b8 95       		.byte	0x95
+ 852 01b9 5B000000 		.4byte	0x5b
+ 853 01bd 03       		.byte	0x3
+ 854 01be 91       		.byte	0x91
+ 855 01bf B87F     		.sleb128 -72
+ 856 01c1 0E       		.uleb128 0xe
+ 857 01c2 B1000000 		.4byte	.LASF19
+ 858 01c6 01       		.byte	0x1
+ 859 01c7 96       		.byte	0x96
+ 860 01c8 49000000 		.4byte	0x49
+ 861 01cc 02       		.byte	0x2
+ 862 01cd 91       		.byte	0x91
+ 863 01ce 5C       		.sleb128 -36
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 22
+
+
+ 864 01cf 0E       		.uleb128 0xe
+ 865 01d0 BB010000 		.4byte	.LASF20
+ 866 01d4 01       		.byte	0x1
+ 867 01d5 97       		.byte	0x97
+ 868 01d6 49000000 		.4byte	0x49
+ 869 01da 02       		.byte	0x2
+ 870 01db 91       		.byte	0x91
+ 871 01dc 58       		.sleb128 -40
+ 872 01dd 0E       		.uleb128 0xe
+ 873 01de 51000000 		.4byte	.LASF21
+ 874 01e2 01       		.byte	0x1
+ 875 01e3 F2       		.byte	0xf2
+ 876 01e4 5B000000 		.4byte	0x5b
+ 877 01e8 03       		.byte	0x3
+ 878 01e9 91       		.byte	0x91
+ 879 01ea B07F     		.sleb128 -80
+ 880 01ec 0E       		.uleb128 0xe
+ 881 01ed B8000000 		.4byte	.LASF22
+ 882 01f1 01       		.byte	0x1
+ 883 01f2 FF       		.byte	0xff
+ 884 01f3 5B000000 		.4byte	0x5b
+ 885 01f7 03       		.byte	0x3
+ 886 01f8 91       		.byte	0x91
+ 887 01f9 A87F     		.sleb128 -88
+ 888 01fb 00       		.byte	0
+ 889 01fc 00       		.byte	0
+ 890              		.section	.debug_abbrev,"",%progbits
+ 891              	.Ldebug_abbrev0:
+ 892 0000 01       		.uleb128 0x1
+ 893 0001 11       		.uleb128 0x11
+ 894 0002 01       		.byte	0x1
+ 895 0003 25       		.uleb128 0x25
+ 896 0004 0E       		.uleb128 0xe
+ 897 0005 13       		.uleb128 0x13
+ 898 0006 0B       		.uleb128 0xb
+ 899 0007 03       		.uleb128 0x3
+ 900 0008 0E       		.uleb128 0xe
+ 901 0009 1B       		.uleb128 0x1b
+ 902 000a 0E       		.uleb128 0xe
+ 903 000b 11       		.uleb128 0x11
+ 904 000c 01       		.uleb128 0x1
+ 905 000d 12       		.uleb128 0x12
+ 906 000e 01       		.uleb128 0x1
+ 907 000f 10       		.uleb128 0x10
+ 908 0010 06       		.uleb128 0x6
+ 909 0011 00       		.byte	0
+ 910 0012 00       		.byte	0
+ 911 0013 02       		.uleb128 0x2
+ 912 0014 16       		.uleb128 0x16
+ 913 0015 00       		.byte	0
+ 914 0016 03       		.uleb128 0x3
+ 915 0017 08       		.uleb128 0x8
+ 916 0018 3A       		.uleb128 0x3a
+ 917 0019 0B       		.uleb128 0xb
+ 918 001a 3B       		.uleb128 0x3b
+ 919 001b 0B       		.uleb128 0xb
+ 920 001c 49       		.uleb128 0x49
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 23
+
+
+ 921 001d 13       		.uleb128 0x13
+ 922 001e 00       		.byte	0
+ 923 001f 00       		.byte	0
+ 924 0020 03       		.uleb128 0x3
+ 925 0021 24       		.uleb128 0x24
+ 926 0022 00       		.byte	0
+ 927 0023 0B       		.uleb128 0xb
+ 928 0024 0B       		.uleb128 0xb
+ 929 0025 3E       		.uleb128 0x3e
+ 930 0026 0B       		.uleb128 0xb
+ 931 0027 03       		.uleb128 0x3
+ 932 0028 0E       		.uleb128 0xe
+ 933 0029 00       		.byte	0
+ 934 002a 00       		.byte	0
+ 935 002b 04       		.uleb128 0x4
+ 936 002c 16       		.uleb128 0x16
+ 937 002d 00       		.byte	0
+ 938 002e 03       		.uleb128 0x3
+ 939 002f 0E       		.uleb128 0xe
+ 940 0030 3A       		.uleb128 0x3a
+ 941 0031 0B       		.uleb128 0xb
+ 942 0032 3B       		.uleb128 0x3b
+ 943 0033 0B       		.uleb128 0xb
+ 944 0034 49       		.uleb128 0x49
+ 945 0035 13       		.uleb128 0x13
+ 946 0036 00       		.byte	0
+ 947 0037 00       		.byte	0
+ 948 0038 05       		.uleb128 0x5
+ 949 0039 24       		.uleb128 0x24
+ 950 003a 00       		.byte	0
+ 951 003b 0B       		.uleb128 0xb
+ 952 003c 0B       		.uleb128 0xb
+ 953 003d 3E       		.uleb128 0x3e
+ 954 003e 0B       		.uleb128 0xb
+ 955 003f 03       		.uleb128 0x3
+ 956 0040 08       		.uleb128 0x8
+ 957 0041 00       		.byte	0
+ 958 0042 00       		.byte	0
+ 959 0043 06       		.uleb128 0x6
+ 960 0044 2E       		.uleb128 0x2e
+ 961 0045 01       		.byte	0x1
+ 962 0046 3F       		.uleb128 0x3f
+ 963 0047 0C       		.uleb128 0xc
+ 964 0048 03       		.uleb128 0x3
+ 965 0049 0E       		.uleb128 0xe
+ 966 004a 3A       		.uleb128 0x3a
+ 967 004b 0B       		.uleb128 0xb
+ 968 004c 3B       		.uleb128 0x3b
+ 969 004d 05       		.uleb128 0x5
+ 970 004e 27       		.uleb128 0x27
+ 971 004f 0C       		.uleb128 0xc
+ 972 0050 49       		.uleb128 0x49
+ 973 0051 13       		.uleb128 0x13
+ 974 0052 11       		.uleb128 0x11
+ 975 0053 01       		.uleb128 0x1
+ 976 0054 12       		.uleb128 0x12
+ 977 0055 01       		.uleb128 0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 24
+
+
+ 978 0056 40       		.uleb128 0x40
+ 979 0057 06       		.uleb128 0x6
+ 980 0058 9642     		.uleb128 0x2116
+ 981 005a 0C       		.uleb128 0xc
+ 982 005b 01       		.uleb128 0x1
+ 983 005c 13       		.uleb128 0x13
+ 984 005d 00       		.byte	0
+ 985 005e 00       		.byte	0
+ 986 005f 07       		.uleb128 0x7
+ 987 0060 34       		.uleb128 0x34
+ 988 0061 00       		.byte	0
+ 989 0062 03       		.uleb128 0x3
+ 990 0063 0E       		.uleb128 0xe
+ 991 0064 3A       		.uleb128 0x3a
+ 992 0065 0B       		.uleb128 0xb
+ 993 0066 3B       		.uleb128 0x3b
+ 994 0067 05       		.uleb128 0x5
+ 995 0068 49       		.uleb128 0x49
+ 996 0069 13       		.uleb128 0x13
+ 997 006a 02       		.uleb128 0x2
+ 998 006b 0A       		.uleb128 0xa
+ 999 006c 00       		.byte	0
+ 1000 006d 00       		.byte	0
+ 1001 006e 08       		.uleb128 0x8
+ 1002 006f 2E       		.uleb128 0x2e
+ 1003 0070 01       		.byte	0x1
+ 1004 0071 3F       		.uleb128 0x3f
+ 1005 0072 0C       		.uleb128 0xc
+ 1006 0073 03       		.uleb128 0x3
+ 1007 0074 0E       		.uleb128 0xe
+ 1008 0075 3A       		.uleb128 0x3a
+ 1009 0076 0B       		.uleb128 0xb
+ 1010 0077 3B       		.uleb128 0x3b
+ 1011 0078 05       		.uleb128 0x5
+ 1012 0079 49       		.uleb128 0x49
+ 1013 007a 13       		.uleb128 0x13
+ 1014 007b 3C       		.uleb128 0x3c
+ 1015 007c 0C       		.uleb128 0xc
+ 1016 007d 01       		.uleb128 0x1
+ 1017 007e 13       		.uleb128 0x13
+ 1018 007f 00       		.byte	0
+ 1019 0080 00       		.byte	0
+ 1020 0081 09       		.uleb128 0x9
+ 1021 0082 18       		.uleb128 0x18
+ 1022 0083 00       		.byte	0
+ 1023 0084 00       		.byte	0
+ 1024 0085 00       		.byte	0
+ 1025 0086 0A       		.uleb128 0xa
+ 1026 0087 01       		.uleb128 0x1
+ 1027 0088 01       		.byte	0x1
+ 1028 0089 49       		.uleb128 0x49
+ 1029 008a 13       		.uleb128 0x13
+ 1030 008b 01       		.uleb128 0x1
+ 1031 008c 13       		.uleb128 0x13
+ 1032 008d 00       		.byte	0
+ 1033 008e 00       		.byte	0
+ 1034 008f 0B       		.uleb128 0xb
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 25
+
+
+ 1035 0090 21       		.uleb128 0x21
+ 1036 0091 00       		.byte	0
+ 1037 0092 49       		.uleb128 0x49
+ 1038 0093 13       		.uleb128 0x13
+ 1039 0094 2F       		.uleb128 0x2f
+ 1040 0095 0B       		.uleb128 0xb
+ 1041 0096 00       		.byte	0
+ 1042 0097 00       		.byte	0
+ 1043 0098 0C       		.uleb128 0xc
+ 1044 0099 2E       		.uleb128 0x2e
+ 1045 009a 01       		.byte	0x1
+ 1046 009b 3F       		.uleb128 0x3f
+ 1047 009c 0C       		.uleb128 0xc
+ 1048 009d 03       		.uleb128 0x3
+ 1049 009e 0E       		.uleb128 0xe
+ 1050 009f 3A       		.uleb128 0x3a
+ 1051 00a0 0B       		.uleb128 0xb
+ 1052 00a1 3B       		.uleb128 0x3b
+ 1053 00a2 0B       		.uleb128 0xb
+ 1054 00a3 27       		.uleb128 0x27
+ 1055 00a4 0C       		.uleb128 0xc
+ 1056 00a5 49       		.uleb128 0x49
+ 1057 00a6 13       		.uleb128 0x13
+ 1058 00a7 11       		.uleb128 0x11
+ 1059 00a8 01       		.uleb128 0x1
+ 1060 00a9 12       		.uleb128 0x12
+ 1061 00aa 01       		.uleb128 0x1
+ 1062 00ab 40       		.uleb128 0x40
+ 1063 00ac 06       		.uleb128 0x6
+ 1064 00ad 9642     		.uleb128 0x2116
+ 1065 00af 0C       		.uleb128 0xc
+ 1066 00b0 00       		.byte	0
+ 1067 00b1 00       		.byte	0
+ 1068 00b2 0D       		.uleb128 0xd
+ 1069 00b3 05       		.uleb128 0x5
+ 1070 00b4 00       		.byte	0
+ 1071 00b5 03       		.uleb128 0x3
+ 1072 00b6 0E       		.uleb128 0xe
+ 1073 00b7 3A       		.uleb128 0x3a
+ 1074 00b8 0B       		.uleb128 0xb
+ 1075 00b9 3B       		.uleb128 0x3b
+ 1076 00ba 0B       		.uleb128 0xb
+ 1077 00bb 49       		.uleb128 0x49
+ 1078 00bc 13       		.uleb128 0x13
+ 1079 00bd 02       		.uleb128 0x2
+ 1080 00be 0A       		.uleb128 0xa
+ 1081 00bf 00       		.byte	0
+ 1082 00c0 00       		.byte	0
+ 1083 00c1 0E       		.uleb128 0xe
+ 1084 00c2 34       		.uleb128 0x34
+ 1085 00c3 00       		.byte	0
+ 1086 00c4 03       		.uleb128 0x3
+ 1087 00c5 0E       		.uleb128 0xe
+ 1088 00c6 3A       		.uleb128 0x3a
+ 1089 00c7 0B       		.uleb128 0xb
+ 1090 00c8 3B       		.uleb128 0x3b
+ 1091 00c9 0B       		.uleb128 0xb
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 26
+
+
+ 1092 00ca 49       		.uleb128 0x49
+ 1093 00cb 13       		.uleb128 0x13
+ 1094 00cc 02       		.uleb128 0x2
+ 1095 00cd 0A       		.uleb128 0xa
+ 1096 00ce 00       		.byte	0
+ 1097 00cf 00       		.byte	0
+ 1098 00d0 0F       		.uleb128 0xf
+ 1099 00d1 34       		.uleb128 0x34
+ 1100 00d2 00       		.byte	0
+ 1101 00d3 03       		.uleb128 0x3
+ 1102 00d4 08       		.uleb128 0x8
+ 1103 00d5 3A       		.uleb128 0x3a
+ 1104 00d6 0B       		.uleb128 0xb
+ 1105 00d7 3B       		.uleb128 0x3b
+ 1106 00d8 0B       		.uleb128 0xb
+ 1107 00d9 49       		.uleb128 0x49
+ 1108 00da 13       		.uleb128 0x13
+ 1109 00db 02       		.uleb128 0x2
+ 1110 00dc 0A       		.uleb128 0xa
+ 1111 00dd 00       		.byte	0
+ 1112 00de 00       		.byte	0
+ 1113 00df 00       		.byte	0
+ 1114              		.section	.debug_loc,"",%progbits
+ 1115              	.Ldebug_loc0:
+ 1116              	.LLST1:
+ 1117 0000 38020000 		.4byte	.LFB1-.Ltext0
+ 1118 0004 3A020000 		.4byte	.LCFI3-.Ltext0
+ 1119 0008 0200     		.2byte	0x2
+ 1120 000a 7D       		.byte	0x7d
+ 1121 000b 00       		.sleb128 0
+ 1122 000c 3A020000 		.4byte	.LCFI3-.Ltext0
+ 1123 0010 3C020000 		.4byte	.LCFI4-.Ltext0
+ 1124 0014 0200     		.2byte	0x2
+ 1125 0016 7D       		.byte	0x7d
+ 1126 0017 14       		.sleb128 20
+ 1127 0018 3C020000 		.4byte	.LCFI4-.Ltext0
+ 1128 001c 3E020000 		.4byte	.LCFI5-.Ltext0
+ 1129 0020 0200     		.2byte	0x2
+ 1130 0022 7D       		.byte	0x7d
+ 1131 0023 30       		.sleb128 48
+ 1132 0024 3E020000 		.4byte	.LCFI5-.Ltext0
+ 1133 0028 D4030000 		.4byte	.LFE1-.Ltext0
+ 1134 002c 0200     		.2byte	0x2
+ 1135 002e 77       		.byte	0x77
+ 1136 002f 30       		.sleb128 48
+ 1137 0030 00000000 		.4byte	0
+ 1138 0034 00000000 		.4byte	0
+ 1139              	.LLST0:
+ 1140 0038 00000000 		.4byte	.LFB0-.Ltext0
+ 1141 003c 02000000 		.4byte	.LCFI0-.Ltext0
+ 1142 0040 0200     		.2byte	0x2
+ 1143 0042 7D       		.byte	0x7d
+ 1144 0043 00       		.sleb128 0
+ 1145 0044 02000000 		.4byte	.LCFI0-.Ltext0
+ 1146 0048 04000000 		.4byte	.LCFI1-.Ltext0
+ 1147 004c 0200     		.2byte	0x2
+ 1148 004e 7D       		.byte	0x7d
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 27
+
+
+ 1149 004f 14       		.sleb128 20
+ 1150 0050 04000000 		.4byte	.LCFI1-.Ltext0
+ 1151 0054 06000000 		.4byte	.LCFI2-.Ltext0
+ 1152 0058 0300     		.2byte	0x3
+ 1153 005a 7D       		.byte	0x7d
+ 1154 005b 8001     		.sleb128 128
+ 1155 005d 06000000 		.4byte	.LCFI2-.Ltext0
+ 1156 0061 38020000 		.4byte	.LFE0-.Ltext0
+ 1157 0065 0300     		.2byte	0x3
+ 1158 0067 77       		.byte	0x77
+ 1159 0068 8001     		.sleb128 128
+ 1160 006a 00000000 		.4byte	0
+ 1161 006e 00000000 		.4byte	0
+ 1162              		.section	.debug_aranges,"",%progbits
+ 1163 0000 1C000000 		.4byte	0x1c
+ 1164 0004 0200     		.2byte	0x2
+ 1165 0006 00000000 		.4byte	.Ldebug_info0
+ 1166 000a 04       		.byte	0x4
+ 1167 000b 00       		.byte	0
+ 1168 000c 0000     		.2byte	0
+ 1169 000e 0000     		.2byte	0
+ 1170 0010 00000000 		.4byte	.Ltext0
+ 1171 0014 D4030000 		.4byte	.Letext0-.Ltext0
+ 1172 0018 00000000 		.4byte	0
+ 1173 001c 00000000 		.4byte	0
+ 1174              		.section	.debug_line,"",%progbits
+ 1175              	.Ldebug_line0:
+ 1176 0000 93000000 		.section	.debug_str,"MS",%progbits,1
+ 1176      02002D00 
+ 1176      00000201 
+ 1176      FB0E0D00 
+ 1176      01010101 
+ 1177              	.LASF9:
+ 1178 0000 6C6F6E67 		.ascii	"long long int\000"
+ 1178      206C6F6E 
+ 1178      6720696E 
+ 1178      7400
+ 1179              	.LASF4:
+ 1180 000e 756E7369 		.ascii	"unsigned int\000"
+ 1180      676E6564 
+ 1180      20696E74 
+ 1180      00
+ 1181              	.LASF26:
+ 1182 001b 6D656173 		.ascii	"measureBrightness\000"
+ 1182      75726542 
+ 1182      72696768 
+ 1182      746E6573 
+ 1182      7300
+ 1183              	.LASF27:
+ 1184 002d 6D64656C 		.ascii	"mdelay\000"
+ 1184      617900
+ 1185              	.LASF10:
+ 1186 0034 72657443 		.ascii	"retCode\000"
+ 1186      6F646500 
+ 1187              	.LASF16:
+ 1188 003c 63685363 		.ascii	"chScale\000"
+ 1188      616C6500 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 28
+
+
+ 1189              	.LASF18:
+ 1190 0044 726F756E 		.ascii	"roundedRatio\000"
+ 1190      64656452 
+ 1190      6174696F 
+ 1190      00
+ 1191              	.LASF21:
+ 1192 0051 74656D70 		.ascii	"temporary\000"
+ 1192      6F726172 
+ 1192      7900
+ 1193              	.LASF5:
+ 1194 005b 74553634 		.ascii	"tU64\000"
+ 1194      00
+ 1195              	.LASF12:
+ 1196 0060 72656164 		.ascii	"readValue\000"
+ 1196      56616C75 
+ 1196      6500
+ 1197              	.LASF17:
+ 1198 006a 6368616E 		.ascii	"channelsRatio\000"
+ 1198      6E656C73 
+ 1198      52617469 
+ 1198      6F00
+ 1199              	.LASF6:
+ 1200 0078 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1200      206C6F6E 
+ 1200      6720756E 
+ 1200      7369676E 
+ 1200      65642069 
+ 1201              	.LASF1:
+ 1202 008f 756E7369 		.ascii	"unsigned char\000"
+ 1202      676E6564 
+ 1202      20636861 
+ 1202      7200
+ 1203              	.LASF28:
+ 1204 009d 63616C63 		.ascii	"calculateBrightness\000"
+ 1204      756C6174 
+ 1204      65427269 
+ 1204      6768746E 
+ 1204      65737300 
+ 1205              	.LASF19:
+ 1206 00b1 6256616C 		.ascii	"bValue\000"
+ 1206      756500
+ 1207              	.LASF22:
+ 1208 00b8 72657375 		.ascii	"resultInLux\000"
+ 1208      6C74496E 
+ 1208      4C757800 
+ 1209              	.LASF23:
+ 1210 00c4 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
+ 1210      43313120 
+ 1210      372E332E 
+ 1210      31203230 
+ 1210      31383036 
+ 1211 00f7 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb -mthum"
+ 1211      20726576 
+ 1211      6973696F 
+ 1211      6E203236 
+ 1211      31393037 
+ 1212 012a 622D696E 		.ascii	"b-interwork -gdwarf-2 -O0\000"
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 29
+
+
+ 1212      74657277 
+ 1212      6F726B20 
+ 1212      2D676477 
+ 1212      6172662D 
+ 1213              	.LASF11:
+ 1214 0144 636F6D6D 		.ascii	"command\000"
+ 1214      616E6400 
+ 1215              	.LASF24:
+ 1216 014c 74736C32 		.ascii	"tsl2561.c\000"
+ 1216      3536312E 
+ 1216      6300
+ 1217              	.LASF15:
+ 1218 0156 62726967 		.ascii	"brightnessValue\000"
+ 1218      68746E65 
+ 1218      73735661 
+ 1218      6C756500 
+ 1219              	.LASF25:
+ 1220 0166 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
+ 1220      6D626564 
+ 1220      6465645C 
+ 1220      32313338 
+ 1220      4D696E69 
+ 1221              	.LASF2:
+ 1222 0184 73686F72 		.ascii	"short unsigned int\000"
+ 1222      7420756E 
+ 1222      7369676E 
+ 1222      65642069 
+ 1222      6E7400
+ 1223              	.LASF7:
+ 1224 0197 7369676E 		.ascii	"signed char\000"
+ 1224      65642063 
+ 1224      68617200 
+ 1225              	.LASF0:
+ 1226 01a3 74553136 		.ascii	"tU16\000"
+ 1226      00
+ 1227              	.LASF13:
+ 1228 01a8 6368616E 		.ascii	"channel0\000"
+ 1228      6E656C30 
+ 1228      00
+ 1229              	.LASF8:
+ 1230 01b1 73686F72 		.ascii	"short int\000"
+ 1230      7420696E 
+ 1230      7400
+ 1231              	.LASF20:
+ 1232 01bb 6D56616C 		.ascii	"mValue\000"
+ 1232      756500
+ 1233              	.LASF3:
+ 1234 01c2 74553332 		.ascii	"tU32\000"
+ 1234      00
+ 1235              	.LASF14:
+ 1236 01c7 6368616E 		.ascii	"channel1\000"
+ 1236      6E656C31 
+ 1236      00
+ 1237              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s 			page 30
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 tsl2561.c
+C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s:24     .text:00000000 calculateBrightness
+C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s:32     .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s:368    .text:00000220 $d
+C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s:377    .text:00000238 $t
+C:\Users\embedded\AppData\Local\Temp\cckeMtzw.s:384    .text:00000238 measureBrightness
+
+UNDEFINED SYMBOLS
+__aeabi_lmul
+__aeabi_uldivmod
+i2cWrite
+mdelay
+i2cRead

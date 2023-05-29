@@ -1,0 +1,892 @@
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 1
+
+
+   1              		.cpu arm7tdmi
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 0
+  10              		.eabi_attribute 18, 4
+  11              		.file	"lm75.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.rodata
+  16              		.align	2
+  17              	.LC0:
+  18 0000 256400   		.ascii	"%d\000"
+  19              		.text
+  20              		.align	1
+  21              		.global	measureTemperature
+  22              		.syntax unified
+  23              		.code	16
+  24              		.thumb_func
+  25              		.fpu softvfp
+  26              		.type	measureTemperature, %function
+  27              	measureTemperature:
+  28              	.LFB0:
+  29              		.file 1 "lm75.c"
+   1:lm75.c        **** /******************************************************************************
+   2:lm75.c        ****  *  Obsługa pomiaru temperatury przy pomocy temometru LM75.
+   3:lm75.c        ****  * 
+   4:lm75.c        ****  *  Plik z kodem źródłowym funkcji.
+   5:lm75.c        ****  *****************************************************************************/
+   6:lm75.c        **** 
+   7:lm75.c        **** /******************************************************************************
+   8:lm75.c        ****  * Includes
+   9:lm75.c        ****  *****************************************************************************/
+  10:lm75.c        **** 
+  11:lm75.c        **** #include "lm75.h"
+  12:lm75.c        **** 
+  13:lm75.c        **** /******************************************************************************
+  14:lm75.c        ****  * Defines and typedefs
+  15:lm75.c        ****  *****************************************************************************/
+  16:lm75.c        **** 
+  17:lm75.c        **** #define lm75Address         0x48 // 0x48 = 0b 0100 1000
+  18:lm75.c        **** #define lm75ReadAddress     0X91 // 0X91 = 0b 1001 0001
+  19:lm75.c        **** #define lm75WriteAddress    0X90 // 0X90 = 0b 1001 0000
+  20:lm75.c        **** #define lm75AddressSoldered         0x4F // 0x4F = 0b 0100 1111
+  21:lm75.c        **** #define lm75ReadAddressSoldered     0x9F // 0x9F = 0b 1001 1111
+  22:lm75.c        **** #define lm75WriteAddressSoldered    0x9E // 0x9E = 0b 1001 1110
+  23:lm75.c        **** 
+  24:lm75.c        **** /*****************************************************************************
+  25:lm75.c        ****  * Global variables
+  26:lm75.c        ****  ****************************************************************************/
+  27:lm75.c        **** 
+  28:lm75.c        **** /*****************************************************************************
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 2
+
+
+  29:lm75.c        ****  * Local variables
+  30:lm75.c        ****  ****************************************************************************/
+  31:lm75.c        **** 
+  32:lm75.c        **** /*****************************************************************************
+  33:lm75.c        ****  * Local prototypes
+  34:lm75.c        ****  ****************************************************************************/
+  35:lm75.c        **** 
+  36:lm75.c        **** /*
+  37:lm75.c        ****  * @brief   Funkcja measureTemperature() jest wykorzystywana do odczytania z urządzenia LM75 niepr
+  38:lm75.c        ****  *          temperatury, oraz jej przeliczenie na prawidłową, aktualnie występującą temperatur
+  39:lm75.c        ****  *          Celsjusza.
+  40:lm75.c        ****  *
+  41:lm75.c        ****  * @param   void
+  42:lm75.c        ****  *
+  43:lm75.c        ****  * @returns void
+  44:lm75.c        ****  *
+  45:lm75.c        ****  * @side effects:
+  46:lm75.c        ****  *          Wartość temperatury podana jest z dokładnością do 0.5 stopnia Celsjusza, co stanow
+  47:lm75.c        ****  *          termometru LM75 (jednostkową, minimalną różnicę pomiędzy temperaturami).
+  48:lm75.c        ****  */
+  49:lm75.c        **** 
+  50:lm75.c        **** void measureTemperature(void)
+  51:lm75.c        **** {
+  30              		.loc 1 51 0
+  31              		.cfi_startproc
+  32              		@ Function supports interworking.
+  33              		@ args = 0, pretend = 0, frame = 24
+  34              		@ frame_needed = 1, uses_anonymous_args = 0
+  35 0000 B0B5     		push	{r4, r5, r7, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 16
+  38              		.cfi_offset 4, -16
+  39              		.cfi_offset 5, -12
+  40              		.cfi_offset 7, -8
+  41              		.cfi_offset 14, -4
+  42 0002 86B0     		sub	sp, sp, #24
+  43              	.LCFI1:
+  44              		.cfi_def_cfa_offset 40
+  45 0004 00AF     		add	r7, sp, #0
+  46              	.LCFI2:
+  47              		.cfi_def_cfa_register 7
+  52:lm75.c        ****     // Variable holding result of I2C operation.
+  53:lm75.c        ****     tU8 retCode = 0;
+  48              		.loc 1 53 0
+  49 0006 1325     		movs	r5, #19
+  50 0008 7B19     		adds	r3, r7, r5
+  51 000a 0022     		movs	r2, #0
+  52 000c 1A70     		strb	r2, [r3]
+  54:lm75.c        **** 
+  55:lm75.c        ****     // Buffer for read temperature values
+  56:lm75.c        ****     tU8 readTemperature[2] = {0};
+  53              		.loc 1 56 0
+  54 000e 1024     		movs	r4, #16
+  55 0010 3B19     		adds	r3, r7, r4
+  56 0012 0022     		movs	r2, #0
+  57 0014 1A80     		strh	r2, [r3]
+  57:lm75.c        **** 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 3
+
+
+  58:lm75.c        ****     // Reading temperature value from LM75 device
+  59:lm75.c        ****     retCode = i2cRead(lm75ReadAddress, readTemperature, 2);
+  58              		.loc 1 59 0
+  59 0016 3B19     		adds	r3, r7, r4
+  60 0018 0222     		movs	r2, #2
+  61 001a 1900     		movs	r1, r3
+  62 001c 9120     		movs	r0, #145
+  63 001e FFF7FEFF 		bl	i2cRead
+  64 0022 0300     		movs	r3, r0
+  65 0024 1A00     		movs	r2, r3
+  66 0026 7B19     		adds	r3, r7, r5
+  67 0028 1A70     		strb	r2, [r3]
+  60:lm75.c        **** 
+  61:lm75.c        ****     // Char array used for storing temperature to be shown to the user.
+  62:lm75.c        ****     tU8 charArray[10] = {0};
+  68              		.loc 1 62 0
+  69 002a 3B1D     		adds	r3, r7, #4
+  70 002c 1800     		movs	r0, r3
+  71 002e 0A23     		movs	r3, #10
+  72 0030 1A00     		movs	r2, r3
+  73 0032 0021     		movs	r1, #0
+  74 0034 FFF7FEFF 		bl	memset
+  63:lm75.c        **** 
+  64:lm75.c        ****     // Variable for string integer part of the temperature
+  65:lm75.c        ****     // Since the temperature can be negative (when the 8-th bit is up then this variable must be tS
+  66:lm75.c        ****     tS8 calculatedValue = readTemperature[0];
+  75              		.loc 1 66 0
+  76 0038 3B19     		adds	r3, r7, r4
+  77 003a 1A78     		ldrb	r2, [r3]
+  78 003c 1721     		movs	r1, #23
+  79 003e 7B18     		adds	r3, r7, r1
+  80 0040 1A70     		strb	r2, [r3]
+  67:lm75.c        **** 
+  68:lm75.c        ****     // Flag indicating whether temperature value is below zero or not.
+  69:lm75.c        ****     tU8 isNegative = 0;
+  81              		.loc 1 69 0
+  82 0042 1623     		movs	r3, #22
+  83 0044 FB18     		adds	r3, r7, r3
+  84 0046 0022     		movs	r2, #0
+  85 0048 1A70     		strb	r2, [r3]
+  70:lm75.c        **** 
+  71:lm75.c        ****     // Flag indicating whether it is required to add 0.5 Celsius degree to measured temperature.
+  72:lm75.c        ****     tU8 appendHalf = 0;
+  86              		.loc 1 72 0
+  87 004a 1523     		movs	r3, #21
+  88 004c FB18     		adds	r3, r7, r3
+  89 004e 0022     		movs	r2, #0
+  90 0050 1A70     		strb	r2, [r3]
+  73:lm75.c        **** 
+  74:lm75.c        ****     if (calculatedValue < 0) {
+  91              		.loc 1 74 0
+  92 0052 7B18     		adds	r3, r7, r1
+  93 0054 1B78     		ldrb	r3, [r3]
+  94 0056 7F2B     		cmp	r3, #127
+  95 0058 03D9     		bls	.L2
+  75:lm75.c        ****     	// Case for negative temperature - if temperature is in fact below zero, then adding 0.5 degre
+  76:lm75.c        ****         isNegative = 1;
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 4
+
+
+  96              		.loc 1 76 0
+  97 005a 1623     		movs	r3, #22
+  98 005c FB18     		adds	r3, r7, r3
+  99 005e 0122     		movs	r2, #1
+ 100 0060 1A70     		strb	r2, [r3]
+ 101              	.L2:
+  77:lm75.c        ****     }
+  78:lm75.c        ****     if ((isNegative == (tU8)1) && ((readTemperature[1] & (tU8)0x80) == (tU8)0x80)){
+ 102              		.loc 1 78 0
+ 103 0062 1623     		movs	r3, #22
+ 104 0064 FB18     		adds	r3, r7, r3
+ 105 0066 1B78     		ldrb	r3, [r3]
+ 106 0068 012B     		cmp	r3, #1
+ 107 006a 12D1     		bne	.L3
+ 108              		.loc 1 78 0 is_stmt 0 discriminator 1
+ 109 006c 1023     		movs	r3, #16
+ 110 006e FB18     		adds	r3, r7, r3
+ 111 0070 5B78     		ldrb	r3, [r3, #1]
+ 112 0072 1B06     		lsls	r3, r3, #24
+ 113 0074 1B16     		asrs	r3, r3, #24
+ 114 0076 0CD5     		bpl	.L3
+  79:lm75.c        ****         // Case for temperature that is negative and most significant bit in LSB (that is for 0.5 d
+  80:lm75.c        ****         calculatedValue = calculatedValue + (tS8)1;
+ 115              		.loc 1 80 0 is_stmt 1
+ 116 0078 1721     		movs	r1, #23
+ 117 007a 7B18     		adds	r3, r7, r1
+ 118 007c 1B78     		ldrb	r3, [r3]
+ 119 007e 0133     		adds	r3, r3, #1
+ 120 0080 1B06     		lsls	r3, r3, #24
+ 121 0082 1A0E     		lsrs	r2, r3, #24
+ 122 0084 7B18     		adds	r3, r7, r1
+ 123 0086 1A70     		strb	r2, [r3]
+  81:lm75.c        ****     	appendHalf = 1;
+ 124              		.loc 1 81 0
+ 125 0088 1523     		movs	r3, #21
+ 126 008a FB18     		adds	r3, r7, r3
+ 127 008c 0122     		movs	r2, #1
+ 128 008e 1A70     		strb	r2, [r3]
+ 129 0090 0EE0     		b	.L4
+ 130              	.L3:
+  82:lm75.c        ****     } else if ((isNegative == (tU8)0) && ((readTemperature[1] & (tU8)0x80) == (tU8)0x80)) {
+ 131              		.loc 1 82 0
+ 132 0092 1623     		movs	r3, #22
+ 133 0094 FB18     		adds	r3, r7, r3
+ 134 0096 1B78     		ldrb	r3, [r3]
+ 135 0098 002B     		cmp	r3, #0
+ 136 009a 09D1     		bne	.L4
+ 137              		.loc 1 82 0 is_stmt 0 discriminator 1
+ 138 009c 1023     		movs	r3, #16
+ 139 009e FB18     		adds	r3, r7, r3
+ 140 00a0 5B78     		ldrb	r3, [r3, #1]
+ 141 00a2 1B06     		lsls	r3, r3, #24
+ 142 00a4 1B16     		asrs	r3, r3, #24
+ 143 00a6 03D5     		bpl	.L4
+  83:lm75.c        ****         // Case for temperature that is non negative and most significant bit in LSB (that is for 0
+  84:lm75.c        ****     	appendHalf = 1;
+ 144              		.loc 1 84 0 is_stmt 1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 5
+
+
+ 145 00a8 1523     		movs	r3, #21
+ 146 00aa FB18     		adds	r3, r7, r3
+ 147 00ac 0122     		movs	r2, #1
+ 148 00ae 1A70     		strb	r2, [r3]
+ 149              	.L4:
+  85:lm75.c        ****     } else {
+  86:lm75.c        ****         ;
+  87:lm75.c        ****     }
+  88:lm75.c        **** 
+  89:lm75.c        ****     // Variable used as iterator in a loop.
+  90:lm75.c        **** 	tU8 i = 0;
+ 150              		.loc 1 90 0
+ 151 00b0 1423     		movs	r3, #20
+ 152 00b2 FB18     		adds	r3, r7, r3
+ 153 00b4 0022     		movs	r2, #0
+ 154 00b6 1A70     		strb	r2, [r3]
+  91:lm75.c        **** 
+  92:lm75.c        ****     // Parsing calculatedValue into charArray to change it accroding to appendHalf flag value
+  93:lm75.c        ****     retCode = sprintf(charArray, "%d", calculatedValue);
+ 155              		.loc 1 93 0
+ 156 00b8 1723     		movs	r3, #23
+ 157 00ba FB18     		adds	r3, r7, r3
+ 158 00bc 0022     		movs	r2, #0
+ 159 00be 9A56     		ldrsb	r2, [r3, r2]
+ 160 00c0 1D49     		ldr	r1, .L9
+ 161 00c2 3B1D     		adds	r3, r7, #4
+ 162 00c4 1800     		movs	r0, r3
+ 163 00c6 FFF7FEFF 		bl	sprintf
+ 164 00ca 0200     		movs	r2, r0
+ 165 00cc 1323     		movs	r3, #19
+ 166 00ce FB18     		adds	r3, r7, r3
+ 167 00d0 1A70     		strb	r2, [r3]
+  94:lm75.c        **** 
+  95:lm75.c        ****     while(charArray[i] != (tU8)0) {
+ 168              		.loc 1 95 0
+ 169 00d2 05E0     		b	.L5
+ 170              	.L6:
+  96:lm75.c        ****         i = i + (tU8)1;
+ 171              		.loc 1 96 0
+ 172 00d4 1422     		movs	r2, #20
+ 173 00d6 BB18     		adds	r3, r7, r2
+ 174 00d8 BA18     		adds	r2, r7, r2
+ 175 00da 1278     		ldrb	r2, [r2]
+ 176 00dc 0132     		adds	r2, r2, #1
+ 177 00de 1A70     		strb	r2, [r3]
+ 178              	.L5:
+  95:lm75.c        ****         i = i + (tU8)1;
+ 179              		.loc 1 95 0
+ 180 00e0 1423     		movs	r3, #20
+ 181 00e2 FB18     		adds	r3, r7, r3
+ 182 00e4 1B78     		ldrb	r3, [r3]
+ 183 00e6 3A1D     		adds	r2, r7, #4
+ 184 00e8 D35C     		ldrb	r3, [r2, r3]
+ 185 00ea 002B     		cmp	r3, #0
+ 186 00ec F2D1     		bne	.L6
+  97:lm75.c        ****     }
+  98:lm75.c        **** 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 6
+
+
+  99:lm75.c        ****     charArray[i] = '.';
+ 187              		.loc 1 99 0
+ 188 00ee 1423     		movs	r3, #20
+ 189 00f0 FB18     		adds	r3, r7, r3
+ 190 00f2 1B78     		ldrb	r3, [r3]
+ 191 00f4 3A1D     		adds	r2, r7, #4
+ 192 00f6 2E21     		movs	r1, #46
+ 193 00f8 D154     		strb	r1, [r2, r3]
+ 100:lm75.c        ****     if (appendHalf == (tU8)1) {
+ 194              		.loc 1 100 0
+ 195 00fa 1523     		movs	r3, #21
+ 196 00fc FB18     		adds	r3, r7, r3
+ 197 00fe 1B78     		ldrb	r3, [r3]
+ 198 0100 012B     		cmp	r3, #1
+ 199 0102 07D1     		bne	.L7
+ 101:lm75.c        ****         charArray[i + (tU8)1] = '5';
+ 200              		.loc 1 101 0
+ 201 0104 1423     		movs	r3, #20
+ 202 0106 FB18     		adds	r3, r7, r3
+ 203 0108 1B78     		ldrb	r3, [r3]
+ 204 010a 0133     		adds	r3, r3, #1
+ 205 010c 3A1D     		adds	r2, r7, #4
+ 206 010e 3521     		movs	r1, #53
+ 207 0110 D154     		strb	r1, [r2, r3]
+ 208 0112 06E0     		b	.L8
+ 209              	.L7:
+ 102:lm75.c        ****     } else {
+ 103:lm75.c        ****         charArray[i + (tU8)1] = '0';
+ 210              		.loc 1 103 0
+ 211 0114 1423     		movs	r3, #20
+ 212 0116 FB18     		adds	r3, r7, r3
+ 213 0118 1B78     		ldrb	r3, [r3]
+ 214 011a 0133     		adds	r3, r3, #1
+ 215 011c 3A1D     		adds	r2, r7, #4
+ 216 011e 3021     		movs	r1, #48
+ 217 0120 D154     		strb	r1, [r2, r3]
+ 218              	.L8:
+ 104:lm75.c        ****     }
+ 105:lm75.c        **** 
+ 106:lm75.c        ****     lcdPuts(charArray);
+ 219              		.loc 1 106 0
+ 220 0122 3B1D     		adds	r3, r7, #4
+ 221 0124 1800     		movs	r0, r3
+ 222 0126 FFF7FEFF 		bl	lcdPuts
+ 107:lm75.c        **** }
+ 223              		.loc 1 107 0
+ 224 012a C046     		nop
+ 225 012c BD46     		mov	sp, r7
+ 226 012e 06B0     		add	sp, sp, #24
+ 227              		@ sp needed
+ 228 0130 B0BC     		pop	{r4, r5, r7}
+ 229 0132 01BC     		pop	{r0}
+ 230 0134 0047     		bx	r0
+ 231              	.L10:
+ 232 0136 C046     		.align	2
+ 233              	.L9:
+ 234 0138 00000000 		.word	.LC0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 7
+
+
+ 235              		.cfi_endproc
+ 236              	.LFE0:
+ 237              		.size	measureTemperature, .-measureTemperature
+ 238              	.Letext0:
+ 239              		.file 2 "general.h"
+ 240              		.file 3 "<built-in>"
+ 241              		.section	.debug_info,"",%progbits
+ 242              	.Ldebug_info0:
+ 243 0000 3D010000 		.4byte	0x13d
+ 244 0004 0200     		.2byte	0x2
+ 245 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 246 000a 04       		.byte	0x4
+ 247 000b 01       		.uleb128 0x1
+ 248 000c 73000000 		.4byte	.LASF14
+ 249 0010 0C       		.byte	0xc
+ 250 0011 4F010000 		.4byte	.LASF15
+ 251 0015 FE000000 		.4byte	.LASF16
+ 252 0019 00000000 		.4byte	.Ltext0
+ 253 001d 3C010000 		.4byte	.Letext0
+ 254 0021 00000000 		.4byte	.Ldebug_line0
+ 255 0025 02       		.uleb128 0x2
+ 256 0026 74553800 		.ascii	"tU8\000"
+ 257 002a 02       		.byte	0x2
+ 258 002b 20       		.byte	0x20
+ 259 002c 30000000 		.4byte	0x30
+ 260 0030 03       		.uleb128 0x3
+ 261 0031 01       		.byte	0x1
+ 262 0032 08       		.byte	0x8
+ 263 0033 60000000 		.4byte	.LASF0
+ 264 0037 03       		.uleb128 0x3
+ 265 0038 02       		.byte	0x2
+ 266 0039 07       		.byte	0x7
+ 267 003a 1C010000 		.4byte	.LASF1
+ 268 003e 03       		.uleb128 0x3
+ 269 003f 04       		.byte	0x4
+ 270 0040 07       		.byte	0x7
+ 271 0041 21000000 		.4byte	.LASF2
+ 272 0045 03       		.uleb128 0x3
+ 273 0046 08       		.byte	0x8
+ 274 0047 07       		.byte	0x7
+ 275 0048 49000000 		.4byte	.LASF3
+ 276 004c 02       		.uleb128 0x2
+ 277 004d 74533800 		.ascii	"tS8\000"
+ 278 0051 02       		.byte	0x2
+ 279 0052 24       		.byte	0x24
+ 280 0053 57000000 		.4byte	0x57
+ 281 0057 03       		.uleb128 0x3
+ 282 0058 01       		.byte	0x1
+ 283 0059 06       		.byte	0x6
+ 284 005a 2F010000 		.4byte	.LASF4
+ 285 005e 03       		.uleb128 0x3
+ 286 005f 02       		.byte	0x2
+ 287 0060 05       		.byte	0x5
+ 288 0061 45010000 		.4byte	.LASF5
+ 289 0065 04       		.uleb128 0x4
+ 290 0066 04       		.byte	0x4
+ 291 0067 05       		.byte	0x5
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 8
+
+
+ 292 0068 696E7400 		.ascii	"int\000"
+ 293 006c 03       		.uleb128 0x3
+ 294 006d 08       		.byte	0x8
+ 295 006e 05       		.byte	0x5
+ 296 006f 00000000 		.4byte	.LASF6
+ 297 0073 05       		.uleb128 0x5
+ 298 0074 01       		.byte	0x1
+ 299 0075 0E000000 		.4byte	.LASF17
+ 300 0079 01       		.byte	0x1
+ 301 007a 32       		.byte	0x32
+ 302 007b 01       		.byte	0x1
+ 303 007c 00000000 		.4byte	.LFB0
+ 304 0080 3C010000 		.4byte	.LFE0
+ 305 0084 00000000 		.4byte	.LLST0
+ 306 0088 01       		.byte	0x1
+ 307 0089 08010000 		.4byte	0x108
+ 308 008d 06       		.uleb128 0x6
+ 309 008e 2E000000 		.4byte	.LASF7
+ 310 0092 01       		.byte	0x1
+ 311 0093 35       		.byte	0x35
+ 312 0094 25000000 		.4byte	0x25
+ 313 0098 02       		.byte	0x2
+ 314 0099 91       		.byte	0x91
+ 315 009a 6B       		.sleb128 -21
+ 316 009b 06       		.uleb128 0x6
+ 317 009c 56010000 		.4byte	.LASF8
+ 318 00a0 01       		.byte	0x1
+ 319 00a1 38       		.byte	0x38
+ 320 00a2 08010000 		.4byte	0x108
+ 321 00a6 02       		.byte	0x2
+ 322 00a7 91       		.byte	0x91
+ 323 00a8 68       		.sleb128 -24
+ 324 00a9 06       		.uleb128 0x6
+ 325 00aa 3B010000 		.4byte	.LASF9
+ 326 00ae 01       		.byte	0x1
+ 327 00af 3E       		.byte	0x3e
+ 328 00b0 18010000 		.4byte	0x118
+ 329 00b4 02       		.byte	0x2
+ 330 00b5 91       		.byte	0x91
+ 331 00b6 5C       		.sleb128 -36
+ 332 00b7 06       		.uleb128 0x6
+ 333 00b8 66010000 		.4byte	.LASF10
+ 334 00bc 01       		.byte	0x1
+ 335 00bd 42       		.byte	0x42
+ 336 00be 4C000000 		.4byte	0x4c
+ 337 00c2 02       		.byte	0x2
+ 338 00c3 91       		.byte	0x91
+ 339 00c4 6F       		.sleb128 -17
+ 340 00c5 06       		.uleb128 0x6
+ 341 00c6 3E000000 		.4byte	.LASF11
+ 342 00ca 01       		.byte	0x1
+ 343 00cb 45       		.byte	0x45
+ 344 00cc 25000000 		.4byte	0x25
+ 345 00d0 02       		.byte	0x2
+ 346 00d1 91       		.byte	0x91
+ 347 00d2 6E       		.sleb128 -18
+ 348 00d3 06       		.uleb128 0x6
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 9
+
+
+ 349 00d4 F3000000 		.4byte	.LASF12
+ 350 00d8 01       		.byte	0x1
+ 351 00d9 48       		.byte	0x48
+ 352 00da 25000000 		.4byte	0x25
+ 353 00de 02       		.byte	0x2
+ 354 00df 91       		.byte	0x91
+ 355 00e0 6D       		.sleb128 -19
+ 356 00e1 07       		.uleb128 0x7
+ 357 00e2 6900     		.ascii	"i\000"
+ 358 00e4 01       		.byte	0x1
+ 359 00e5 5A       		.byte	0x5a
+ 360 00e6 25000000 		.4byte	0x25
+ 361 00ea 02       		.byte	0x2
+ 362 00eb 91       		.byte	0x91
+ 363 00ec 6C       		.sleb128 -20
+ 364 00ed 08       		.uleb128 0x8
+ 365 00ee 01       		.byte	0x1
+ 366 00ef 36000000 		.4byte	.LASF18
+ 367 00f3 03       		.byte	0x3
+ 368 00f4 00       		.byte	0
+ 369 00f5 01       		.byte	0x1
+ 370 00f6 65000000 		.4byte	0x65
+ 371 00fa 01       		.byte	0x1
+ 372 00fb 09       		.uleb128 0x9
+ 373 00fc 28010000 		.4byte	0x128
+ 374 0100 09       		.uleb128 0x9
+ 375 0101 3A010000 		.4byte	0x13a
+ 376 0105 0A       		.uleb128 0xa
+ 377 0106 00       		.byte	0
+ 378 0107 00       		.byte	0
+ 379 0108 0B       		.uleb128 0xb
+ 380 0109 25000000 		.4byte	0x25
+ 381 010d 18010000 		.4byte	0x118
+ 382 0111 0C       		.uleb128 0xc
+ 383 0112 3E000000 		.4byte	0x3e
+ 384 0116 01       		.byte	0x1
+ 385 0117 00       		.byte	0
+ 386 0118 0B       		.uleb128 0xb
+ 387 0119 25000000 		.4byte	0x25
+ 388 011d 28010000 		.4byte	0x128
+ 389 0121 0C       		.uleb128 0xc
+ 390 0122 3E000000 		.4byte	0x3e
+ 391 0126 09       		.byte	0x9
+ 392 0127 00       		.byte	0
+ 393 0128 0D       		.uleb128 0xd
+ 394 0129 04       		.byte	0x4
+ 395 012a 2E010000 		.4byte	0x12e
+ 396 012e 03       		.uleb128 0x3
+ 397 012f 01       		.byte	0x1
+ 398 0130 08       		.byte	0x8
+ 399 0131 6E000000 		.4byte	.LASF13
+ 400 0135 0E       		.uleb128 0xe
+ 401 0136 2E010000 		.4byte	0x12e
+ 402 013a 0D       		.uleb128 0xd
+ 403 013b 04       		.byte	0x4
+ 404 013c 35010000 		.4byte	0x135
+ 405 0140 00       		.byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 10
+
+
+ 406              		.section	.debug_abbrev,"",%progbits
+ 407              	.Ldebug_abbrev0:
+ 408 0000 01       		.uleb128 0x1
+ 409 0001 11       		.uleb128 0x11
+ 410 0002 01       		.byte	0x1
+ 411 0003 25       		.uleb128 0x25
+ 412 0004 0E       		.uleb128 0xe
+ 413 0005 13       		.uleb128 0x13
+ 414 0006 0B       		.uleb128 0xb
+ 415 0007 03       		.uleb128 0x3
+ 416 0008 0E       		.uleb128 0xe
+ 417 0009 1B       		.uleb128 0x1b
+ 418 000a 0E       		.uleb128 0xe
+ 419 000b 11       		.uleb128 0x11
+ 420 000c 01       		.uleb128 0x1
+ 421 000d 12       		.uleb128 0x12
+ 422 000e 01       		.uleb128 0x1
+ 423 000f 10       		.uleb128 0x10
+ 424 0010 06       		.uleb128 0x6
+ 425 0011 00       		.byte	0
+ 426 0012 00       		.byte	0
+ 427 0013 02       		.uleb128 0x2
+ 428 0014 16       		.uleb128 0x16
+ 429 0015 00       		.byte	0
+ 430 0016 03       		.uleb128 0x3
+ 431 0017 08       		.uleb128 0x8
+ 432 0018 3A       		.uleb128 0x3a
+ 433 0019 0B       		.uleb128 0xb
+ 434 001a 3B       		.uleb128 0x3b
+ 435 001b 0B       		.uleb128 0xb
+ 436 001c 49       		.uleb128 0x49
+ 437 001d 13       		.uleb128 0x13
+ 438 001e 00       		.byte	0
+ 439 001f 00       		.byte	0
+ 440 0020 03       		.uleb128 0x3
+ 441 0021 24       		.uleb128 0x24
+ 442 0022 00       		.byte	0
+ 443 0023 0B       		.uleb128 0xb
+ 444 0024 0B       		.uleb128 0xb
+ 445 0025 3E       		.uleb128 0x3e
+ 446 0026 0B       		.uleb128 0xb
+ 447 0027 03       		.uleb128 0x3
+ 448 0028 0E       		.uleb128 0xe
+ 449 0029 00       		.byte	0
+ 450 002a 00       		.byte	0
+ 451 002b 04       		.uleb128 0x4
+ 452 002c 24       		.uleb128 0x24
+ 453 002d 00       		.byte	0
+ 454 002e 0B       		.uleb128 0xb
+ 455 002f 0B       		.uleb128 0xb
+ 456 0030 3E       		.uleb128 0x3e
+ 457 0031 0B       		.uleb128 0xb
+ 458 0032 03       		.uleb128 0x3
+ 459 0033 08       		.uleb128 0x8
+ 460 0034 00       		.byte	0
+ 461 0035 00       		.byte	0
+ 462 0036 05       		.uleb128 0x5
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 11
+
+
+ 463 0037 2E       		.uleb128 0x2e
+ 464 0038 01       		.byte	0x1
+ 465 0039 3F       		.uleb128 0x3f
+ 466 003a 0C       		.uleb128 0xc
+ 467 003b 03       		.uleb128 0x3
+ 468 003c 0E       		.uleb128 0xe
+ 469 003d 3A       		.uleb128 0x3a
+ 470 003e 0B       		.uleb128 0xb
+ 471 003f 3B       		.uleb128 0x3b
+ 472 0040 0B       		.uleb128 0xb
+ 473 0041 27       		.uleb128 0x27
+ 474 0042 0C       		.uleb128 0xc
+ 475 0043 11       		.uleb128 0x11
+ 476 0044 01       		.uleb128 0x1
+ 477 0045 12       		.uleb128 0x12
+ 478 0046 01       		.uleb128 0x1
+ 479 0047 40       		.uleb128 0x40
+ 480 0048 06       		.uleb128 0x6
+ 481 0049 9642     		.uleb128 0x2116
+ 482 004b 0C       		.uleb128 0xc
+ 483 004c 01       		.uleb128 0x1
+ 484 004d 13       		.uleb128 0x13
+ 485 004e 00       		.byte	0
+ 486 004f 00       		.byte	0
+ 487 0050 06       		.uleb128 0x6
+ 488 0051 34       		.uleb128 0x34
+ 489 0052 00       		.byte	0
+ 490 0053 03       		.uleb128 0x3
+ 491 0054 0E       		.uleb128 0xe
+ 492 0055 3A       		.uleb128 0x3a
+ 493 0056 0B       		.uleb128 0xb
+ 494 0057 3B       		.uleb128 0x3b
+ 495 0058 0B       		.uleb128 0xb
+ 496 0059 49       		.uleb128 0x49
+ 497 005a 13       		.uleb128 0x13
+ 498 005b 02       		.uleb128 0x2
+ 499 005c 0A       		.uleb128 0xa
+ 500 005d 00       		.byte	0
+ 501 005e 00       		.byte	0
+ 502 005f 07       		.uleb128 0x7
+ 503 0060 34       		.uleb128 0x34
+ 504 0061 00       		.byte	0
+ 505 0062 03       		.uleb128 0x3
+ 506 0063 08       		.uleb128 0x8
+ 507 0064 3A       		.uleb128 0x3a
+ 508 0065 0B       		.uleb128 0xb
+ 509 0066 3B       		.uleb128 0x3b
+ 510 0067 0B       		.uleb128 0xb
+ 511 0068 49       		.uleb128 0x49
+ 512 0069 13       		.uleb128 0x13
+ 513 006a 02       		.uleb128 0x2
+ 514 006b 0A       		.uleb128 0xa
+ 515 006c 00       		.byte	0
+ 516 006d 00       		.byte	0
+ 517 006e 08       		.uleb128 0x8
+ 518 006f 2E       		.uleb128 0x2e
+ 519 0070 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 12
+
+
+ 520 0071 3F       		.uleb128 0x3f
+ 521 0072 0C       		.uleb128 0xc
+ 522 0073 03       		.uleb128 0x3
+ 523 0074 0E       		.uleb128 0xe
+ 524 0075 3A       		.uleb128 0x3a
+ 525 0076 0B       		.uleb128 0xb
+ 526 0077 3B       		.uleb128 0x3b
+ 527 0078 0B       		.uleb128 0xb
+ 528 0079 27       		.uleb128 0x27
+ 529 007a 0C       		.uleb128 0xc
+ 530 007b 49       		.uleb128 0x49
+ 531 007c 13       		.uleb128 0x13
+ 532 007d 3C       		.uleb128 0x3c
+ 533 007e 0C       		.uleb128 0xc
+ 534 007f 00       		.byte	0
+ 535 0080 00       		.byte	0
+ 536 0081 09       		.uleb128 0x9
+ 537 0082 05       		.uleb128 0x5
+ 538 0083 00       		.byte	0
+ 539 0084 49       		.uleb128 0x49
+ 540 0085 13       		.uleb128 0x13
+ 541 0086 00       		.byte	0
+ 542 0087 00       		.byte	0
+ 543 0088 0A       		.uleb128 0xa
+ 544 0089 18       		.uleb128 0x18
+ 545 008a 00       		.byte	0
+ 546 008b 00       		.byte	0
+ 547 008c 00       		.byte	0
+ 548 008d 0B       		.uleb128 0xb
+ 549 008e 01       		.uleb128 0x1
+ 550 008f 01       		.byte	0x1
+ 551 0090 49       		.uleb128 0x49
+ 552 0091 13       		.uleb128 0x13
+ 553 0092 01       		.uleb128 0x1
+ 554 0093 13       		.uleb128 0x13
+ 555 0094 00       		.byte	0
+ 556 0095 00       		.byte	0
+ 557 0096 0C       		.uleb128 0xc
+ 558 0097 21       		.uleb128 0x21
+ 559 0098 00       		.byte	0
+ 560 0099 49       		.uleb128 0x49
+ 561 009a 13       		.uleb128 0x13
+ 562 009b 2F       		.uleb128 0x2f
+ 563 009c 0B       		.uleb128 0xb
+ 564 009d 00       		.byte	0
+ 565 009e 00       		.byte	0
+ 566 009f 0D       		.uleb128 0xd
+ 567 00a0 0F       		.uleb128 0xf
+ 568 00a1 00       		.byte	0
+ 569 00a2 0B       		.uleb128 0xb
+ 570 00a3 0B       		.uleb128 0xb
+ 571 00a4 49       		.uleb128 0x49
+ 572 00a5 13       		.uleb128 0x13
+ 573 00a6 00       		.byte	0
+ 574 00a7 00       		.byte	0
+ 575 00a8 0E       		.uleb128 0xe
+ 576 00a9 26       		.uleb128 0x26
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 13
+
+
+ 577 00aa 00       		.byte	0
+ 578 00ab 49       		.uleb128 0x49
+ 579 00ac 13       		.uleb128 0x13
+ 580 00ad 00       		.byte	0
+ 581 00ae 00       		.byte	0
+ 582 00af 00       		.byte	0
+ 583              		.section	.debug_loc,"",%progbits
+ 584              	.Ldebug_loc0:
+ 585              	.LLST0:
+ 586 0000 00000000 		.4byte	.LFB0-.Ltext0
+ 587 0004 02000000 		.4byte	.LCFI0-.Ltext0
+ 588 0008 0200     		.2byte	0x2
+ 589 000a 7D       		.byte	0x7d
+ 590 000b 00       		.sleb128 0
+ 591 000c 02000000 		.4byte	.LCFI0-.Ltext0
+ 592 0010 04000000 		.4byte	.LCFI1-.Ltext0
+ 593 0014 0200     		.2byte	0x2
+ 594 0016 7D       		.byte	0x7d
+ 595 0017 10       		.sleb128 16
+ 596 0018 04000000 		.4byte	.LCFI1-.Ltext0
+ 597 001c 06000000 		.4byte	.LCFI2-.Ltext0
+ 598 0020 0200     		.2byte	0x2
+ 599 0022 7D       		.byte	0x7d
+ 600 0023 28       		.sleb128 40
+ 601 0024 06000000 		.4byte	.LCFI2-.Ltext0
+ 602 0028 3C010000 		.4byte	.LFE0-.Ltext0
+ 603 002c 0200     		.2byte	0x2
+ 604 002e 77       		.byte	0x77
+ 605 002f 28       		.sleb128 40
+ 606 0030 00000000 		.4byte	0
+ 607 0034 00000000 		.4byte	0
+ 608              		.section	.debug_aranges,"",%progbits
+ 609 0000 1C000000 		.4byte	0x1c
+ 610 0004 0200     		.2byte	0x2
+ 611 0006 00000000 		.4byte	.Ldebug_info0
+ 612 000a 04       		.byte	0x4
+ 613 000b 00       		.byte	0
+ 614 000c 0000     		.2byte	0
+ 615 000e 0000     		.2byte	0
+ 616 0010 00000000 		.4byte	.Ltext0
+ 617 0014 3C010000 		.4byte	.Letext0-.Ltext0
+ 618 0018 00000000 		.4byte	0
+ 619 001c 00000000 		.4byte	0
+ 620              		.section	.debug_line,"",%progbits
+ 621              	.Ldebug_line0:
+ 622 0000 74000000 		.section	.debug_str,"MS",%progbits,1
+ 622      02003800 
+ 622      00000201 
+ 622      FB0E0D00 
+ 622      01010101 
+ 623              	.LASF6:
+ 624 0000 6C6F6E67 		.ascii	"long long int\000"
+ 624      206C6F6E 
+ 624      6720696E 
+ 624      7400
+ 625              	.LASF17:
+ 626 000e 6D656173 		.ascii	"measureTemperature\000"
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 14
+
+
+ 626      75726554 
+ 626      656D7065 
+ 626      72617475 
+ 626      726500
+ 627              	.LASF2:
+ 628 0021 756E7369 		.ascii	"unsigned int\000"
+ 628      676E6564 
+ 628      20696E74 
+ 628      00
+ 629              	.LASF7:
+ 630 002e 72657443 		.ascii	"retCode\000"
+ 630      6F646500 
+ 631              	.LASF18:
+ 632 0036 73707269 		.ascii	"sprintf\000"
+ 632      6E746600 
+ 633              	.LASF11:
+ 634 003e 69734E65 		.ascii	"isNegative\000"
+ 634      67617469 
+ 634      766500
+ 635              	.LASF3:
+ 636 0049 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 636      206C6F6E 
+ 636      6720756E 
+ 636      7369676E 
+ 636      65642069 
+ 637              	.LASF0:
+ 638 0060 756E7369 		.ascii	"unsigned char\000"
+ 638      676E6564 
+ 638      20636861 
+ 638      7200
+ 639              	.LASF13:
+ 640 006e 63686172 		.ascii	"char\000"
+ 640      00
+ 641              	.LASF14:
+ 642 0073 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
+ 642      43313120 
+ 642      372E332E 
+ 642      31203230 
+ 642      31383036 
+ 643 00a6 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb -mthum"
+ 643      20726576 
+ 643      6973696F 
+ 643      6E203236 
+ 643      31393037 
+ 644 00d9 622D696E 		.ascii	"b-interwork -gdwarf-2 -O0\000"
+ 644      74657277 
+ 644      6F726B20 
+ 644      2D676477 
+ 644      6172662D 
+ 645              	.LASF12:
+ 646 00f3 61707065 		.ascii	"appendHalf\000"
+ 646      6E644861 
+ 646      6C6600
+ 647              	.LASF16:
+ 648 00fe 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
+ 648      6D626564 
+ 648      6465645C 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 15
+
+
+ 648      32313338 
+ 648      4D696E69 
+ 649              	.LASF1:
+ 650 011c 73686F72 		.ascii	"short unsigned int\000"
+ 650      7420756E 
+ 650      7369676E 
+ 650      65642069 
+ 650      6E7400
+ 651              	.LASF4:
+ 652 012f 7369676E 		.ascii	"signed char\000"
+ 652      65642063 
+ 652      68617200 
+ 653              	.LASF9:
+ 654 013b 63686172 		.ascii	"charArray\000"
+ 654      41727261 
+ 654      7900
+ 655              	.LASF5:
+ 656 0145 73686F72 		.ascii	"short int\000"
+ 656      7420696E 
+ 656      7400
+ 657              	.LASF15:
+ 658 014f 6C6D3735 		.ascii	"lm75.c\000"
+ 658      2E6300
+ 659              	.LASF8:
+ 660 0156 72656164 		.ascii	"readTemperature\000"
+ 660      54656D70 
+ 660      65726174 
+ 660      75726500 
+ 661              	.LASF10:
+ 662 0166 63616C63 		.ascii	"calculatedValue\000"
+ 662      756C6174 
+ 662      65645661 
+ 662      6C756500 
+ 663              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s 			page 16
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lm75.c
+C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s:16     .rodata:00000000 $d
+C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s:27     .text:00000000 measureTemperature
+C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s:35     .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\ccRHkt0J.s:234    .text:00000138 $d
+
+UNDEFINED SYMBOLS
+i2cRead
+memset
+sprintf
+lcdPuts

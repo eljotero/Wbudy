@@ -1,0 +1,3190 @@
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 1
+
+
+   1              		.cpu arm7tdmi
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 0
+  10              		.eabi_attribute 18, 4
+  11              		.file	"bmp180.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.global	__aeabi_lmul
+  16              		.global	__aeabi_ldivmod
+  17              		.global	__aeabi_uldivmod
+  18              		.align	1
+  19              		.global	calculatePressure
+  20              		.syntax unified
+  21              		.code	16
+  22              		.thumb_func
+  23              		.fpu softvfp
+  24              		.type	calculatePressure, %function
+  25              	calculatePressure:
+  26              	.LFB0:
+  27              		.file 1 "bmp180.c"
+   1:bmp180.c      **** /******************************************************************************
+   2:bmp180.c      ****  *  Obsługa pomiaru ciśnienia przy pomocy czujnika BMP180.
+   3:bmp180.c      ****  * 
+   4:bmp180.c      ****  *  Plik z kodem źródłowym funkcji.
+   5:bmp180.c      ****  *****************************************************************************/
+   6:bmp180.c      **** 
+   7:bmp180.c      **** /******************************************************************************
+   8:bmp180.c      ****  * Includes
+   9:bmp180.c      ****  *****************************************************************************/
+  10:bmp180.c      **** 
+  11:bmp180.c      **** #include "bmp180.h"
+  12:bmp180.c      **** 
+  13:bmp180.c      **** /******************************************************************************
+  14:bmp180.c      ****  * Defines and typedefs
+  15:bmp180.c      ****  *****************************************************************************/
+  16:bmp180.c      **** 
+  17:bmp180.c      **** // 7 - bit address of BMP180 device.
+  18:bmp180.c      **** #define bmp180Address       0x77 // 0x77 = 0b 0111 0111
+  19:bmp180.c      **** 
+  20:bmp180.c      **** // ((bmp180Address << 1) | 1) (east significant bit is 1 for read operation).
+  21:bmp180.c      **** #define bmp180ReadAddress   0xEF // 0xEE = 0b 1110 1111
+  22:bmp180.c      **** 
+  23:bmp180.c      **** // (bmp180Address << 1) (least significant bit is 0 for write operation).
+  24:bmp180.c      **** #define bmp180WriteAddress  0xEE // 0xEE = 0b 1110 1110
+  25:bmp180.c      **** 
+  26:bmp180.c      **** // Defines oversampling ratio of the pressure measurement
+  27:bmp180.c      **** #define pressureOss 0x00    // 0x03 = 0b 00
+  28:bmp180.c      **** 
+  29:bmp180.c      **** /*****************************************************************************
+  30:bmp180.c      ****  * Global variables
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 2
+
+
+  31:bmp180.c      ****  ****************************************************************************/
+  32:bmp180.c      **** 
+  33:bmp180.c      **** /*****************************************************************************
+  34:bmp180.c      ****  * Local variables
+  35:bmp180.c      ****  ****************************************************************************/
+  36:bmp180.c      **** 
+  37:bmp180.c      **** /*****************************************************************************
+  38:bmp180.c      ****  * Local prototypes
+  39:bmp180.c      ****  ****************************************************************************/
+  40:bmp180.c      **** 
+  41:bmp180.c      **** /*
+  42:bmp180.c      ****  * @brief   Funkcja calculatePressure() wykorzystywana jest do przeliczenia wartości ciśnienia, o
+  43:bmp180.c      ****  *          ciśnienia BMP180 w oparciu o podany w dokumentacji algorytm przeliczający. W tym celu
+  44:bmp180.c      ****  *          również wartości korygujące, odczytane z pamięci EEPROM urządzenia, a także wart
+  45:bmp180.c      ****  *           
+  46:bmp180.c      ****  * @param   readPress
+  47:bmp180.c      ****  *          Nieprzeliczona wartość ciśnienia, odczytana z czujnika BMP180.
+  48:bmp180.c      ****  * @param   readTemp
+  49:bmp180.c      ****  *          Nieprzeliczona wartość tempertury, odczytana z czujnika BMP180.
+  50:bmp180.c      ****  * @param   calibrationArray
+  51:bmp180.c      ****  *          Wskaźnik do jedenastoelementowej tablicy, zawierajacej wartości korygujące, potrzebn
+  52:bmp180.c      ****  *          wartości ciśnienia.
+  53:bmp180.c      ****  * @returns
+  54:bmp180.c      ****  *          Przeliczona wartość ciśnienia, która wyrażona jest w paskalach (Pa).
+  55:bmp180.c      ****  * 
+  56:bmp180.c      ****  * @side effects: 
+  57:bmp180.c      ****  *          Brak
+  58:bmp180.c      ****  */
+  59:bmp180.c      **** 
+  60:bmp180.c      **** tS32 calculatePressure(tU32 readPress, tU16 readTemp, tU16 *calibrationArray)
+  61:bmp180.c      **** {
+  28              		.loc 1 61 0
+  29              		.cfi_startproc
+  30              		@ Function supports interworking.
+  31              		@ args = 0, pretend = 0, frame = 416
+  32              		@ frame_needed = 1, uses_anonymous_args = 0
+  33 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 20
+  36              		.cfi_offset 4, -20
+  37              		.cfi_offset 5, -16
+  38              		.cfi_offset 6, -12
+  39              		.cfi_offset 7, -8
+  40              		.cfi_offset 14, -4
+  41 0002 E9B0     		sub	sp, sp, #420
+  42              	.LCFI1:
+  43              		.cfi_def_cfa_offset 440
+  44 0004 00AF     		add	r7, sp, #0
+  45              	.LCFI2:
+  46              		.cfi_def_cfa_register 7
+  47 0006 9223     		movs	r3, #146
+  48 0008 5B00     		lsls	r3, r3, #1
+  49 000a FB18     		adds	r3, r7, r3
+  50 000c 1860     		str	r0, [r3]
+  51 000e 0B00     		movs	r3, r1
+  52 0010 8E21     		movs	r1, #142
+  53 0012 4900     		lsls	r1, r1, #1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 3
+
+
+  54 0014 7918     		adds	r1, r7, r1
+  55 0016 0A60     		str	r2, [r1]
+  56 0018 0A21     		movs	r1, #10
+  57 001a 8C22     		movs	r2, #140
+  58 001c 5200     		lsls	r2, r2, #1
+  59 001e BA18     		adds	r2, r7, r2
+  60 0020 5218     		adds	r2, r2, r1
+  61 0022 1380     		strh	r3, [r2]
+  62:bmp180.c      ****     // Compensation data read from BMP180 EEPROM.
+  63:bmp180.c      ****     tS16 AC1;
+  64:bmp180.c      ****     tS16 AC2; 
+  65:bmp180.c      ****     tS16 AC3; 
+  66:bmp180.c      ****     tS16 B1; 
+  67:bmp180.c      ****     tS16 B2; 
+  68:bmp180.c      ****     tS16 MB; 
+  69:bmp180.c      ****     tS16 MC; 
+  70:bmp180.c      ****     tS16 MD;
+  71:bmp180.c      ****     tU16 AC4;
+  72:bmp180.c      ****     tU16 AC5; 
+  73:bmp180.c      ****     tU16 AC6;
+  74:bmp180.c      **** 
+  75:bmp180.c      ****     // Getting coefficient value with correct types, according to documentation.
+  76:bmp180.c      **** 
+  77:bmp180.c      ****     AC1 = calibrationArray[0];
+  62              		.loc 1 77 0
+  63 0024 8E23     		movs	r3, #142
+  64 0026 5B00     		lsls	r3, r3, #1
+  65 0028 FB18     		adds	r3, r7, r3
+  66 002a 1B68     		ldr	r3, [r3]
+  67 002c 1B88     		ldrh	r3, [r3]
+  68 002e 7E22     		movs	r2, #126
+  69 0030 8C20     		movs	r0, #140
+  70 0032 4000     		lsls	r0, r0, #1
+  71 0034 8446     		mov	ip, r0
+  72 0036 BC44     		add	ip, ip, r7
+  73 0038 6244     		add	r2, r2, ip
+  74 003a 1380     		strh	r3, [r2]
+  78:bmp180.c      ****     AC2 = calibrationArray[1];
+  75              		.loc 1 78 0
+  76 003c 8E23     		movs	r3, #142
+  77 003e 5B00     		lsls	r3, r3, #1
+  78 0040 FB18     		adds	r3, r7, r3
+  79 0042 1B68     		ldr	r3, [r3]
+  80 0044 0233     		adds	r3, r3, #2
+  81 0046 1B88     		ldrh	r3, [r3]
+  82 0048 7C22     		movs	r2, #124
+  83 004a 8C20     		movs	r0, #140
+  84 004c 4000     		lsls	r0, r0, #1
+  85 004e 8446     		mov	ip, r0
+  86 0050 BC44     		add	ip, ip, r7
+  87 0052 6244     		add	r2, r2, ip
+  88 0054 1380     		strh	r3, [r2]
+  79:bmp180.c      ****     AC3 = calibrationArray[2];
+  89              		.loc 1 79 0
+  90 0056 8E23     		movs	r3, #142
+  91 0058 5B00     		lsls	r3, r3, #1
+  92 005a FB18     		adds	r3, r7, r3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 4
+
+
+  93 005c 1B68     		ldr	r3, [r3]
+  94 005e 0433     		adds	r3, r3, #4
+  95 0060 1B88     		ldrh	r3, [r3]
+  96 0062 7A22     		movs	r2, #122
+  97 0064 8C20     		movs	r0, #140
+  98 0066 4000     		lsls	r0, r0, #1
+  99 0068 8446     		mov	ip, r0
+ 100 006a BC44     		add	ip, ip, r7
+ 101 006c 6244     		add	r2, r2, ip
+ 102 006e 1380     		strh	r3, [r2]
+  80:bmp180.c      ****     AC4 = calibrationArray[3];
+ 103              		.loc 1 80 0
+ 104 0070 7823     		movs	r3, #120
+ 105 0072 8C22     		movs	r2, #140
+ 106 0074 5200     		lsls	r2, r2, #1
+ 107 0076 BA18     		adds	r2, r7, r2
+ 108 0078 D218     		adds	r2, r2, r3
+ 109 007a 8E23     		movs	r3, #142
+ 110 007c 5B00     		lsls	r3, r3, #1
+ 111 007e FB18     		adds	r3, r7, r3
+ 112 0080 1B68     		ldr	r3, [r3]
+ 113 0082 DB88     		ldrh	r3, [r3, #6]
+ 114 0084 1380     		strh	r3, [r2]
+  81:bmp180.c      ****     AC5 = calibrationArray[4];
+ 115              		.loc 1 81 0
+ 116 0086 7623     		movs	r3, #118
+ 117 0088 8C22     		movs	r2, #140
+ 118 008a 5200     		lsls	r2, r2, #1
+ 119 008c BA18     		adds	r2, r7, r2
+ 120 008e D218     		adds	r2, r2, r3
+ 121 0090 8E23     		movs	r3, #142
+ 122 0092 5B00     		lsls	r3, r3, #1
+ 123 0094 FB18     		adds	r3, r7, r3
+ 124 0096 1B68     		ldr	r3, [r3]
+ 125 0098 1B89     		ldrh	r3, [r3, #8]
+ 126 009a 1380     		strh	r3, [r2]
+  82:bmp180.c      ****     AC6 = calibrationArray[5];
+ 127              		.loc 1 82 0
+ 128 009c 7420     		movs	r0, #116
+ 129 009e 8C23     		movs	r3, #140
+ 130 00a0 5B00     		lsls	r3, r3, #1
+ 131 00a2 FB18     		adds	r3, r7, r3
+ 132 00a4 1A18     		adds	r2, r3, r0
+ 133 00a6 8E23     		movs	r3, #142
+ 134 00a8 5B00     		lsls	r3, r3, #1
+ 135 00aa FB18     		adds	r3, r7, r3
+ 136 00ac 1B68     		ldr	r3, [r3]
+ 137 00ae 5B89     		ldrh	r3, [r3, #10]
+ 138 00b0 1380     		strh	r3, [r2]
+  83:bmp180.c      ****     B1 = calibrationArray[6];
+ 139              		.loc 1 83 0
+ 140 00b2 8E23     		movs	r3, #142
+ 141 00b4 5B00     		lsls	r3, r3, #1
+ 142 00b6 FB18     		adds	r3, r7, r3
+ 143 00b8 1B68     		ldr	r3, [r3]
+ 144 00ba 0C33     		adds	r3, r3, #12
+ 145 00bc 1B88     		ldrh	r3, [r3]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 5
+
+
+ 146 00be 7222     		movs	r2, #114
+ 147 00c0 8C24     		movs	r4, #140
+ 148 00c2 6400     		lsls	r4, r4, #1
+ 149 00c4 A446     		mov	ip, r4
+ 150 00c6 BC44     		add	ip, ip, r7
+ 151 00c8 6244     		add	r2, r2, ip
+ 152 00ca 1380     		strh	r3, [r2]
+  84:bmp180.c      ****     B2 = calibrationArray[7];
+ 153              		.loc 1 84 0
+ 154 00cc 8E23     		movs	r3, #142
+ 155 00ce 5B00     		lsls	r3, r3, #1
+ 156 00d0 FB18     		adds	r3, r7, r3
+ 157 00d2 1B68     		ldr	r3, [r3]
+ 158 00d4 0E33     		adds	r3, r3, #14
+ 159 00d6 1B88     		ldrh	r3, [r3]
+ 160 00d8 7022     		movs	r2, #112
+ 161 00da 8C24     		movs	r4, #140
+ 162 00dc 6400     		lsls	r4, r4, #1
+ 163 00de A446     		mov	ip, r4
+ 164 00e0 BC44     		add	ip, ip, r7
+ 165 00e2 6244     		add	r2, r2, ip
+ 166 00e4 1380     		strh	r3, [r2]
+  85:bmp180.c      ****     MB = calibrationArray[8];
+ 167              		.loc 1 85 0
+ 168 00e6 8E23     		movs	r3, #142
+ 169 00e8 5B00     		lsls	r3, r3, #1
+ 170 00ea FB18     		adds	r3, r7, r3
+ 171 00ec 1B68     		ldr	r3, [r3]
+ 172 00ee 1033     		adds	r3, r3, #16
+ 173 00f0 1B88     		ldrh	r3, [r3]
+ 174 00f2 6E22     		movs	r2, #110
+ 175 00f4 8C24     		movs	r4, #140
+ 176 00f6 6400     		lsls	r4, r4, #1
+ 177 00f8 A446     		mov	ip, r4
+ 178 00fa BC44     		add	ip, ip, r7
+ 179 00fc 6244     		add	r2, r2, ip
+ 180 00fe 1380     		strh	r3, [r2]
+  86:bmp180.c      ****     MC = calibrationArray[9];
+ 181              		.loc 1 86 0
+ 182 0100 8E23     		movs	r3, #142
+ 183 0102 5B00     		lsls	r3, r3, #1
+ 184 0104 FB18     		adds	r3, r7, r3
+ 185 0106 1B68     		ldr	r3, [r3]
+ 186 0108 1233     		adds	r3, r3, #18
+ 187 010a 1B88     		ldrh	r3, [r3]
+ 188 010c 6C22     		movs	r2, #108
+ 189 010e 8C24     		movs	r4, #140
+ 190 0110 6400     		lsls	r4, r4, #1
+ 191 0112 A446     		mov	ip, r4
+ 192 0114 BC44     		add	ip, ip, r7
+ 193 0116 6244     		add	r2, r2, ip
+ 194 0118 1380     		strh	r3, [r2]
+  87:bmp180.c      ****     MD = calibrationArray[10];
+ 195              		.loc 1 87 0
+ 196 011a 8E23     		movs	r3, #142
+ 197 011c 5B00     		lsls	r3, r3, #1
+ 198 011e FB18     		adds	r3, r7, r3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 6
+
+
+ 199 0120 1B68     		ldr	r3, [r3]
+ 200 0122 1433     		adds	r3, r3, #20
+ 201 0124 1B88     		ldrh	r3, [r3]
+ 202 0126 6A22     		movs	r2, #106
+ 203 0128 8C24     		movs	r4, #140
+ 204 012a 6400     		lsls	r4, r4, #1
+ 205 012c A446     		mov	ip, r4
+ 206 012e BC44     		add	ip, ip, r7
+ 207 0130 6244     		add	r2, r2, ip
+ 208 0132 1380     		strh	r3, [r2]
+  88:bmp180.c      **** 
+  89:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+  90:bmp180.c      ****     // Calculations for temperature.
+  91:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+  92:bmp180.c      **** 
+  93:bmp180.c      ****     tS64 X1 = ((tS64)(((tS64)readTemp - (tS64)AC6) * (tS64)AC5) / (tS64)32768);
+ 209              		.loc 1 93 0
+ 210 0134 8C23     		movs	r3, #140
+ 211 0136 5B00     		lsls	r3, r3, #1
+ 212 0138 FB18     		adds	r3, r7, r3
+ 213 013a 5B18     		adds	r3, r3, r1
+ 214 013c 1B88     		ldrh	r3, [r3]
+ 215 013e 1B04     		lsls	r3, r3, #16
+ 216 0140 1B0C     		lsrs	r3, r3, #16
+ 217 0142 BB65     		str	r3, [r7, #88]
+ 218 0144 0023     		movs	r3, #0
+ 219 0146 FB65     		str	r3, [r7, #92]
+ 220 0148 8C23     		movs	r3, #140
+ 221 014a 5B00     		lsls	r3, r3, #1
+ 222 014c FB18     		adds	r3, r7, r3
+ 223 014e 1B18     		adds	r3, r3, r0
+ 224 0150 1B88     		ldrh	r3, [r3]
+ 225 0152 1B04     		lsls	r3, r3, #16
+ 226 0154 1B0C     		lsrs	r3, r3, #16
+ 227 0156 3B65     		str	r3, [r7, #80]
+ 228 0158 0023     		movs	r3, #0
+ 229 015a 7B65     		str	r3, [r7, #84]
+ 230 015c B86D     		ldr	r0, [r7, #88]
+ 231 015e F96D     		ldr	r1, [r7, #92]
+ 232 0160 3B6D     		ldr	r3, [r7, #80]
+ 233 0162 7C6D     		ldr	r4, [r7, #84]
+ 234 0164 C01A     		subs	r0, r0, r3
+ 235 0166 A141     		sbcs	r1, r1, r4
+ 236 0168 7623     		movs	r3, #118
+ 237 016a 8C22     		movs	r2, #140
+ 238 016c 5200     		lsls	r2, r2, #1
+ 239 016e 9446     		mov	ip, r2
+ 240 0170 BC44     		add	ip, ip, r7
+ 241 0172 6344     		add	r3, r3, ip
+ 242 0174 1B88     		ldrh	r3, [r3]
+ 243 0176 1B04     		lsls	r3, r3, #16
+ 244 0178 1B0C     		lsrs	r3, r3, #16
+ 245 017a BB64     		str	r3, [r7, #72]
+ 246 017c 0023     		movs	r3, #0
+ 247 017e FB64     		str	r3, [r7, #76]
+ 248 0180 BA6C     		ldr	r2, [r7, #72]
+ 249 0182 FB6C     		ldr	r3, [r7, #76]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 7
+
+
+ 250 0184 FFF7FEFF 		bl	__aeabi_lmul
+ 251              	.LVL0:
+ 252 0188 0300     		movs	r3, r0
+ 253 018a 0C00     		movs	r4, r1
+ 254 018c 1900     		movs	r1, r3
+ 255 018e 2200     		movs	r2, r4
+ 256 0190 002A     		cmp	r2, #0
+ 257 0192 03DA     		bge	.L2
+ 258 0194 DD4B     		ldr	r3, .L39
+ 259 0196 0024     		movs	r4, #0
+ 260 0198 C918     		adds	r1, r1, r3
+ 261 019a 6241     		adcs	r2, r2, r4
+ 262              	.L2:
+ 263 019c 5304     		lsls	r3, r2, #17
+ 264 019e C80B     		lsrs	r0, r1, #15
+ 265 01a0 7C1C     		adds	r4, r7, #1
+ 266 01a2 FF34     		adds	r4, r4, #255
+ 267 01a4 2060     		str	r0, [r4]
+ 268 01a6 781C     		adds	r0, r7, #1
+ 269 01a8 FF30     		adds	r0, r0, #255
+ 270 01aa 0068     		ldr	r0, [r0]
+ 271 01ac 1843     		orrs	r0, r3
+ 272 01ae 7B1C     		adds	r3, r7, #1
+ 273 01b0 FF33     		adds	r3, r3, #255
+ 274 01b2 1860     		str	r0, [r3]
+ 275 01b4 D313     		asrs	r3, r2, #15
+ 276 01b6 7A1D     		adds	r2, r7, #5
+ 277 01b8 FF32     		adds	r2, r2, #255
+ 278 01ba 1360     		str	r3, [r2]
+ 279 01bc 7B1C     		adds	r3, r7, #1
+ 280 01be FF33     		adds	r3, r3, #255
+ 281 01c0 5C68     		ldr	r4, [r3, #4]
+ 282 01c2 1B68     		ldr	r3, [r3]
+ 283 01c4 BC22     		movs	r2, #188
+ 284 01c6 5200     		lsls	r2, r2, #1
+ 285 01c8 BA18     		adds	r2, r7, r2
+ 286 01ca 1360     		str	r3, [r2]
+ 287 01cc 5460     		str	r4, [r2, #4]
+  94:bmp180.c      ****     tS64 X2 = ((tS64)((tS64)MC * (tS64)2048) / (tS64)(X1 + (tS64)MD));
+ 288              		.loc 1 94 0
+ 289 01ce 6C23     		movs	r3, #108
+ 290 01d0 8C22     		movs	r2, #140
+ 291 01d2 5200     		lsls	r2, r2, #1
+ 292 01d4 9446     		mov	ip, r2
+ 293 01d6 BC44     		add	ip, ip, r7
+ 294 01d8 6344     		add	r3, r3, ip
+ 295 01da 1B88     		ldrh	r3, [r3]
+ 296 01dc 1B04     		lsls	r3, r3, #16
+ 297 01de 1B14     		asrs	r3, r3, #16
+ 298 01e0 3B64     		str	r3, [r7, #64]
+ 299 01e2 DB17     		asrs	r3, r3, #31
+ 300 01e4 7B64     		str	r3, [r7, #68]
+ 301 01e6 396C     		ldr	r1, [r7, #64]
+ 302 01e8 7A6C     		ldr	r2, [r7, #68]
+ 303 01ea 0B00     		movs	r3, r1
+ 304 01ec 5B0D     		lsrs	r3, r3, #21
+ 305 01ee 1000     		movs	r0, r2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 8
+
+
+ 306 01f0 C002     		lsls	r0, r0, #11
+ 307 01f2 8A24     		movs	r4, #138
+ 308 01f4 6400     		lsls	r4, r4, #1
+ 309 01f6 3C19     		adds	r4, r7, r4
+ 310 01f8 2060     		str	r0, [r4]
+ 311 01fa 8A20     		movs	r0, #138
+ 312 01fc 4000     		lsls	r0, r0, #1
+ 313 01fe 3818     		adds	r0, r7, r0
+ 314 0200 0068     		ldr	r0, [r0]
+ 315 0202 1843     		orrs	r0, r3
+ 316 0204 8A23     		movs	r3, #138
+ 317 0206 5B00     		lsls	r3, r3, #1
+ 318 0208 FB18     		adds	r3, r7, r3
+ 319 020a 1860     		str	r0, [r3]
+ 320 020c 0B00     		movs	r3, r1
+ 321 020e DB02     		lsls	r3, r3, #11
+ 322 0210 8822     		movs	r2, #136
+ 323 0212 5200     		lsls	r2, r2, #1
+ 324 0214 BA18     		adds	r2, r7, r2
+ 325 0216 1360     		str	r3, [r2]
+ 326 0218 6A23     		movs	r3, #106
+ 327 021a 8C22     		movs	r2, #140
+ 328 021c 5200     		lsls	r2, r2, #1
+ 329 021e 9446     		mov	ip, r2
+ 330 0220 BC44     		add	ip, ip, r7
+ 331 0222 6344     		add	r3, r3, ip
+ 332 0224 1B88     		ldrh	r3, [r3]
+ 333 0226 1B04     		lsls	r3, r3, #16
+ 334 0228 1B14     		asrs	r3, r3, #16
+ 335 022a BB63     		str	r3, [r7, #56]
+ 336 022c DB17     		asrs	r3, r3, #31
+ 337 022e FB63     		str	r3, [r7, #60]
+ 338 0230 BC23     		movs	r3, #188
+ 339 0232 5B00     		lsls	r3, r3, #1
+ 340 0234 FB18     		adds	r3, r7, r3
+ 341 0236 5C68     		ldr	r4, [r3, #4]
+ 342 0238 1B68     		ldr	r3, [r3]
+ 343 023a B96B     		ldr	r1, [r7, #56]
+ 344 023c FA6B     		ldr	r2, [r7, #60]
+ 345 023e C918     		adds	r1, r1, r3
+ 346 0240 6241     		adcs	r2, r2, r4
+ 347 0242 0B00     		movs	r3, r1
+ 348 0244 1400     		movs	r4, r2
+ 349 0246 1A00     		movs	r2, r3
+ 350 0248 2300     		movs	r3, r4
+ 351 024a 8821     		movs	r1, #136
+ 352 024c 4900     		lsls	r1, r1, #1
+ 353 024e 7918     		adds	r1, r7, r1
+ 354 0250 0868     		ldr	r0, [r1]
+ 355 0252 4968     		ldr	r1, [r1, #4]
+ 356 0254 FFF7FEFF 		bl	__aeabi_ldivmod
+ 357              	.LVL1:
+ 358 0258 0300     		movs	r3, r0
+ 359 025a 0C00     		movs	r4, r1
+ 360 025c B822     		movs	r2, #184
+ 361 025e 5200     		lsls	r2, r2, #1
+ 362 0260 BA18     		adds	r2, r7, r2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 9
+
+
+ 363 0262 1360     		str	r3, [r2]
+ 364 0264 5460     		str	r4, [r2, #4]
+  95:bmp180.c      ****     tS64 B5 = X1 + X2;
+ 365              		.loc 1 95 0
+ 366 0266 BC23     		movs	r3, #188
+ 367 0268 5B00     		lsls	r3, r3, #1
+ 368 026a FB18     		adds	r3, r7, r3
+ 369 026c 1968     		ldr	r1, [r3]
+ 370 026e 5A68     		ldr	r2, [r3, #4]
+ 371 0270 B823     		movs	r3, #184
+ 372 0272 5B00     		lsls	r3, r3, #1
+ 373 0274 FB18     		adds	r3, r7, r3
+ 374 0276 5C68     		ldr	r4, [r3, #4]
+ 375 0278 1B68     		ldr	r3, [r3]
+ 376 027a 5B18     		adds	r3, r3, r1
+ 377 027c 5441     		adcs	r4, r4, r2
+ 378 027e B422     		movs	r2, #180
+ 379 0280 5200     		lsls	r2, r2, #1
+ 380 0282 BA18     		adds	r2, r7, r2
+ 381 0284 1360     		str	r3, [r2]
+ 382 0286 5460     		str	r4, [r2, #4]
+  96:bmp180.c      ****     tS64 T = ((tS64)(B5 + (tS64)8) / (tS64)16);
+ 383              		.loc 1 96 0
+ 384 0288 B423     		movs	r3, #180
+ 385 028a 5B00     		lsls	r3, r3, #1
+ 386 028c FB18     		adds	r3, r7, r3
+ 387 028e 1968     		ldr	r1, [r3]
+ 388 0290 5A68     		ldr	r2, [r3, #4]
+ 389 0292 0823     		movs	r3, #8
+ 390 0294 0024     		movs	r4, #0
+ 391 0296 5B18     		adds	r3, r3, r1
+ 392 0298 5441     		adcs	r4, r4, r2
+ 393 029a 1900     		movs	r1, r3
+ 394 029c 2200     		movs	r2, r4
+ 395 029e 002A     		cmp	r2, #0
+ 396 02a0 03DA     		bge	.L4
+ 397 02a2 0F23     		movs	r3, #15
+ 398 02a4 0024     		movs	r4, #0
+ 399 02a6 C918     		adds	r1, r1, r3
+ 400 02a8 6241     		adcs	r2, r2, r4
+ 401              	.L4:
+ 402 02aa 1307     		lsls	r3, r2, #28
+ 403 02ac 0809     		lsrs	r0, r1, #4
+ 404 02ae F824     		movs	r4, #248
+ 405 02b0 3C19     		adds	r4, r7, r4
+ 406 02b2 2060     		str	r0, [r4]
+ 407 02b4 F820     		movs	r0, #248
+ 408 02b6 3818     		adds	r0, r7, r0
+ 409 02b8 0068     		ldr	r0, [r0]
+ 410 02ba 1843     		orrs	r0, r3
+ 411 02bc F823     		movs	r3, #248
+ 412 02be FB18     		adds	r3, r7, r3
+ 413 02c0 1860     		str	r0, [r3]
+ 414 02c2 1311     		asrs	r3, r2, #4
+ 415 02c4 FC22     		movs	r2, #252
+ 416 02c6 BA18     		adds	r2, r7, r2
+ 417 02c8 1360     		str	r3, [r2]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 10
+
+
+ 418 02ca F823     		movs	r3, #248
+ 419 02cc FB18     		adds	r3, r7, r3
+ 420 02ce 5C68     		ldr	r4, [r3, #4]
+ 421 02d0 1B68     		ldr	r3, [r3]
+ 422 02d2 B022     		movs	r2, #176
+ 423 02d4 5200     		lsls	r2, r2, #1
+ 424 02d6 BA18     		adds	r2, r7, r2
+ 425 02d8 1360     		str	r3, [r2]
+ 426 02da 5460     		str	r4, [r2, #4]
+  97:bmp180.c      **** 
+  98:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+  99:bmp180.c      ****     // Calculations for pressure.
+ 100:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 101:bmp180.c      **** 
+ 102:bmp180.c      ****     tU64 helperValue = 0;
+ 427              		.loc 1 102 0
+ 428 02dc 0023     		movs	r3, #0
+ 429 02de 0024     		movs	r4, #0
+ 430 02e0 AC22     		movs	r2, #172
+ 431 02e2 5200     		lsls	r2, r2, #1
+ 432 02e4 BA18     		adds	r2, r7, r2
+ 433 02e6 1360     		str	r3, [r2]
+ 434 02e8 5460     		str	r4, [r2, #4]
+ 103:bmp180.c      ****     tS64 helperValueSigned = 0;
+ 435              		.loc 1 103 0
+ 436 02ea 0023     		movs	r3, #0
+ 437 02ec 0024     		movs	r4, #0
+ 438 02ee A822     		movs	r2, #168
+ 439 02f0 5200     		lsls	r2, r2, #1
+ 440 02f2 BA18     		adds	r2, r7, r2
+ 441 02f4 1360     		str	r3, [r2]
+ 442 02f6 5460     		str	r4, [r2, #4]
+ 104:bmp180.c      **** 
+ 105:bmp180.c      ****     tS64 B6 = B5 - 4000;
+ 443              		.loc 1 105 0
+ 444 02f8 B423     		movs	r3, #180
+ 445 02fa 5B00     		lsls	r3, r3, #1
+ 446 02fc FB18     		adds	r3, r7, r3
+ 447 02fe 1968     		ldr	r1, [r3]
+ 448 0300 5A68     		ldr	r2, [r3, #4]
+ 449 0302 834B     		ldr	r3, .L39+4
+ 450 0304 0124     		movs	r4, #1
+ 451 0306 6442     		rsbs	r4, r4, #0
+ 452 0308 5B18     		adds	r3, r3, r1
+ 453 030a 5441     		adcs	r4, r4, r2
+ 454 030c A422     		movs	r2, #164
+ 455 030e 5200     		lsls	r2, r2, #1
+ 456 0310 BA18     		adds	r2, r7, r2
+ 457 0312 1360     		str	r3, [r2]
+ 458 0314 5460     		str	r4, [r2, #4]
+ 106:bmp180.c      ****     X1 = ((tS64)((tS64)B2 * ((tS64)(B6 * B6) / (tS64)4096)) / (tS64)2048);
+ 459              		.loc 1 106 0
+ 460 0316 7023     		movs	r3, #112
+ 461 0318 8C22     		movs	r2, #140
+ 462 031a 5200     		lsls	r2, r2, #1
+ 463 031c 9446     		mov	ip, r2
+ 464 031e BC44     		add	ip, ip, r7
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 11
+
+
+ 465 0320 6344     		add	r3, r3, ip
+ 466 0322 1B88     		ldrh	r3, [r3]
+ 467 0324 1B04     		lsls	r3, r3, #16
+ 468 0326 1B14     		asrs	r3, r3, #16
+ 469 0328 3B63     		str	r3, [r7, #48]
+ 470 032a DB17     		asrs	r3, r3, #31
+ 471 032c 7B63     		str	r3, [r7, #52]
+ 472 032e A423     		movs	r3, #164
+ 473 0330 5B00     		lsls	r3, r3, #1
+ 474 0332 FB18     		adds	r3, r7, r3
+ 475 0334 1A68     		ldr	r2, [r3]
+ 476 0336 5B68     		ldr	r3, [r3, #4]
+ 477 0338 A421     		movs	r1, #164
+ 478 033a 4900     		lsls	r1, r1, #1
+ 479 033c 7918     		adds	r1, r7, r1
+ 480 033e 0868     		ldr	r0, [r1]
+ 481 0340 4968     		ldr	r1, [r1, #4]
+ 482 0342 FFF7FEFF 		bl	__aeabi_lmul
+ 483              	.LVL2:
+ 484 0346 0300     		movs	r3, r0
+ 485 0348 0C00     		movs	r4, r1
+ 486 034a 1900     		movs	r1, r3
+ 487 034c 2200     		movs	r2, r4
+ 488 034e 002A     		cmp	r2, #0
+ 489 0350 03DA     		bge	.L6
+ 490 0352 704B     		ldr	r3, .L39+8
+ 491 0354 0024     		movs	r4, #0
+ 492 0356 C918     		adds	r1, r1, r3
+ 493 0358 6241     		adcs	r2, r2, r4
+ 494              	.L6:
+ 495 035a 1305     		lsls	r3, r2, #20
+ 496 035c 080B     		lsrs	r0, r1, #12
+ 497 035e F024     		movs	r4, #240
+ 498 0360 3C19     		adds	r4, r7, r4
+ 499 0362 2060     		str	r0, [r4]
+ 500 0364 F020     		movs	r0, #240
+ 501 0366 3818     		adds	r0, r7, r0
+ 502 0368 0068     		ldr	r0, [r0]
+ 503 036a 1843     		orrs	r0, r3
+ 504 036c F023     		movs	r3, #240
+ 505 036e FB18     		adds	r3, r7, r3
+ 506 0370 1860     		str	r0, [r3]
+ 507 0372 1313     		asrs	r3, r2, #12
+ 508 0374 F422     		movs	r2, #244
+ 509 0376 BA18     		adds	r2, r7, r2
+ 510 0378 1360     		str	r3, [r2]
+ 511 037a F023     		movs	r3, #240
+ 512 037c FB18     		adds	r3, r7, r3
+ 513 037e 5C68     		ldr	r4, [r3, #4]
+ 514 0380 1B68     		ldr	r3, [r3]
+ 515 0382 1A00     		movs	r2, r3
+ 516 0384 2300     		movs	r3, r4
+ 517 0386 386B     		ldr	r0, [r7, #48]
+ 518 0388 796B     		ldr	r1, [r7, #52]
+ 519 038a FFF7FEFF 		bl	__aeabi_lmul
+ 520              	.LVL3:
+ 521 038e 0300     		movs	r3, r0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 12
+
+
+ 522 0390 0C00     		movs	r4, r1
+ 523 0392 1900     		movs	r1, r3
+ 524 0394 2200     		movs	r2, r4
+ 525 0396 002A     		cmp	r2, #0
+ 526 0398 03DA     		bge	.L8
+ 527 039a 5F4B     		ldr	r3, .L39+12
+ 528 039c 0024     		movs	r4, #0
+ 529 039e C918     		adds	r1, r1, r3
+ 530 03a0 6241     		adcs	r2, r2, r4
+ 531              	.L8:
+ 532 03a2 5305     		lsls	r3, r2, #21
+ 533 03a4 C80A     		lsrs	r0, r1, #11
+ 534 03a6 E824     		movs	r4, #232
+ 535 03a8 3C19     		adds	r4, r7, r4
+ 536 03aa 2060     		str	r0, [r4]
+ 537 03ac E820     		movs	r0, #232
+ 538 03ae 3818     		adds	r0, r7, r0
+ 539 03b0 0068     		ldr	r0, [r0]
+ 540 03b2 1843     		orrs	r0, r3
+ 541 03b4 E823     		movs	r3, #232
+ 542 03b6 FB18     		adds	r3, r7, r3
+ 543 03b8 1860     		str	r0, [r3]
+ 544 03ba D312     		asrs	r3, r2, #11
+ 545 03bc EC22     		movs	r2, #236
+ 546 03be BA18     		adds	r2, r7, r2
+ 547 03c0 1360     		str	r3, [r2]
+ 548 03c2 E823     		movs	r3, #232
+ 549 03c4 FB18     		adds	r3, r7, r3
+ 550 03c6 5C68     		ldr	r4, [r3, #4]
+ 551 03c8 1B68     		ldr	r3, [r3]
+ 552 03ca BC22     		movs	r2, #188
+ 553 03cc 5200     		lsls	r2, r2, #1
+ 554 03ce BA18     		adds	r2, r7, r2
+ 555 03d0 1360     		str	r3, [r2]
+ 556 03d2 5460     		str	r4, [r2, #4]
+ 107:bmp180.c      ****     X2 = ((tS64)((tS64)AC2 * B6) / (tS64)2048);
+ 557              		.loc 1 107 0
+ 558 03d4 7C23     		movs	r3, #124
+ 559 03d6 8C22     		movs	r2, #140
+ 560 03d8 5200     		lsls	r2, r2, #1
+ 561 03da 9446     		mov	ip, r2
+ 562 03dc BC44     		add	ip, ip, r7
+ 563 03de 6344     		add	r3, r3, ip
+ 564 03e0 1B88     		ldrh	r3, [r3]
+ 565 03e2 1B04     		lsls	r3, r3, #16
+ 566 03e4 1B14     		asrs	r3, r3, #16
+ 567 03e6 BB62     		str	r3, [r7, #40]
+ 568 03e8 DB17     		asrs	r3, r3, #31
+ 569 03ea FB62     		str	r3, [r7, #44]
+ 570 03ec A423     		movs	r3, #164
+ 571 03ee 5B00     		lsls	r3, r3, #1
+ 572 03f0 FB18     		adds	r3, r7, r3
+ 573 03f2 1A68     		ldr	r2, [r3]
+ 574 03f4 5B68     		ldr	r3, [r3, #4]
+ 575 03f6 B86A     		ldr	r0, [r7, #40]
+ 576 03f8 F96A     		ldr	r1, [r7, #44]
+ 577 03fa FFF7FEFF 		bl	__aeabi_lmul
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 13
+
+
+ 578              	.LVL4:
+ 579 03fe 0300     		movs	r3, r0
+ 580 0400 0C00     		movs	r4, r1
+ 581 0402 1900     		movs	r1, r3
+ 582 0404 2200     		movs	r2, r4
+ 583 0406 002A     		cmp	r2, #0
+ 584 0408 03DA     		bge	.L10
+ 585 040a 434B     		ldr	r3, .L39+12
+ 586 040c 0024     		movs	r4, #0
+ 587 040e C918     		adds	r1, r1, r3
+ 588 0410 6241     		adcs	r2, r2, r4
+ 589              	.L10:
+ 590 0412 5305     		lsls	r3, r2, #21
+ 591 0414 C80A     		lsrs	r0, r1, #11
+ 592 0416 E024     		movs	r4, #224
+ 593 0418 3C19     		adds	r4, r7, r4
+ 594 041a 2060     		str	r0, [r4]
+ 595 041c E020     		movs	r0, #224
+ 596 041e 3818     		adds	r0, r7, r0
+ 597 0420 0068     		ldr	r0, [r0]
+ 598 0422 1843     		orrs	r0, r3
+ 599 0424 E023     		movs	r3, #224
+ 600 0426 FB18     		adds	r3, r7, r3
+ 601 0428 1860     		str	r0, [r3]
+ 602 042a D312     		asrs	r3, r2, #11
+ 603 042c E422     		movs	r2, #228
+ 604 042e BA18     		adds	r2, r7, r2
+ 605 0430 1360     		str	r3, [r2]
+ 606 0432 E023     		movs	r3, #224
+ 607 0434 FB18     		adds	r3, r7, r3
+ 608 0436 5C68     		ldr	r4, [r3, #4]
+ 609 0438 1B68     		ldr	r3, [r3]
+ 610 043a B822     		movs	r2, #184
+ 611 043c 5200     		lsls	r2, r2, #1
+ 612 043e BA18     		adds	r2, r7, r2
+ 613 0440 1360     		str	r3, [r2]
+ 614 0442 5460     		str	r4, [r2, #4]
+ 108:bmp180.c      ****     tS64 X3 = X1 + X2;
+ 615              		.loc 1 108 0
+ 616 0444 BC23     		movs	r3, #188
+ 617 0446 5B00     		lsls	r3, r3, #1
+ 618 0448 FB18     		adds	r3, r7, r3
+ 619 044a 1968     		ldr	r1, [r3]
+ 620 044c 5A68     		ldr	r2, [r3, #4]
+ 621 044e B823     		movs	r3, #184
+ 622 0450 5B00     		lsls	r3, r3, #1
+ 623 0452 FB18     		adds	r3, r7, r3
+ 624 0454 5C68     		ldr	r4, [r3, #4]
+ 625 0456 1B68     		ldr	r3, [r3]
+ 626 0458 5B18     		adds	r3, r3, r1
+ 627 045a 5441     		adcs	r4, r4, r2
+ 628 045c A022     		movs	r2, #160
+ 629 045e 5200     		lsls	r2, r2, #1
+ 630 0460 BA18     		adds	r2, r7, r2
+ 631 0462 1360     		str	r3, [r2]
+ 632 0464 5460     		str	r4, [r2, #4]
+ 109:bmp180.c      **** 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 14
+
+
+ 110:bmp180.c      ****     helperValue = ((tU64)1 << (tU64)pressureOss);
+ 633              		.loc 1 110 0
+ 634 0466 0123     		movs	r3, #1
+ 635 0468 0024     		movs	r4, #0
+ 636 046a AC22     		movs	r2, #172
+ 637 046c 5200     		lsls	r2, r2, #1
+ 638 046e BA18     		adds	r2, r7, r2
+ 639 0470 1360     		str	r3, [r2]
+ 640 0472 5460     		str	r4, [r2, #4]
+ 111:bmp180.c      ****     tS64 B3 = (tS64)(((tS64)((tS64)((tS64)AC1 * (tS64)4) + X3) / (tS64)helperValue) + (tS64)2) / (t
+ 641              		.loc 1 111 0
+ 642 0474 7E23     		movs	r3, #126
+ 643 0476 8C22     		movs	r2, #140
+ 644 0478 5200     		lsls	r2, r2, #1
+ 645 047a 9446     		mov	ip, r2
+ 646 047c BC44     		add	ip, ip, r7
+ 647 047e 6344     		add	r3, r3, ip
+ 648 0480 1B88     		ldrh	r3, [r3]
+ 649 0482 1B04     		lsls	r3, r3, #16
+ 650 0484 1B14     		asrs	r3, r3, #16
+ 651 0486 3B62     		str	r3, [r7, #32]
+ 652 0488 DB17     		asrs	r3, r3, #31
+ 653 048a 7B62     		str	r3, [r7, #36]
+ 654 048c 396A     		ldr	r1, [r7, #32]
+ 655 048e 7A6A     		ldr	r2, [r7, #36]
+ 656 0490 0B00     		movs	r3, r1
+ 657 0492 9B0F     		lsrs	r3, r3, #30
+ 658 0494 1000     		movs	r0, r2
+ 659 0496 8000     		lsls	r0, r0, #2
+ 660 0498 8624     		movs	r4, #134
+ 661 049a 6400     		lsls	r4, r4, #1
+ 662 049c 3C19     		adds	r4, r7, r4
+ 663 049e 2060     		str	r0, [r4]
+ 664 04a0 8620     		movs	r0, #134
+ 665 04a2 4000     		lsls	r0, r0, #1
+ 666 04a4 3818     		adds	r0, r7, r0
+ 667 04a6 0068     		ldr	r0, [r0]
+ 668 04a8 1843     		orrs	r0, r3
+ 669 04aa 8623     		movs	r3, #134
+ 670 04ac 5B00     		lsls	r3, r3, #1
+ 671 04ae FB18     		adds	r3, r7, r3
+ 672 04b0 1860     		str	r0, [r3]
+ 673 04b2 0B00     		movs	r3, r1
+ 674 04b4 9B00     		lsls	r3, r3, #2
+ 675 04b6 8422     		movs	r2, #132
+ 676 04b8 5200     		lsls	r2, r2, #1
+ 677 04ba BA18     		adds	r2, r7, r2
+ 678 04bc 1360     		str	r3, [r2]
+ 679 04be A023     		movs	r3, #160
+ 680 04c0 5B00     		lsls	r3, r3, #1
+ 681 04c2 FB18     		adds	r3, r7, r3
+ 682 04c4 5C68     		ldr	r4, [r3, #4]
+ 683 04c6 1B68     		ldr	r3, [r3]
+ 684 04c8 8422     		movs	r2, #132
+ 685 04ca 5200     		lsls	r2, r2, #1
+ 686 04cc BA18     		adds	r2, r7, r2
+ 687 04ce 1068     		ldr	r0, [r2]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 15
+
+
+ 688 04d0 5168     		ldr	r1, [r2, #4]
+ 689 04d2 C018     		adds	r0, r0, r3
+ 690 04d4 6141     		adcs	r1, r1, r4
+ 691 04d6 AC23     		movs	r3, #172
+ 692 04d8 5B00     		lsls	r3, r3, #1
+ 693 04da FB18     		adds	r3, r7, r3
+ 694 04dc 5C68     		ldr	r4, [r3, #4]
+ 695 04de 1B68     		ldr	r3, [r3]
+ 696 04e0 1A00     		movs	r2, r3
+ 697 04e2 2300     		movs	r3, r4
+ 698 04e4 FFF7FEFF 		bl	__aeabi_ldivmod
+ 699              	.LVL5:
+ 700 04e8 0300     		movs	r3, r0
+ 701 04ea 0C00     		movs	r4, r1
+ 702 04ec 1900     		movs	r1, r3
+ 703 04ee 2200     		movs	r2, r4
+ 704 04f0 0223     		movs	r3, #2
+ 705 04f2 0024     		movs	r4, #0
+ 706 04f4 5B18     		adds	r3, r3, r1
+ 707 04f6 5441     		adcs	r4, r4, r2
+ 708 04f8 1900     		movs	r1, r3
+ 709 04fa 2200     		movs	r2, r4
+ 710 04fc 002A     		cmp	r2, #0
+ 711 04fe 0DDA     		bge	.L12
+ 712 0500 0323     		movs	r3, #3
+ 713 0502 0024     		movs	r4, #0
+ 714 0504 C918     		adds	r1, r1, r3
+ 715 0506 6241     		adcs	r2, r2, r4
+ 716 0508 08E0     		b	.L40
+ 717              	.L41:
+ 718 050a C046     		.align	2
+ 719              	.L39:
+ 720 050c FF7F0000 		.word	32767
+ 721 0510 60F0FFFF 		.word	-4000
+ 722 0514 FF0F0000 		.word	4095
+ 723 0518 FF070000 		.word	2047
+ 724              	.L40:
+ 725              	.L12:
+ 726 051c 9307     		lsls	r3, r2, #30
+ 727 051e 8808     		lsrs	r0, r1, #2
+ 728 0520 D824     		movs	r4, #216
+ 729 0522 3C19     		adds	r4, r7, r4
+ 730 0524 2060     		str	r0, [r4]
+ 731 0526 D820     		movs	r0, #216
+ 732 0528 3818     		adds	r0, r7, r0
+ 733 052a 0068     		ldr	r0, [r0]
+ 734 052c 1843     		orrs	r0, r3
+ 735 052e D823     		movs	r3, #216
+ 736 0530 FB18     		adds	r3, r7, r3
+ 737 0532 1860     		str	r0, [r3]
+ 738 0534 9310     		asrs	r3, r2, #2
+ 739 0536 DC22     		movs	r2, #220
+ 740 0538 BA18     		adds	r2, r7, r2
+ 741 053a 1360     		str	r3, [r2]
+ 742 053c D823     		movs	r3, #216
+ 743 053e FB18     		adds	r3, r7, r3
+ 744 0540 5C68     		ldr	r4, [r3, #4]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 16
+
+
+ 745 0542 1B68     		ldr	r3, [r3]
+ 746 0544 9C22     		movs	r2, #156
+ 747 0546 5200     		lsls	r2, r2, #1
+ 748 0548 BA18     		adds	r2, r7, r2
+ 749 054a 1360     		str	r3, [r2]
+ 750 054c 5460     		str	r4, [r2, #4]
+ 112:bmp180.c      ****     X1 = (tS64)((tS64)AC3 * B6) / (tS64)8192;
+ 751              		.loc 1 112 0
+ 752 054e 7A23     		movs	r3, #122
+ 753 0550 8C22     		movs	r2, #140
+ 754 0552 5200     		lsls	r2, r2, #1
+ 755 0554 9446     		mov	ip, r2
+ 756 0556 BC44     		add	ip, ip, r7
+ 757 0558 6344     		add	r3, r3, ip
+ 758 055a 1B88     		ldrh	r3, [r3]
+ 759 055c 1B04     		lsls	r3, r3, #16
+ 760 055e 1B14     		asrs	r3, r3, #16
+ 761 0560 BB61     		str	r3, [r7, #24]
+ 762 0562 DB17     		asrs	r3, r3, #31
+ 763 0564 FB61     		str	r3, [r7, #28]
+ 764 0566 A423     		movs	r3, #164
+ 765 0568 5B00     		lsls	r3, r3, #1
+ 766 056a FB18     		adds	r3, r7, r3
+ 767 056c 1A68     		ldr	r2, [r3]
+ 768 056e 5B68     		ldr	r3, [r3, #4]
+ 769 0570 B869     		ldr	r0, [r7, #24]
+ 770 0572 F969     		ldr	r1, [r7, #28]
+ 771 0574 FFF7FEFF 		bl	__aeabi_lmul
+ 772              	.LVL6:
+ 773 0578 0300     		movs	r3, r0
+ 774 057a 0C00     		movs	r4, r1
+ 775 057c 1900     		movs	r1, r3
+ 776 057e 2200     		movs	r2, r4
+ 777 0580 002A     		cmp	r2, #0
+ 778 0582 03DA     		bge	.L14
+ 779 0584 AF4B     		ldr	r3, .L42
+ 780 0586 0024     		movs	r4, #0
+ 781 0588 C918     		adds	r1, r1, r3
+ 782 058a 6241     		adcs	r2, r2, r4
+ 783              	.L14:
+ 784 058c D304     		lsls	r3, r2, #19
+ 785 058e 480B     		lsrs	r0, r1, #13
+ 786 0590 D024     		movs	r4, #208
+ 787 0592 3C19     		adds	r4, r7, r4
+ 788 0594 2060     		str	r0, [r4]
+ 789 0596 D020     		movs	r0, #208
+ 790 0598 3818     		adds	r0, r7, r0
+ 791 059a 0068     		ldr	r0, [r0]
+ 792 059c 1843     		orrs	r0, r3
+ 793 059e D023     		movs	r3, #208
+ 794 05a0 FB18     		adds	r3, r7, r3
+ 795 05a2 1860     		str	r0, [r3]
+ 796 05a4 5313     		asrs	r3, r2, #13
+ 797 05a6 D422     		movs	r2, #212
+ 798 05a8 BA18     		adds	r2, r7, r2
+ 799 05aa 1360     		str	r3, [r2]
+ 800 05ac D023     		movs	r3, #208
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 17
+
+
+ 801 05ae FB18     		adds	r3, r7, r3
+ 802 05b0 5C68     		ldr	r4, [r3, #4]
+ 803 05b2 1B68     		ldr	r3, [r3]
+ 804 05b4 BC22     		movs	r2, #188
+ 805 05b6 5200     		lsls	r2, r2, #1
+ 806 05b8 BA18     		adds	r2, r7, r2
+ 807 05ba 1360     		str	r3, [r2]
+ 808 05bc 5460     		str	r4, [r2, #4]
+ 113:bmp180.c      ****     X2 = (tS64)(((tS64)B1 * (tS64)((B6 * B6) / (tS64)4096))) / (tS64)65536;
+ 809              		.loc 1 113 0
+ 810 05be 7223     		movs	r3, #114
+ 811 05c0 8C22     		movs	r2, #140
+ 812 05c2 5200     		lsls	r2, r2, #1
+ 813 05c4 9446     		mov	ip, r2
+ 814 05c6 BC44     		add	ip, ip, r7
+ 815 05c8 6344     		add	r3, r3, ip
+ 816 05ca 1B88     		ldrh	r3, [r3]
+ 817 05cc 1B04     		lsls	r3, r3, #16
+ 818 05ce 1B14     		asrs	r3, r3, #16
+ 819 05d0 3B61     		str	r3, [r7, #16]
+ 820 05d2 DB17     		asrs	r3, r3, #31
+ 821 05d4 7B61     		str	r3, [r7, #20]
+ 822 05d6 A423     		movs	r3, #164
+ 823 05d8 5B00     		lsls	r3, r3, #1
+ 824 05da FB18     		adds	r3, r7, r3
+ 825 05dc 1A68     		ldr	r2, [r3]
+ 826 05de 5B68     		ldr	r3, [r3, #4]
+ 827 05e0 A421     		movs	r1, #164
+ 828 05e2 4900     		lsls	r1, r1, #1
+ 829 05e4 7918     		adds	r1, r7, r1
+ 830 05e6 0868     		ldr	r0, [r1]
+ 831 05e8 4968     		ldr	r1, [r1, #4]
+ 832 05ea FFF7FEFF 		bl	__aeabi_lmul
+ 833              	.LVL7:
+ 834 05ee 0300     		movs	r3, r0
+ 835 05f0 0C00     		movs	r4, r1
+ 836 05f2 1900     		movs	r1, r3
+ 837 05f4 2200     		movs	r2, r4
+ 838 05f6 002A     		cmp	r2, #0
+ 839 05f8 03DA     		bge	.L16
+ 840 05fa 934B     		ldr	r3, .L42+4
+ 841 05fc 0024     		movs	r4, #0
+ 842 05fe C918     		adds	r1, r1, r3
+ 843 0600 6241     		adcs	r2, r2, r4
+ 844              	.L16:
+ 845 0602 1305     		lsls	r3, r2, #20
+ 846 0604 080B     		lsrs	r0, r1, #12
+ 847 0606 C824     		movs	r4, #200
+ 848 0608 3C19     		adds	r4, r7, r4
+ 849 060a 2060     		str	r0, [r4]
+ 850 060c C820     		movs	r0, #200
+ 851 060e 3818     		adds	r0, r7, r0
+ 852 0610 0068     		ldr	r0, [r0]
+ 853 0612 1843     		orrs	r0, r3
+ 854 0614 C823     		movs	r3, #200
+ 855 0616 FB18     		adds	r3, r7, r3
+ 856 0618 1860     		str	r0, [r3]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 18
+
+
+ 857 061a 1313     		asrs	r3, r2, #12
+ 858 061c CC22     		movs	r2, #204
+ 859 061e BA18     		adds	r2, r7, r2
+ 860 0620 1360     		str	r3, [r2]
+ 861 0622 C823     		movs	r3, #200
+ 862 0624 FB18     		adds	r3, r7, r3
+ 863 0626 5C68     		ldr	r4, [r3, #4]
+ 864 0628 1B68     		ldr	r3, [r3]
+ 865 062a 1A00     		movs	r2, r3
+ 866 062c 2300     		movs	r3, r4
+ 867 062e 3869     		ldr	r0, [r7, #16]
+ 868 0630 7969     		ldr	r1, [r7, #20]
+ 869 0632 FFF7FEFF 		bl	__aeabi_lmul
+ 870              	.LVL8:
+ 871 0636 0300     		movs	r3, r0
+ 872 0638 0C00     		movs	r4, r1
+ 873 063a 1900     		movs	r1, r3
+ 874 063c 2200     		movs	r2, r4
+ 875 063e 002A     		cmp	r2, #0
+ 876 0640 03DA     		bge	.L18
+ 877 0642 824B     		ldr	r3, .L42+8
+ 878 0644 0024     		movs	r4, #0
+ 879 0646 C918     		adds	r1, r1, r3
+ 880 0648 6241     		adcs	r2, r2, r4
+ 881              	.L18:
+ 882 064a 1304     		lsls	r3, r2, #16
+ 883 064c 080C     		lsrs	r0, r1, #16
+ 884 064e C024     		movs	r4, #192
+ 885 0650 3C19     		adds	r4, r7, r4
+ 886 0652 2060     		str	r0, [r4]
+ 887 0654 C020     		movs	r0, #192
+ 888 0656 3818     		adds	r0, r7, r0
+ 889 0658 0068     		ldr	r0, [r0]
+ 890 065a 1843     		orrs	r0, r3
+ 891 065c C023     		movs	r3, #192
+ 892 065e FB18     		adds	r3, r7, r3
+ 893 0660 1860     		str	r0, [r3]
+ 894 0662 1314     		asrs	r3, r2, #16
+ 895 0664 C422     		movs	r2, #196
+ 896 0666 BA18     		adds	r2, r7, r2
+ 897 0668 1360     		str	r3, [r2]
+ 898 066a C023     		movs	r3, #192
+ 899 066c FB18     		adds	r3, r7, r3
+ 900 066e 5C68     		ldr	r4, [r3, #4]
+ 901 0670 1B68     		ldr	r3, [r3]
+ 902 0672 B822     		movs	r2, #184
+ 903 0674 5200     		lsls	r2, r2, #1
+ 904 0676 BA18     		adds	r2, r7, r2
+ 905 0678 1360     		str	r3, [r2]
+ 906 067a 5460     		str	r4, [r2, #4]
+ 114:bmp180.c      ****     X3 = (((X1 + X2) + (tS64)2) / (tS64)4);
+ 907              		.loc 1 114 0
+ 908 067c BC23     		movs	r3, #188
+ 909 067e 5B00     		lsls	r3, r3, #1
+ 910 0680 FB18     		adds	r3, r7, r3
+ 911 0682 1968     		ldr	r1, [r3]
+ 912 0684 5A68     		ldr	r2, [r3, #4]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 19
+
+
+ 913 0686 B823     		movs	r3, #184
+ 914 0688 5B00     		lsls	r3, r3, #1
+ 915 068a FB18     		adds	r3, r7, r3
+ 916 068c 5C68     		ldr	r4, [r3, #4]
+ 917 068e 1B68     		ldr	r3, [r3]
+ 918 0690 C918     		adds	r1, r1, r3
+ 919 0692 6241     		adcs	r2, r2, r4
+ 920 0694 0223     		movs	r3, #2
+ 921 0696 0024     		movs	r4, #0
+ 922 0698 5B18     		adds	r3, r3, r1
+ 923 069a 5441     		adcs	r4, r4, r2
+ 924 069c 1900     		movs	r1, r3
+ 925 069e 2200     		movs	r2, r4
+ 926 06a0 002A     		cmp	r2, #0
+ 927 06a2 03DA     		bge	.L20
+ 928 06a4 0323     		movs	r3, #3
+ 929 06a6 0024     		movs	r4, #0
+ 930 06a8 C918     		adds	r1, r1, r3
+ 931 06aa 6241     		adcs	r2, r2, r4
+ 932              	.L20:
+ 933 06ac 9307     		lsls	r3, r2, #30
+ 934 06ae 8808     		lsrs	r0, r1, #2
+ 935 06b0 B824     		movs	r4, #184
+ 936 06b2 3C19     		adds	r4, r7, r4
+ 937 06b4 2060     		str	r0, [r4]
+ 938 06b6 B820     		movs	r0, #184
+ 939 06b8 3818     		adds	r0, r7, r0
+ 940 06ba 0068     		ldr	r0, [r0]
+ 941 06bc 1843     		orrs	r0, r3
+ 942 06be B823     		movs	r3, #184
+ 943 06c0 FB18     		adds	r3, r7, r3
+ 944 06c2 1860     		str	r0, [r3]
+ 945 06c4 9310     		asrs	r3, r2, #2
+ 946 06c6 BC22     		movs	r2, #188
+ 947 06c8 BA18     		adds	r2, r7, r2
+ 948 06ca 1360     		str	r3, [r2]
+ 949 06cc B823     		movs	r3, #184
+ 950 06ce FB18     		adds	r3, r7, r3
+ 951 06d0 5C68     		ldr	r4, [r3, #4]
+ 952 06d2 1B68     		ldr	r3, [r3]
+ 953 06d4 A022     		movs	r2, #160
+ 954 06d6 5200     		lsls	r2, r2, #1
+ 955 06d8 BA18     		adds	r2, r7, r2
+ 956 06da 1360     		str	r3, [r2]
+ 957 06dc 5460     		str	r4, [r2, #4]
+ 115:bmp180.c      **** 
+ 116:bmp180.c      ****     helperValueSigned = (tS64)((tS64)((tS64)((tS64)AC4 * (X3 + (tS64)32768))) / (tS64)32768); 
+ 958              		.loc 1 116 0
+ 959 06de 7823     		movs	r3, #120
+ 960 06e0 8C22     		movs	r2, #140
+ 961 06e2 5200     		lsls	r2, r2, #1
+ 962 06e4 9446     		mov	ip, r2
+ 963 06e6 BC44     		add	ip, ip, r7
+ 964 06e8 6344     		add	r3, r3, ip
+ 965 06ea 1B88     		ldrh	r3, [r3]
+ 966 06ec 1B04     		lsls	r3, r3, #16
+ 967 06ee 1B0C     		lsrs	r3, r3, #16
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 20
+
+
+ 968 06f0 BB60     		str	r3, [r7, #8]
+ 969 06f2 0023     		movs	r3, #0
+ 970 06f4 FB60     		str	r3, [r7, #12]
+ 971 06f6 A023     		movs	r3, #160
+ 972 06f8 5B00     		lsls	r3, r3, #1
+ 973 06fa FB18     		adds	r3, r7, r3
+ 974 06fc 1968     		ldr	r1, [r3]
+ 975 06fe 5A68     		ldr	r2, [r3, #4]
+ 976 0700 8023     		movs	r3, #128
+ 977 0702 1B02     		lsls	r3, r3, #8
+ 978 0704 0024     		movs	r4, #0
+ 979 0706 5B18     		adds	r3, r3, r1
+ 980 0708 5441     		adcs	r4, r4, r2
+ 981 070a 1A00     		movs	r2, r3
+ 982 070c 2300     		movs	r3, r4
+ 983 070e B868     		ldr	r0, [r7, #8]
+ 984 0710 F968     		ldr	r1, [r7, #12]
+ 985 0712 FFF7FEFF 		bl	__aeabi_lmul
+ 986              	.LVL9:
+ 987 0716 0300     		movs	r3, r0
+ 988 0718 0C00     		movs	r4, r1
+ 989 071a 1900     		movs	r1, r3
+ 990 071c 2200     		movs	r2, r4
+ 991 071e 002A     		cmp	r2, #0
+ 992 0720 03DA     		bge	.L22
+ 993 0722 4B4B     		ldr	r3, .L42+12
+ 994 0724 0024     		movs	r4, #0
+ 995 0726 C918     		adds	r1, r1, r3
+ 996 0728 6241     		adcs	r2, r2, r4
+ 997              	.L22:
+ 998 072a 5304     		lsls	r3, r2, #17
+ 999 072c C80B     		lsrs	r0, r1, #15
+ 1000 072e B024     		movs	r4, #176
+ 1001 0730 3C19     		adds	r4, r7, r4
+ 1002 0732 2060     		str	r0, [r4]
+ 1003 0734 B020     		movs	r0, #176
+ 1004 0736 3818     		adds	r0, r7, r0
+ 1005 0738 0068     		ldr	r0, [r0]
+ 1006 073a 1843     		orrs	r0, r3
+ 1007 073c B023     		movs	r3, #176
+ 1008 073e FB18     		adds	r3, r7, r3
+ 1009 0740 1860     		str	r0, [r3]
+ 1010 0742 D313     		asrs	r3, r2, #15
+ 1011 0744 B422     		movs	r2, #180
+ 1012 0746 BA18     		adds	r2, r7, r2
+ 1013 0748 1360     		str	r3, [r2]
+ 1014 074a B023     		movs	r3, #176
+ 1015 074c FB18     		adds	r3, r7, r3
+ 1016 074e 5C68     		ldr	r4, [r3, #4]
+ 1017 0750 1B68     		ldr	r3, [r3]
+ 1018 0752 A822     		movs	r2, #168
+ 1019 0754 5200     		lsls	r2, r2, #1
+ 1020 0756 BA18     		adds	r2, r7, r2
+ 1021 0758 1360     		str	r3, [r2]
+ 1022 075a 5460     		str	r4, [r2, #4]
+ 117:bmp180.c      ****     tU64 B4 = (tU64)helperValueSigned;
+ 1023              		.loc 1 117 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 21
+
+
+ 1024 075c A823     		movs	r3, #168
+ 1025 075e 5B00     		lsls	r3, r3, #1
+ 1026 0760 FB18     		adds	r3, r7, r3
+ 1027 0762 5C68     		ldr	r4, [r3, #4]
+ 1028 0764 1B68     		ldr	r3, [r3]
+ 1029 0766 9822     		movs	r2, #152
+ 1030 0768 5200     		lsls	r2, r2, #1
+ 1031 076a BA18     		adds	r2, r7, r2
+ 1032 076c 1360     		str	r3, [r2]
+ 1033 076e 5460     		str	r4, [r2, #4]
+ 118:bmp180.c      ****     helperValue = ((tU64)50000 >> (tU64)pressureOss);
+ 1034              		.loc 1 118 0
+ 1035 0770 384B     		ldr	r3, .L42+16
+ 1036 0772 0024     		movs	r4, #0
+ 1037 0774 AC22     		movs	r2, #172
+ 1038 0776 5200     		lsls	r2, r2, #1
+ 1039 0778 BA18     		adds	r2, r7, r2
+ 1040 077a 1360     		str	r3, [r2]
+ 1041 077c 5460     		str	r4, [r2, #4]
+ 119:bmp180.c      ****     helperValueSigned = (((tS64)readPress - B3) * (tS64)helperValue);
+ 1042              		.loc 1 119 0
+ 1043 077e 9223     		movs	r3, #146
+ 1044 0780 5B00     		lsls	r3, r3, #1
+ 1045 0782 FB18     		adds	r3, r7, r3
+ 1046 0784 1B68     		ldr	r3, [r3]
+ 1047 0786 3B60     		str	r3, [r7]
+ 1048 0788 0023     		movs	r3, #0
+ 1049 078a 7B60     		str	r3, [r7, #4]
+ 1050 078c 9C23     		movs	r3, #156
+ 1051 078e 5B00     		lsls	r3, r3, #1
+ 1052 0790 FB18     		adds	r3, r7, r3
+ 1053 0792 5C68     		ldr	r4, [r3, #4]
+ 1054 0794 1B68     		ldr	r3, [r3]
+ 1055 0796 3868     		ldr	r0, [r7]
+ 1056 0798 7968     		ldr	r1, [r7, #4]
+ 1057 079a C01A     		subs	r0, r0, r3
+ 1058 079c A141     		sbcs	r1, r1, r4
+ 1059 079e AC23     		movs	r3, #172
+ 1060 07a0 5B00     		lsls	r3, r3, #1
+ 1061 07a2 FB18     		adds	r3, r7, r3
+ 1062 07a4 5C68     		ldr	r4, [r3, #4]
+ 1063 07a6 1B68     		ldr	r3, [r3]
+ 1064 07a8 1A00     		movs	r2, r3
+ 1065 07aa 2300     		movs	r3, r4
+ 1066 07ac FFF7FEFF 		bl	__aeabi_lmul
+ 1067              	.LVL10:
+ 1068 07b0 0300     		movs	r3, r0
+ 1069 07b2 0C00     		movs	r4, r1
+ 1070 07b4 A822     		movs	r2, #168
+ 1071 07b6 5200     		lsls	r2, r2, #1
+ 1072 07b8 BA18     		adds	r2, r7, r2
+ 1073 07ba 1360     		str	r3, [r2]
+ 1074 07bc 5460     		str	r4, [r2, #4]
+ 120:bmp180.c      ****     tU64 B7 = (tU64)helperValueSigned;
+ 1075              		.loc 1 120 0
+ 1076 07be A823     		movs	r3, #168
+ 1077 07c0 5B00     		lsls	r3, r3, #1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 22
+
+
+ 1078 07c2 FB18     		adds	r3, r7, r3
+ 1079 07c4 5C68     		ldr	r4, [r3, #4]
+ 1080 07c6 1B68     		ldr	r3, [r3]
+ 1081 07c8 9422     		movs	r2, #148
+ 1082 07ca 5200     		lsls	r2, r2, #1
+ 1083 07cc BA18     		adds	r2, r7, r2
+ 1084 07ce 1360     		str	r3, [r2]
+ 1085 07d0 5460     		str	r4, [r2, #4]
+ 121:bmp180.c      **** 
+ 122:bmp180.c      ****     tS64 p;
+ 123:bmp180.c      ****     if (B7 < 0x80000000UL)
+ 1086              		.loc 1 123 0
+ 1087 07d2 9623     		movs	r3, #150
+ 1088 07d4 5B00     		lsls	r3, r3, #1
+ 1089 07d6 FB18     		adds	r3, r7, r3
+ 1090 07d8 1B68     		ldr	r3, [r3]
+ 1091 07da 002B     		cmp	r3, #0
+ 1092 07dc 3ED1     		bne	.L24
+ 1093 07de 9623     		movs	r3, #150
+ 1094 07e0 5B00     		lsls	r3, r3, #1
+ 1095 07e2 FB18     		adds	r3, r7, r3
+ 1096 07e4 1B68     		ldr	r3, [r3]
+ 1097 07e6 002B     		cmp	r3, #0
+ 1098 07e8 06D1     		bne	.L38
+ 1099 07ea 9423     		movs	r3, #148
+ 1100 07ec 5B00     		lsls	r3, r3, #1
+ 1101 07ee FB18     		adds	r3, r7, r3
+ 1102 07f0 1A68     		ldr	r2, [r3]
+ 1103 07f2 194B     		ldr	r3, .L42+20
+ 1104 07f4 9A42     		cmp	r2, r3
+ 1105 07f6 31D8     		bhi	.L24
+ 1106              	.L38:
+ 124:bmp180.c      ****     {
+ 125:bmp180.c      ****         helperValue = (B7 * (tU64)2) / B4;
+ 1107              		.loc 1 125 0
+ 1108 07f8 9423     		movs	r3, #148
+ 1109 07fa 5B00     		lsls	r3, r3, #1
+ 1110 07fc FB18     		adds	r3, r7, r3
+ 1111 07fe 5C68     		ldr	r4, [r3, #4]
+ 1112 0800 1B68     		ldr	r3, [r3]
+ 1113 0802 DB18     		adds	r3, r3, r3
+ 1114 0804 6441     		adcs	r4, r4, r4
+ 1115 0806 1800     		movs	r0, r3
+ 1116 0808 2100     		movs	r1, r4
+ 1117 080a 9823     		movs	r3, #152
+ 1118 080c 5B00     		lsls	r3, r3, #1
+ 1119 080e FB18     		adds	r3, r7, r3
+ 1120 0810 1A68     		ldr	r2, [r3]
+ 1121 0812 5B68     		ldr	r3, [r3, #4]
+ 1122 0814 FFF7FEFF 		bl	__aeabi_uldivmod
+ 1123              	.LVL11:
+ 1124 0818 0300     		movs	r3, r0
+ 1125 081a 0C00     		movs	r4, r1
+ 1126 081c AC22     		movs	r2, #172
+ 1127 081e 5200     		lsls	r2, r2, #1
+ 1128 0820 BA18     		adds	r2, r7, r2
+ 1129 0822 1360     		str	r3, [r2]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 23
+
+
+ 1130 0824 5460     		str	r4, [r2, #4]
+ 126:bmp180.c      ****         p = (tS64)helperValue;
+ 1131              		.loc 1 126 0
+ 1132 0826 AC23     		movs	r3, #172
+ 1133 0828 5B00     		lsls	r3, r3, #1
+ 1134 082a FB18     		adds	r3, r7, r3
+ 1135 082c 5C68     		ldr	r4, [r3, #4]
+ 1136 082e 1B68     		ldr	r3, [r3]
+ 1137 0830 8022     		movs	r2, #128
+ 1138 0832 8C21     		movs	r1, #140
+ 1139 0834 4900     		lsls	r1, r1, #1
+ 1140 0836 8C46     		mov	ip, r1
+ 1141 0838 BC44     		add	ip, ip, r7
+ 1142 083a 6244     		add	r2, r2, ip
+ 1143 083c 1360     		str	r3, [r2]
+ 1144 083e 5460     		str	r4, [r2, #4]
+ 1145 0840 2EE0     		b	.L26
+ 1146              	.L43:
+ 1147 0842 C046     		.align	2
+ 1148              	.L42:
+ 1149 0844 FF1F0000 		.word	8191
+ 1150 0848 FF0F0000 		.word	4095
+ 1151 084c FFFF0000 		.word	65535
+ 1152 0850 FF7F0000 		.word	32767
+ 1153 0854 50C30000 		.word	50000
+ 1154 0858 FFFFFF7F 		.word	2147483647
+ 1155              	.L24:
+ 127:bmp180.c      ****     }
+ 128:bmp180.c      ****     else
+ 129:bmp180.c      ****     {
+ 130:bmp180.c      ****         helperValue = (B7 / B4) * (tU64)2;
+ 1156              		.loc 1 130 0
+ 1157 085c 9823     		movs	r3, #152
+ 1158 085e 5B00     		lsls	r3, r3, #1
+ 1159 0860 FB18     		adds	r3, r7, r3
+ 1160 0862 1A68     		ldr	r2, [r3]
+ 1161 0864 5B68     		ldr	r3, [r3, #4]
+ 1162 0866 9421     		movs	r1, #148
+ 1163 0868 4900     		lsls	r1, r1, #1
+ 1164 086a 7918     		adds	r1, r7, r1
+ 1165 086c 0868     		ldr	r0, [r1]
+ 1166 086e 4968     		ldr	r1, [r1, #4]
+ 1167 0870 FFF7FEFF 		bl	__aeabi_uldivmod
+ 1168              	.LVL12:
+ 1169 0874 0300     		movs	r3, r0
+ 1170 0876 0C00     		movs	r4, r1
+ 1171 0878 DB18     		adds	r3, r3, r3
+ 1172 087a 6441     		adcs	r4, r4, r4
+ 1173 087c AC22     		movs	r2, #172
+ 1174 087e 5200     		lsls	r2, r2, #1
+ 1175 0880 BA18     		adds	r2, r7, r2
+ 1176 0882 1360     		str	r3, [r2]
+ 1177 0884 5460     		str	r4, [r2, #4]
+ 131:bmp180.c      ****         p = (tS64)helperValue;
+ 1178              		.loc 1 131 0
+ 1179 0886 AC23     		movs	r3, #172
+ 1180 0888 5B00     		lsls	r3, r3, #1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 24
+
+
+ 1181 088a FB18     		adds	r3, r7, r3
+ 1182 088c 5C68     		ldr	r4, [r3, #4]
+ 1183 088e 1B68     		ldr	r3, [r3]
+ 1184 0890 8022     		movs	r2, #128
+ 1185 0892 8C21     		movs	r1, #140
+ 1186 0894 4900     		lsls	r1, r1, #1
+ 1187 0896 8C46     		mov	ip, r1
+ 1188 0898 BC44     		add	ip, ip, r7
+ 1189 089a 6244     		add	r2, r2, ip
+ 1190 089c 1360     		str	r3, [r2]
+ 1191 089e 5460     		str	r4, [r2, #4]
+ 1192              	.L26:
+ 132:bmp180.c      ****     }
+ 133:bmp180.c      **** 
+ 134:bmp180.c      ****     X1 = (tS64)(p / (tS64)256) * (tS64)(p / (tS64)256);
+ 1193              		.loc 1 134 0
+ 1194 08a0 8023     		movs	r3, #128
+ 1195 08a2 8C22     		movs	r2, #140
+ 1196 08a4 5200     		lsls	r2, r2, #1
+ 1197 08a6 9446     		mov	ip, r2
+ 1198 08a8 BC44     		add	ip, ip, r7
+ 1199 08aa 6344     		add	r3, r3, ip
+ 1200 08ac 5C68     		ldr	r4, [r3, #4]
+ 1201 08ae 1B68     		ldr	r3, [r3]
+ 1202 08b0 1900     		movs	r1, r3
+ 1203 08b2 2200     		movs	r2, r4
+ 1204 08b4 002A     		cmp	r2, #0
+ 1205 08b6 03DA     		bge	.L27
+ 1206 08b8 FF23     		movs	r3, #255
+ 1207 08ba 0024     		movs	r4, #0
+ 1208 08bc C918     		adds	r1, r1, r3
+ 1209 08be 6241     		adcs	r2, r2, r4
+ 1210              	.L27:
+ 1211 08c0 1306     		lsls	r3, r2, #24
+ 1212 08c2 080A     		lsrs	r0, r1, #8
+ 1213 08c4 A824     		movs	r4, #168
+ 1214 08c6 3C19     		adds	r4, r7, r4
+ 1215 08c8 2060     		str	r0, [r4]
+ 1216 08ca A820     		movs	r0, #168
+ 1217 08cc 3818     		adds	r0, r7, r0
+ 1218 08ce 0068     		ldr	r0, [r0]
+ 1219 08d0 1843     		orrs	r0, r3
+ 1220 08d2 A823     		movs	r3, #168
+ 1221 08d4 FB18     		adds	r3, r7, r3
+ 1222 08d6 1860     		str	r0, [r3]
+ 1223 08d8 1312     		asrs	r3, r2, #8
+ 1224 08da AC22     		movs	r2, #172
+ 1225 08dc BA18     		adds	r2, r7, r2
+ 1226 08de 1360     		str	r3, [r2]
+ 1227 08e0 A823     		movs	r3, #168
+ 1228 08e2 FB18     		adds	r3, r7, r3
+ 1229 08e4 5C68     		ldr	r4, [r3, #4]
+ 1230 08e6 1B68     		ldr	r3, [r3]
+ 1231 08e8 8822     		movs	r2, #136
+ 1232 08ea 5200     		lsls	r2, r2, #1
+ 1233 08ec BA18     		adds	r2, r7, r2
+ 1234 08ee 1360     		str	r3, [r2]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 25
+
+
+ 1235 08f0 5460     		str	r4, [r2, #4]
+ 1236 08f2 8023     		movs	r3, #128
+ 1237 08f4 8C22     		movs	r2, #140
+ 1238 08f6 5200     		lsls	r2, r2, #1
+ 1239 08f8 9446     		mov	ip, r2
+ 1240 08fa BC44     		add	ip, ip, r7
+ 1241 08fc 6344     		add	r3, r3, ip
+ 1242 08fe 5C68     		ldr	r4, [r3, #4]
+ 1243 0900 1B68     		ldr	r3, [r3]
+ 1244 0902 1900     		movs	r1, r3
+ 1245 0904 2200     		movs	r2, r4
+ 1246 0906 002A     		cmp	r2, #0
+ 1247 0908 03DA     		bge	.L29
+ 1248 090a FF23     		movs	r3, #255
+ 1249 090c 0024     		movs	r4, #0
+ 1250 090e C918     		adds	r1, r1, r3
+ 1251 0910 6241     		adcs	r2, r2, r4
+ 1252              	.L29:
+ 1253 0912 1306     		lsls	r3, r2, #24
+ 1254 0914 080A     		lsrs	r0, r1, #8
+ 1255 0916 A024     		movs	r4, #160
+ 1256 0918 3C19     		adds	r4, r7, r4
+ 1257 091a 2060     		str	r0, [r4]
+ 1258 091c A020     		movs	r0, #160
+ 1259 091e 3818     		adds	r0, r7, r0
+ 1260 0920 0068     		ldr	r0, [r0]
+ 1261 0922 1843     		orrs	r0, r3
+ 1262 0924 A023     		movs	r3, #160
+ 1263 0926 FB18     		adds	r3, r7, r3
+ 1264 0928 1860     		str	r0, [r3]
+ 1265 092a 1312     		asrs	r3, r2, #8
+ 1266 092c A422     		movs	r2, #164
+ 1267 092e BA18     		adds	r2, r7, r2
+ 1268 0930 1360     		str	r3, [r2]
+ 1269 0932 A023     		movs	r3, #160
+ 1270 0934 FB18     		adds	r3, r7, r3
+ 1271 0936 5C68     		ldr	r4, [r3, #4]
+ 1272 0938 1B68     		ldr	r3, [r3]
+ 1273 093a 1A00     		movs	r2, r3
+ 1274 093c 2300     		movs	r3, r4
+ 1275 093e 8821     		movs	r1, #136
+ 1276 0940 4900     		lsls	r1, r1, #1
+ 1277 0942 7918     		adds	r1, r7, r1
+ 1278 0944 0868     		ldr	r0, [r1]
+ 1279 0946 4968     		ldr	r1, [r1, #4]
+ 1280 0948 FFF7FEFF 		bl	__aeabi_lmul
+ 1281              	.LVL13:
+ 1282 094c 0300     		movs	r3, r0
+ 1283 094e 0C00     		movs	r4, r1
+ 1284 0950 BC22     		movs	r2, #188
+ 1285 0952 5200     		lsls	r2, r2, #1
+ 1286 0954 BA18     		adds	r2, r7, r2
+ 1287 0956 1360     		str	r3, [r2]
+ 1288 0958 5460     		str	r4, [r2, #4]
+ 135:bmp180.c      ****     X1 = ((tS64)(X1 * (tS64)3038) / (tS64)65536);
+ 1289              		.loc 1 135 0
+ 1290 095a 834A     		ldr	r2, .L44
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 26
+
+
+ 1291 095c 0023     		movs	r3, #0
+ 1292 095e BC21     		movs	r1, #188
+ 1293 0960 4900     		lsls	r1, r1, #1
+ 1294 0962 7918     		adds	r1, r7, r1
+ 1295 0964 0868     		ldr	r0, [r1]
+ 1296 0966 4968     		ldr	r1, [r1, #4]
+ 1297 0968 FFF7FEFF 		bl	__aeabi_lmul
+ 1298              	.LVL14:
+ 1299 096c 0300     		movs	r3, r0
+ 1300 096e 0C00     		movs	r4, r1
+ 1301 0970 1900     		movs	r1, r3
+ 1302 0972 2200     		movs	r2, r4
+ 1303 0974 002A     		cmp	r2, #0
+ 1304 0976 03DA     		bge	.L31
+ 1305 0978 7C4B     		ldr	r3, .L44+4
+ 1306 097a 0024     		movs	r4, #0
+ 1307 097c C918     		adds	r1, r1, r3
+ 1308 097e 6241     		adcs	r2, r2, r4
+ 1309              	.L31:
+ 1310 0980 1304     		lsls	r3, r2, #16
+ 1311 0982 080C     		lsrs	r0, r1, #16
+ 1312 0984 9824     		movs	r4, #152
+ 1313 0986 3C19     		adds	r4, r7, r4
+ 1314 0988 2060     		str	r0, [r4]
+ 1315 098a 9820     		movs	r0, #152
+ 1316 098c 3818     		adds	r0, r7, r0
+ 1317 098e 0068     		ldr	r0, [r0]
+ 1318 0990 1843     		orrs	r0, r3
+ 1319 0992 9823     		movs	r3, #152
+ 1320 0994 FB18     		adds	r3, r7, r3
+ 1321 0996 1860     		str	r0, [r3]
+ 1322 0998 1314     		asrs	r3, r2, #16
+ 1323 099a 9C22     		movs	r2, #156
+ 1324 099c BA18     		adds	r2, r7, r2
+ 1325 099e 1360     		str	r3, [r2]
+ 1326 09a0 9823     		movs	r3, #152
+ 1327 09a2 FB18     		adds	r3, r7, r3
+ 1328 09a4 5C68     		ldr	r4, [r3, #4]
+ 1329 09a6 1B68     		ldr	r3, [r3]
+ 1330 09a8 BC22     		movs	r2, #188
+ 1331 09aa 5200     		lsls	r2, r2, #1
+ 1332 09ac BA18     		adds	r2, r7, r2
+ 1333 09ae 1360     		str	r3, [r2]
+ 1334 09b0 5460     		str	r4, [r2, #4]
+ 136:bmp180.c      ****     X2 = ((tS64)((tS64)-7357 * p) / (tS64)65536);
+ 1335              		.loc 1 136 0
+ 1336 09b2 8023     		movs	r3, #128
+ 1337 09b4 8C22     		movs	r2, #140
+ 1338 09b6 5200     		lsls	r2, r2, #1
+ 1339 09b8 9446     		mov	ip, r2
+ 1340 09ba BC44     		add	ip, ip, r7
+ 1341 09bc 6344     		add	r3, r3, ip
+ 1342 09be 1868     		ldr	r0, [r3]
+ 1343 09c0 5968     		ldr	r1, [r3, #4]
+ 1344 09c2 8823     		movs	r3, #136
+ 1345 09c4 5B00     		lsls	r3, r3, #1
+ 1346 09c6 FB18     		adds	r3, r7, r3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 27
+
+
+ 1347 09c8 1860     		str	r0, [r3]
+ 1348 09ca 5960     		str	r1, [r3, #4]
+ 1349 09cc 0300     		movs	r3, r0
+ 1350 09ce 0C00     		movs	r4, r1
+ 1351 09d0 D80B     		lsrs	r0, r3, #15
+ 1352 09d2 6204     		lsls	r2, r4, #17
+ 1353 09d4 9421     		movs	r1, #148
+ 1354 09d6 7918     		adds	r1, r7, r1
+ 1355 09d8 0A60     		str	r2, [r1]
+ 1356 09da 9422     		movs	r2, #148
+ 1357 09dc BA18     		adds	r2, r7, r2
+ 1358 09de 1268     		ldr	r2, [r2]
+ 1359 09e0 0243     		orrs	r2, r0
+ 1360 09e2 9421     		movs	r1, #148
+ 1361 09e4 7918     		adds	r1, r7, r1
+ 1362 09e6 0A60     		str	r2, [r1]
+ 1363 09e8 5B04     		lsls	r3, r3, #17
+ 1364 09ea 9022     		movs	r2, #144
+ 1365 09ec BA18     		adds	r2, r7, r2
+ 1366 09ee 1360     		str	r3, [r2]
+ 1367 09f0 9023     		movs	r3, #144
+ 1368 09f2 FB18     		adds	r3, r7, r3
+ 1369 09f4 5C68     		ldr	r4, [r3, #4]
+ 1370 09f6 1B68     		ldr	r3, [r3]
+ 1371 09f8 8822     		movs	r2, #136
+ 1372 09fa 5200     		lsls	r2, r2, #1
+ 1373 09fc BA18     		adds	r2, r7, r2
+ 1374 09fe 1068     		ldr	r0, [r2]
+ 1375 0a00 5168     		ldr	r1, [r2, #4]
+ 1376 0a02 1B18     		adds	r3, r3, r0
+ 1377 0a04 4C41     		adcs	r4, r4, r1
+ 1378 0a06 D80B     		lsrs	r0, r3, #15
+ 1379 0a08 6204     		lsls	r2, r4, #17
+ 1380 0a0a 8C21     		movs	r1, #140
+ 1381 0a0c 7918     		adds	r1, r7, r1
+ 1382 0a0e 0A60     		str	r2, [r1]
+ 1383 0a10 8C22     		movs	r2, #140
+ 1384 0a12 BA18     		adds	r2, r7, r2
+ 1385 0a14 1268     		ldr	r2, [r2]
+ 1386 0a16 0243     		orrs	r2, r0
+ 1387 0a18 8C21     		movs	r1, #140
+ 1388 0a1a 7918     		adds	r1, r7, r1
+ 1389 0a1c 0A60     		str	r2, [r1]
+ 1390 0a1e 5B04     		lsls	r3, r3, #17
+ 1391 0a20 8822     		movs	r2, #136
+ 1392 0a22 BA18     		adds	r2, r7, r2
+ 1393 0a24 1360     		str	r3, [r2]
+ 1394 0a26 8823     		movs	r3, #136
+ 1395 0a28 FB18     		adds	r3, r7, r3
+ 1396 0a2a 5C68     		ldr	r4, [r3, #4]
+ 1397 0a2c 1B68     		ldr	r3, [r3]
+ 1398 0a2e 8822     		movs	r2, #136
+ 1399 0a30 5200     		lsls	r2, r2, #1
+ 1400 0a32 BA18     		adds	r2, r7, r2
+ 1401 0a34 1068     		ldr	r0, [r2]
+ 1402 0a36 5168     		ldr	r1, [r2, #4]
+ 1403 0a38 1B18     		adds	r3, r3, r0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 28
+
+
+ 1404 0a3a 4C41     		adcs	r4, r4, r1
+ 1405 0a3c D80B     		lsrs	r0, r3, #15
+ 1406 0a3e 6604     		lsls	r6, r4, #17
+ 1407 0a40 0643     		orrs	r6, r0
+ 1408 0a42 5D04     		lsls	r5, r3, #17
+ 1409 0a44 ED1A     		subs	r5, r5, r3
+ 1410 0a46 A641     		sbcs	r6, r6, r4
+ 1411 0a48 2B0F     		lsrs	r3, r5, #28
+ 1412 0a4a 3201     		lsls	r2, r6, #4
+ 1413 0a4c 8421     		movs	r1, #132
+ 1414 0a4e 7918     		adds	r1, r7, r1
+ 1415 0a50 0A60     		str	r2, [r1]
+ 1416 0a52 8422     		movs	r2, #132
+ 1417 0a54 BA18     		adds	r2, r7, r2
+ 1418 0a56 1268     		ldr	r2, [r2]
+ 1419 0a58 1A43     		orrs	r2, r3
+ 1420 0a5a 8423     		movs	r3, #132
+ 1421 0a5c FB18     		adds	r3, r7, r3
+ 1422 0a5e 1A60     		str	r2, [r3]
+ 1423 0a60 2B01     		lsls	r3, r5, #4
+ 1424 0a62 8022     		movs	r2, #128
+ 1425 0a64 BA18     		adds	r2, r7, r2
+ 1426 0a66 1360     		str	r3, [r2]
+ 1427 0a68 8023     		movs	r3, #128
+ 1428 0a6a FB18     		adds	r3, r7, r3
+ 1429 0a6c 1D68     		ldr	r5, [r3]
+ 1430 0a6e 5E68     		ldr	r6, [r3, #4]
+ 1431 0a70 8823     		movs	r3, #136
+ 1432 0a72 5B00     		lsls	r3, r3, #1
+ 1433 0a74 FB18     		adds	r3, r7, r3
+ 1434 0a76 1868     		ldr	r0, [r3]
+ 1435 0a78 5968     		ldr	r1, [r3, #4]
+ 1436 0a7a 2D18     		adds	r5, r5, r0
+ 1437 0a7c 4E41     		adcs	r6, r6, r1
+ 1438 0a7e 2B00     		movs	r3, r5
+ 1439 0a80 3400     		movs	r4, r6
+ 1440 0a82 5B19     		adds	r3, r3, r5
+ 1441 0a84 7441     		adcs	r4, r4, r6
+ 1442 0a86 1B18     		adds	r3, r3, r0
+ 1443 0a88 4C41     		adcs	r4, r4, r1
+ 1444 0a8a 1D00     		movs	r5, r3
+ 1445 0a8c 2600     		movs	r6, r4
+ 1446 0a8e AB0F     		lsrs	r3, r5, #30
+ 1447 0a90 B200     		lsls	r2, r6, #2
+ 1448 0a92 FA67     		str	r2, [r7, #124]
+ 1449 0a94 FA6F     		ldr	r2, [r7, #124]
+ 1450 0a96 1A43     		orrs	r2, r3
+ 1451 0a98 FA67     		str	r2, [r7, #124]
+ 1452 0a9a AB00     		lsls	r3, r5, #2
+ 1453 0a9c BB67     		str	r3, [r7, #120]
+ 1454 0a9e BD6F     		ldr	r5, [r7, #120]
+ 1455 0aa0 FE6F     		ldr	r6, [r7, #124]
+ 1456 0aa2 2D18     		adds	r5, r5, r0
+ 1457 0aa4 4E41     		adcs	r6, r6, r1
+ 1458 0aa6 EB0E     		lsrs	r3, r5, #27
+ 1459 0aa8 7201     		lsls	r2, r6, #5
+ 1460 0aaa 7A67     		str	r2, [r7, #116]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 29
+
+
+ 1461 0aac 7A6F     		ldr	r2, [r7, #116]
+ 1462 0aae 1A43     		orrs	r2, r3
+ 1463 0ab0 7A67     		str	r2, [r7, #116]
+ 1464 0ab2 6B01     		lsls	r3, r5, #5
+ 1465 0ab4 3B67     		str	r3, [r7, #112]
+ 1466 0ab6 3D6F     		ldr	r5, [r7, #112]
+ 1467 0ab8 7E6F     		ldr	r6, [r7, #116]
+ 1468 0aba 2D18     		adds	r5, r5, r0
+ 1469 0abc 4E41     		adcs	r6, r6, r1
+ 1470 0abe 2B00     		movs	r3, r5
+ 1471 0ac0 3400     		movs	r4, r6
+ 1472 0ac2 5B19     		adds	r3, r3, r5
+ 1473 0ac4 7441     		adcs	r4, r4, r6
+ 1474 0ac6 1B18     		adds	r3, r3, r0
+ 1475 0ac8 4C41     		adcs	r4, r4, r1
+ 1476 0aca 002C     		cmp	r4, #0
+ 1477 0acc 03DA     		bge	.L33
+ 1478 0ace 2749     		ldr	r1, .L44+4
+ 1479 0ad0 0022     		movs	r2, #0
+ 1480 0ad2 5B18     		adds	r3, r3, r1
+ 1481 0ad4 5441     		adcs	r4, r4, r2
+ 1482              	.L33:
+ 1483 0ad6 2204     		lsls	r2, r4, #16
+ 1484 0ad8 190C     		lsrs	r1, r3, #16
+ 1485 0ada B966     		str	r1, [r7, #104]
+ 1486 0adc B96E     		ldr	r1, [r7, #104]
+ 1487 0ade 1143     		orrs	r1, r2
+ 1488 0ae0 B966     		str	r1, [r7, #104]
+ 1489 0ae2 2314     		asrs	r3, r4, #16
+ 1490 0ae4 FB66     		str	r3, [r7, #108]
+ 1491 0ae6 BB6E     		ldr	r3, [r7, #104]
+ 1492 0ae8 FC6E     		ldr	r4, [r7, #108]
+ 1493 0aea B822     		movs	r2, #184
+ 1494 0aec 5200     		lsls	r2, r2, #1
+ 1495 0aee BA18     		adds	r2, r7, r2
+ 1496 0af0 1360     		str	r3, [r2]
+ 1497 0af2 5460     		str	r4, [r2, #4]
+ 137:bmp180.c      **** 
+ 138:bmp180.c      ****     p = p + ((tS64)(X1 + X2 + (tS64)3791) / (tS64)16);
+ 1498              		.loc 1 138 0
+ 1499 0af4 BC23     		movs	r3, #188
+ 1500 0af6 5B00     		lsls	r3, r3, #1
+ 1501 0af8 FB18     		adds	r3, r7, r3
+ 1502 0afa 1968     		ldr	r1, [r3]
+ 1503 0afc 5A68     		ldr	r2, [r3, #4]
+ 1504 0afe B823     		movs	r3, #184
+ 1505 0b00 5B00     		lsls	r3, r3, #1
+ 1506 0b02 FB18     		adds	r3, r7, r3
+ 1507 0b04 5C68     		ldr	r4, [r3, #4]
+ 1508 0b06 1B68     		ldr	r3, [r3]
+ 1509 0b08 5B18     		adds	r3, r3, r1
+ 1510 0b0a 5441     		adcs	r4, r4, r2
+ 1511 0b0c 1849     		ldr	r1, .L44+8
+ 1512 0b0e 0022     		movs	r2, #0
+ 1513 0b10 5B18     		adds	r3, r3, r1
+ 1514 0b12 5441     		adcs	r4, r4, r2
+ 1515 0b14 002C     		cmp	r4, #0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 30
+
+
+ 1516 0b16 03DA     		bge	.L35
+ 1517 0b18 0F21     		movs	r1, #15
+ 1518 0b1a 0022     		movs	r2, #0
+ 1519 0b1c 5B18     		adds	r3, r3, r1
+ 1520 0b1e 5441     		adcs	r4, r4, r2
+ 1521              	.L35:
+ 1522 0b20 2207     		lsls	r2, r4, #28
+ 1523 0b22 1909     		lsrs	r1, r3, #4
+ 1524 0b24 3966     		str	r1, [r7, #96]
+ 1525 0b26 396E     		ldr	r1, [r7, #96]
+ 1526 0b28 1143     		orrs	r1, r2
+ 1527 0b2a 3966     		str	r1, [r7, #96]
+ 1528 0b2c 2311     		asrs	r3, r4, #4
+ 1529 0b2e 7B66     		str	r3, [r7, #100]
+ 1530 0b30 396E     		ldr	r1, [r7, #96]
+ 1531 0b32 7A6E     		ldr	r2, [r7, #100]
+ 1532 0b34 8020     		movs	r0, #128
+ 1533 0b36 8C23     		movs	r3, #140
+ 1534 0b38 5B00     		lsls	r3, r3, #1
+ 1535 0b3a FB18     		adds	r3, r7, r3
+ 1536 0b3c 1B18     		adds	r3, r3, r0
+ 1537 0b3e 5C68     		ldr	r4, [r3, #4]
+ 1538 0b40 1B68     		ldr	r3, [r3]
+ 1539 0b42 5B18     		adds	r3, r3, r1
+ 1540 0b44 5441     		adcs	r4, r4, r2
+ 1541 0b46 8C22     		movs	r2, #140
+ 1542 0b48 5200     		lsls	r2, r2, #1
+ 1543 0b4a BA18     		adds	r2, r7, r2
+ 1544 0b4c 1218     		adds	r2, r2, r0
+ 1545 0b4e 1360     		str	r3, [r2]
+ 1546 0b50 5460     		str	r4, [r2, #4]
+ 139:bmp180.c      **** 
+ 140:bmp180.c      ****     return p;
+ 1547              		.loc 1 140 0
+ 1548 0b52 8C23     		movs	r3, #140
+ 1549 0b54 5B00     		lsls	r3, r3, #1
+ 1550 0b56 FB18     		adds	r3, r7, r3
+ 1551 0b58 1B18     		adds	r3, r3, r0
+ 1552 0b5a 1B68     		ldr	r3, [r3]
+ 141:bmp180.c      **** }
+ 1553              		.loc 1 141 0
+ 1554 0b5c 1800     		movs	r0, r3
+ 1555 0b5e BD46     		mov	sp, r7
+ 1556 0b60 69B0     		add	sp, sp, #420
+ 1557              		@ sp needed
+ 1558 0b62 F0BC     		pop	{r4, r5, r6, r7}
+ 1559 0b64 02BC     		pop	{r1}
+ 1560 0b66 0847     		bx	r1
+ 1561              	.L45:
+ 1562              		.align	2
+ 1563              	.L44:
+ 1564 0b68 DE0B0000 		.word	3038
+ 1565 0b6c FFFF0000 		.word	65535
+ 1566 0b70 CF0E0000 		.word	3791
+ 1567              		.cfi_endproc
+ 1568              	.LFE0:
+ 1569              		.size	calculatePressure, .-calculatePressure
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 31
+
+
+ 1570              		.align	1
+ 1571              		.global	measurePressure
+ 1572              		.syntax unified
+ 1573              		.code	16
+ 1574              		.thumb_func
+ 1575              		.fpu softvfp
+ 1576              		.type	measurePressure, %function
+ 1577              	measurePressure:
+ 1578              	.LFB1:
+ 142:bmp180.c      **** 
+ 143:bmp180.c      **** /*
+ 144:bmp180.c      ****  * @brief   Funkcja measurePressure() wykorzystywana jest do odczytania z czujnika ciśnienia BMP18
+ 145:bmp180.c      ****  *          ciśnienia. Bazowo wartość ta jest nieprzeliczona, lecz w wyniku przekazania jej do f
+ 146:bmp180.c      ****  *          jest ona przeliczana na wartość wyrażoną w paskalach (Pa), która jest następnie z
+ 147:bmp180.c      ****  *           
+ 148:bmp180.c      ****  * @param   void
+ 149:bmp180.c      ****  *          
+ 150:bmp180.c      ****  * @returns
+ 151:bmp180.c      ****  *          Przeliczona wartość ciśnienia, wyrażona w paskalach (Pa).
+ 152:bmp180.c      ****  * 
+ 153:bmp180.c      ****  * @side effects: 
+ 154:bmp180.c      ****  *          Stan czujnika BMP180 ulega zmianie jako, że są do niego zapisywane wartości np. wart
+ 155:bmp180.c      ****  *          (oversampling).
+ 156:bmp180.c      ****  */
+ 157:bmp180.c      **** 
+ 158:bmp180.c      **** tS32 measurePressure(void)
+ 159:bmp180.c      **** {
+ 1579              		.loc 1 159 0
+ 1580              		.cfi_startproc
+ 1581              		@ Function supports interworking.
+ 1582              		@ args = 0, pretend = 0, frame = 56
+ 1583              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1584 0b74 F0B5     		push	{r4, r5, r6, r7, lr}
+ 1585              	.LCFI3:
+ 1586              		.cfi_def_cfa_offset 20
+ 1587              		.cfi_offset 4, -20
+ 1588              		.cfi_offset 5, -16
+ 1589              		.cfi_offset 6, -12
+ 1590              		.cfi_offset 7, -8
+ 1591              		.cfi_offset 14, -4
+ 1592 0b76 8FB0     		sub	sp, sp, #60
+ 1593              	.LCFI4:
+ 1594              		.cfi_def_cfa_offset 80
+ 1595 0b78 00AF     		add	r7, sp, #0
+ 1596              	.LCFI5:
+ 1597              		.cfi_def_cfa_register 7
+ 160:bmp180.c      ****     // Return code for I2C operations.
+ 161:bmp180.c      ****     tS8 retCode = 0;
+ 1598              		.loc 1 161 0
+ 1599 0b7a 3624     		movs	r4, #54
+ 1600 0b7c 3B19     		adds	r3, r7, r4
+ 1601 0b7e 0022     		movs	r2, #0
+ 1602 0b80 1A70     		strb	r2, [r3]
+ 162:bmp180.c      **** 
+ 163:bmp180.c      ****     // Array of bytes used for reading compensation values.
+ 164:bmp180.c      ****     tU8 registerContents[3] = {0};
+ 1603              		.loc 1 164 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 32
+
+
+ 1604 0b82 2423     		movs	r3, #36
+ 1605 0b84 FB18     		adds	r3, r7, r3
+ 1606 0b86 1800     		movs	r0, r3
+ 1607 0b88 0323     		movs	r3, #3
+ 1608 0b8a 1A00     		movs	r2, r3
+ 1609 0b8c 0021     		movs	r1, #0
+ 1610 0b8e FFF7FEFF 		bl	memset
+ 165:bmp180.c      **** 
+ 166:bmp180.c      ****     // Array holding calibration values
+ 167:bmp180.c      ****     tS16 calibrationArray[11] = {0};
+ 1611              		.loc 1 167 0
+ 1612 0b92 0C23     		movs	r3, #12
+ 1613 0b94 FB18     		adds	r3, r7, r3
+ 1614 0b96 1800     		movs	r0, r3
+ 1615 0b98 1623     		movs	r3, #22
+ 1616 0b9a 1A00     		movs	r2, r3
+ 1617 0b9c 0021     		movs	r1, #0
+ 1618 0b9e FFF7FEFF 		bl	memset
+ 168:bmp180.c      **** 
+ 169:bmp180.c      ****     // Address of register, where calibration data starts.
+ 170:bmp180.c      ****     tU8 staringRegister[1] = {0}; // From 0xAA to 0xBF
+ 1619              		.loc 1 170 0
+ 1620 0ba2 0821     		movs	r1, #8
+ 1621 0ba4 7B18     		adds	r3, r7, r1
+ 1622 0ba6 0022     		movs	r2, #0
+ 1623 0ba8 1A70     		strb	r2, [r3]
+ 171:bmp180.c      ****     staringRegister[0] = (tU8)0xAA;
+ 1624              		.loc 1 171 0
+ 1625 0baa 7B18     		adds	r3, r7, r1
+ 1626 0bac AA22     		movs	r2, #170
+ 1627 0bae 1A70     		strb	r2, [r3]
+ 172:bmp180.c      **** 
+ 173:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 174:bmp180.c      ****     // Reading calibration value for all coefficients
+ 175:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 176:bmp180.c      **** 
+ 177:bmp180.c      ****     //  Definition of iterator used later in a for loop.
+ 178:bmp180.c      ****     tU8 iterator;
+ 179:bmp180.c      **** 
+ 180:bmp180.c      ****     // Making device "aware" we are going to read compenstaion data.
+ 181:bmp180.c      ****     retCode = i2cWrite(bmp180WriteAddress, staringRegister, 1);
+ 1628              		.loc 1 181 0
+ 1629 0bb0 3C19     		adds	r4, r7, r4
+ 1630 0bb2 7B18     		adds	r3, r7, r1
+ 1631 0bb4 0122     		movs	r2, #1
+ 1632 0bb6 1900     		movs	r1, r3
+ 1633 0bb8 EE20     		movs	r0, #238
+ 1634 0bba FFF7FEFF 		bl	i2cWrite
+ 1635 0bbe 0300     		movs	r3, r0
+ 1636 0bc0 2370     		strb	r3, [r4]
+ 182:bmp180.c      **** 
+ 183:bmp180.c      ****     for (iterator = 0; iterator < (tU8)11; iterator = iterator + (tU8)1)
+ 1637              		.loc 1 183 0
+ 1638 0bc2 3723     		movs	r3, #55
+ 1639 0bc4 FB18     		adds	r3, r7, r3
+ 1640 0bc6 0022     		movs	r2, #0
+ 1641 0bc8 1A70     		strb	r2, [r3]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 33
+
+
+ 1642 0bca 2CE0     		b	.L47
+ 1643              	.L48:
+ 184:bmp180.c      ****     {
+ 185:bmp180.c      ****         retCode = i2cRead(bmp180ReadAddress, registerContents, 2);
+ 1644              		.loc 1 185 0 discriminator 3
+ 1645 0bcc 3623     		movs	r3, #54
+ 1646 0bce FC18     		adds	r4, r7, r3
+ 1647 0bd0 2421     		movs	r1, #36
+ 1648 0bd2 0D00     		movs	r5, r1
+ 1649 0bd4 7B18     		adds	r3, r7, r1
+ 1650 0bd6 0222     		movs	r2, #2
+ 1651 0bd8 1900     		movs	r1, r3
+ 1652 0bda EF20     		movs	r0, #239
+ 1653 0bdc FFF7FEFF 		bl	i2cRead
+ 1654 0be0 0300     		movs	r3, r0
+ 1655 0be2 2370     		strb	r3, [r4]
+ 186:bmp180.c      ****         calibrationArray[iterator] = ((registerContents[0] << 8) | registerContents[1]);
+ 1656              		.loc 1 186 0 discriminator 3
+ 1657 0be4 2900     		movs	r1, r5
+ 1658 0be6 7B18     		adds	r3, r7, r1
+ 1659 0be8 1B78     		ldrb	r3, [r3]
+ 1660 0bea 1B02     		lsls	r3, r3, #8
+ 1661 0bec 1A04     		lsls	r2, r3, #16
+ 1662 0bee 1214     		asrs	r2, r2, #16
+ 1663 0bf0 7B18     		adds	r3, r7, r1
+ 1664 0bf2 5B78     		ldrb	r3, [r3, #1]
+ 1665 0bf4 1B04     		lsls	r3, r3, #16
+ 1666 0bf6 1B14     		asrs	r3, r3, #16
+ 1667 0bf8 3720     		movs	r0, #55
+ 1668 0bfa 3918     		adds	r1, r7, r0
+ 1669 0bfc 0978     		ldrb	r1, [r1]
+ 1670 0bfe 1343     		orrs	r3, r2
+ 1671 0c00 1B04     		lsls	r3, r3, #16
+ 1672 0c02 1B14     		asrs	r3, r3, #16
+ 1673 0c04 0C22     		movs	r2, #12
+ 1674 0c06 BA18     		adds	r2, r7, r2
+ 1675 0c08 4900     		lsls	r1, r1, #1
+ 1676 0c0a 8B52     		strh	r3, [r1, r2]
+ 187:bmp180.c      ****         // We increment by 2 starting register to be able to read next calibration value.
+ 188:bmp180.c      ****         staringRegister[0] = staringRegister[0] + (tU8)2;
+ 1677              		.loc 1 188 0 discriminator 3
+ 1678 0c0c 0821     		movs	r1, #8
+ 1679 0c0e 7B18     		adds	r3, r7, r1
+ 1680 0c10 1B78     		ldrb	r3, [r3]
+ 1681 0c12 0233     		adds	r3, r3, #2
+ 1682 0c14 1B06     		lsls	r3, r3, #24
+ 1683 0c16 1A0E     		lsrs	r2, r3, #24
+ 1684 0c18 7B18     		adds	r3, r7, r1
+ 1685 0c1a 1A70     		strb	r2, [r3]
+ 183:bmp180.c      ****     {
+ 1686              		.loc 1 183 0 discriminator 3
+ 1687 0c1c 3B18     		adds	r3, r7, r0
+ 1688 0c1e 3A18     		adds	r2, r7, r0
+ 1689 0c20 1278     		ldrb	r2, [r2]
+ 1690 0c22 0132     		adds	r2, r2, #1
+ 1691 0c24 1A70     		strb	r2, [r3]
+ 1692              	.L47:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 34
+
+
+ 183:bmp180.c      ****     {
+ 1693              		.loc 1 183 0 is_stmt 0 discriminator 1
+ 1694 0c26 3723     		movs	r3, #55
+ 1695 0c28 FB18     		adds	r3, r7, r3
+ 1696 0c2a 1B78     		ldrb	r3, [r3]
+ 1697 0c2c 0A2B     		cmp	r3, #10
+ 1698 0c2e CDD9     		bls	.L48
+ 189:bmp180.c      ****     }
+ 190:bmp180.c      **** 
+ 191:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 192:bmp180.c      **** 
+ 193:bmp180.c      ****     // Temperature / pressure value location registers: 0xF6 (MSB), 0xF7 (LSB), 0xF8 (XLSB)
+ 194:bmp180.c      ****     tU8 resultLocationAddress[1];
+ 195:bmp180.c      ****     resultLocationAddress[0] = 0xF6;
+ 1699              		.loc 1 195 0 is_stmt 1
+ 1700 0c30 3B1D     		adds	r3, r7, #4
+ 1701 0c32 F622     		movs	r2, #246
+ 1702 0c34 1A70     		strb	r2, [r3]
+ 196:bmp180.c      **** 
+ 197:bmp180.c      ****     // Control register value for measuring temperature
+ 198:bmp180.c      ****     tU8 controlRegisterTemperatureValue = 0x2E;
+ 1703              		.loc 1 198 0
+ 1704 0c36 3520     		movs	r0, #53
+ 1705 0c38 3B18     		adds	r3, r7, r0
+ 1706 0c3a 2E22     		movs	r2, #46
+ 1707 0c3c 1A70     		strb	r2, [r3]
+ 199:bmp180.c      **** 
+ 200:bmp180.c      ****     // Control register value for measuring pressure
+ 201:bmp180.c      ****     tU8 controlRegisterPressureValue = ((tU8)0x34 + (tU8)((tU8)pressureOss << (tU8)6));
+ 1708              		.loc 1 201 0
+ 1709 0c3e 3423     		movs	r3, #52
+ 1710 0c40 FB18     		adds	r3, r7, r3
+ 1711 0c42 3422     		movs	r2, #52
+ 1712 0c44 1A70     		strb	r2, [r3]
+ 202:bmp180.c      **** 
+ 203:bmp180.c      ****     // Measurement control register address
+ 204:bmp180.c      ****     tU8 registerAddress = (tU8)0xF4;
+ 1713              		.loc 1 204 0
+ 1714 0c46 3321     		movs	r1, #51
+ 1715 0c48 7B18     		adds	r3, r7, r1
+ 1716 0c4a F422     		movs	r2, #244
+ 1717 0c4c 1A70     		strb	r2, [r3]
+ 205:bmp180.c      **** 
+ 206:bmp180.c      ****     tU8 commandArr[2] = {0};
+ 1718              		.loc 1 206 0
+ 1719 0c4e 3B00     		movs	r3, r7
+ 1720 0c50 0022     		movs	r2, #0
+ 1721 0c52 1A80     		strh	r2, [r3]
+ 207:bmp180.c      **** 
+ 208:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 209:bmp180.c      ****     // Setting oversampling ratio of pressure measurement to 3. (Which means that pressure will be
+ 210:bmp180.c      ****     // measure 8 times before estimating final measured value).
+ 211:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 212:bmp180.c      **** 
+ 213:bmp180.c      ****     // Command for setting oversampling value to 0x03.
+ 214:bmp180.c      ****     /*
+ 215:bmp180.c      ****     commandArr[0] = registerAddress;
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 35
+
+
+ 216:bmp180.c      ****     commandArr[1] = (tU8)((tU8)pressureOss << (tU8)6);
+ 217:bmp180.c      **** 
+ 218:bmp180.c      ****     retCode = i2cWrite(bmp180WriteAddress, commandArr, 2);
+ 219:bmp180.c      **** 	*/
+ 220:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 221:bmp180.c      ****     // Getting temperature value 
+ 222:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 223:bmp180.c      **** 
+ 224:bmp180.c      ****     // Command for getting temperature value
+ 225:bmp180.c      ****     commandArr[0] = registerAddress;
+ 1722              		.loc 1 225 0
+ 1723 0c54 3B00     		movs	r3, r7
+ 1724 0c56 7A18     		adds	r2, r7, r1
+ 1725 0c58 1278     		ldrb	r2, [r2]
+ 1726 0c5a 1A70     		strb	r2, [r3]
+ 226:bmp180.c      ****     commandArr[1] = controlRegisterTemperatureValue;
+ 1727              		.loc 1 226 0
+ 1728 0c5c 3B00     		movs	r3, r7
+ 1729 0c5e 3A18     		adds	r2, r7, r0
+ 1730 0c60 1278     		ldrb	r2, [r2]
+ 1731 0c62 5A70     		strb	r2, [r3, #1]
+ 227:bmp180.c      **** 
+ 228:bmp180.c      ****     // I2C write to BMP180 for reading temperature value.
+ 229:bmp180.c      ****     retCode = i2cWrite(bmp180WriteAddress, commandArr, 2);
+ 1732              		.loc 1 229 0
+ 1733 0c64 3626     		movs	r6, #54
+ 1734 0c66 BC19     		adds	r4, r7, r6
+ 1735 0c68 3B00     		movs	r3, r7
+ 1736 0c6a 0222     		movs	r2, #2
+ 1737 0c6c 1900     		movs	r1, r3
+ 1738 0c6e EE20     		movs	r0, #238
+ 1739 0c70 FFF7FEFF 		bl	i2cWrite
+ 1740 0c74 0300     		movs	r3, r0
+ 1741 0c76 2370     		strb	r3, [r4]
+ 230:bmp180.c      **** 
+ 231:bmp180.c      ****     // Waiting for 5 ms to read temperature ; Minimum waiting time - 4.5 ms.
+ 232:bmp180.c      ****     mdelay(5);
+ 1742              		.loc 1 232 0
+ 1743 0c78 0520     		movs	r0, #5
+ 1744 0c7a FFF7FEFF 		bl	mdelay
+ 233:bmp180.c      **** 
+ 234:bmp180.c      ****     // I2C read to retrieve temperature value from slave.
+ 235:bmp180.c      ****     retCode = i2cWrite(bmp180WriteAddress, resultLocationAddress, 1);
+ 1745              		.loc 1 235 0
+ 1746 0c7e BC19     		adds	r4, r7, r6
+ 1747 0c80 3B1D     		adds	r3, r7, #4
+ 1748 0c82 0122     		movs	r2, #1
+ 1749 0c84 1900     		movs	r1, r3
+ 1750 0c86 EE20     		movs	r0, #238
+ 1751 0c88 FFF7FEFF 		bl	i2cWrite
+ 1752 0c8c 0300     		movs	r3, r0
+ 1753 0c8e 2370     		strb	r3, [r4]
+ 236:bmp180.c      ****     retCode = i2cRead(bmp180ReadAddress, registerContents, 2);
+ 1754              		.loc 1 236 0
+ 1755 0c90 BC19     		adds	r4, r7, r6
+ 1756 0c92 2425     		movs	r5, #36
+ 1757 0c94 7B19     		adds	r3, r7, r5
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 36
+
+
+ 1758 0c96 0222     		movs	r2, #2
+ 1759 0c98 1900     		movs	r1, r3
+ 1760 0c9a EF20     		movs	r0, #239
+ 1761 0c9c FFF7FEFF 		bl	i2cRead
+ 1762 0ca0 0300     		movs	r3, r0
+ 1763 0ca2 2370     		strb	r3, [r4]
+ 237:bmp180.c      **** 
+ 238:bmp180.c      ****     // Creating a single 16 bit unsigned variable out of read 2 bytes of data.
+ 239:bmp180.c      ****     tU16 readTemp = ((registerContents[0] << 8) | (registerContents[1]));
+ 1764              		.loc 1 239 0
+ 1765 0ca4 7B19     		adds	r3, r7, r5
+ 1766 0ca6 1B78     		ldrb	r3, [r3]
+ 1767 0ca8 1B02     		lsls	r3, r3, #8
+ 1768 0caa 1A04     		lsls	r2, r3, #16
+ 1769 0cac 1214     		asrs	r2, r2, #16
+ 1770 0cae 7B19     		adds	r3, r7, r5
+ 1771 0cb0 5B78     		ldrb	r3, [r3, #1]
+ 1772 0cb2 1B04     		lsls	r3, r3, #16
+ 1773 0cb4 1B14     		asrs	r3, r3, #16
+ 1774 0cb6 1343     		orrs	r3, r2
+ 1775 0cb8 1B04     		lsls	r3, r3, #16
+ 1776 0cba 1B14     		asrs	r3, r3, #16
+ 1777 0cbc 3020     		movs	r0, #48
+ 1778 0cbe 3A18     		adds	r2, r7, r0
+ 1779 0cc0 1380     		strh	r3, [r2]
+ 240:bmp180.c      **** 
+ 241:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 242:bmp180.c      ****     // Getting pressure value
+ 243:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 244:bmp180.c      **** 
+ 245:bmp180.c      ****     // Command for getting pressure value..
+ 246:bmp180.c      ****     commandArr[0] = registerAddress;
+ 1780              		.loc 1 246 0
+ 1781 0cc2 3B00     		movs	r3, r7
+ 1782 0cc4 3321     		movs	r1, #51
+ 1783 0cc6 7A18     		adds	r2, r7, r1
+ 1784 0cc8 1278     		ldrb	r2, [r2]
+ 1785 0cca 1A70     		strb	r2, [r3]
+ 247:bmp180.c      ****     commandArr[1] = controlRegisterPressureValue;
+ 1786              		.loc 1 247 0
+ 1787 0ccc 3B00     		movs	r3, r7
+ 1788 0cce 3422     		movs	r2, #52
+ 1789 0cd0 BA18     		adds	r2, r7, r2
+ 1790 0cd2 1278     		ldrb	r2, [r2]
+ 1791 0cd4 5A70     		strb	r2, [r3, #1]
+ 248:bmp180.c      **** 
+ 249:bmp180.c      ****     // I2C write to BMP180 for reading temperature value.
+ 250:bmp180.c      ****     retCode = i2cWrite(bmp180WriteAddress, commandArr, 2);
+ 1792              		.loc 1 250 0
+ 1793 0cd6 BC19     		adds	r4, r7, r6
+ 1794 0cd8 3B00     		movs	r3, r7
+ 1795 0cda 0222     		movs	r2, #2
+ 1796 0cdc 1900     		movs	r1, r3
+ 1797 0cde EE20     		movs	r0, #238
+ 1798 0ce0 FFF7FEFF 		bl	i2cWrite
+ 1799 0ce4 0300     		movs	r3, r0
+ 1800 0ce6 2370     		strb	r3, [r4]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 37
+
+
+ 251:bmp180.c      **** 
+ 252:bmp180.c      ****     // Waiting for 26 ms to read pressure ; Minimum waiting time = 25.5 ms
+ 253:bmp180.c      ****     mdelay(26);
+ 1801              		.loc 1 253 0
+ 1802 0ce8 1A20     		movs	r0, #26
+ 1803 0cea FFF7FEFF 		bl	mdelay
+ 254:bmp180.c      **** 
+ 255:bmp180.c      ****     // I2C read to retrieve presssure value from slave.
+ 256:bmp180.c      ****     retCode = i2cWrite(bmp180WriteAddress, resultLocationAddress, 1);
+ 1804              		.loc 1 256 0
+ 1805 0cee BC19     		adds	r4, r7, r6
+ 1806 0cf0 3B1D     		adds	r3, r7, #4
+ 1807 0cf2 0122     		movs	r2, #1
+ 1808 0cf4 1900     		movs	r1, r3
+ 1809 0cf6 EE20     		movs	r0, #238
+ 1810 0cf8 FFF7FEFF 		bl	i2cWrite
+ 1811 0cfc 0300     		movs	r3, r0
+ 1812 0cfe 2370     		strb	r3, [r4]
+ 257:bmp180.c      ****     retCode = i2cRead(bmp180ReadAddress, registerContents, 3);
+ 1813              		.loc 1 257 0
+ 1814 0d00 BC19     		adds	r4, r7, r6
+ 1815 0d02 7B19     		adds	r3, r7, r5
+ 1816 0d04 0322     		movs	r2, #3
+ 1817 0d06 1900     		movs	r1, r3
+ 1818 0d08 EF20     		movs	r0, #239
+ 1819 0d0a FFF7FEFF 		bl	i2cRead
+ 1820 0d0e 0300     		movs	r3, r0
+ 1821 0d10 2370     		strb	r3, [r4]
+ 258:bmp180.c      **** 
+ 259:bmp180.c      ****     // Creating a single 32 bit unsigned variable out of 3 read bytes of data.
+ 260:bmp180.c      ****     tU32 readPress = ((registerContents[0] << 16) | (registerContents[1] << 8) | (registerContents[
+ 1822              		.loc 1 260 0
+ 1823 0d12 7B19     		adds	r3, r7, r5
+ 1824 0d14 1B78     		ldrb	r3, [r3]
+ 1825 0d16 1A04     		lsls	r2, r3, #16
+ 1826 0d18 7B19     		adds	r3, r7, r5
+ 1827 0d1a 5B78     		ldrb	r3, [r3, #1]
+ 1828 0d1c 1B02     		lsls	r3, r3, #8
+ 1829 0d1e 1343     		orrs	r3, r2
+ 1830 0d20 7A19     		adds	r2, r7, r5
+ 1831 0d22 9278     		ldrb	r2, [r2, #2]
+ 1832 0d24 1343     		orrs	r3, r2
+ 1833 0d26 FB62     		str	r3, [r7, #44]
+ 261:bmp180.c      ****     readPress = (readPress >> ((tU32)8 - (tU32)pressureOss));
+ 1834              		.loc 1 261 0
+ 1835 0d28 FB6A     		ldr	r3, [r7, #44]
+ 1836 0d2a 1B0A     		lsrs	r3, r3, #8
+ 1837 0d2c FB62     		str	r3, [r7, #44]
+ 262:bmp180.c      **** 
+ 263:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 264:bmp180.c      ****     // Calculating value of real pressure
+ 265:bmp180.c      ****     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+ 266:bmp180.c      **** 
+ 267:bmp180.c      ****     tS32 calculatedPressure = calculatePressure(readPress, readTemp, calibrationArray);
+ 1838              		.loc 1 267 0
+ 1839 0d2e 0C23     		movs	r3, #12
+ 1840 0d30 FA18     		adds	r2, r7, r3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 38
+
+
+ 1841 0d32 3020     		movs	r0, #48
+ 1842 0d34 3B18     		adds	r3, r7, r0
+ 1843 0d36 1988     		ldrh	r1, [r3]
+ 1844 0d38 FB6A     		ldr	r3, [r7, #44]
+ 1845 0d3a 1800     		movs	r0, r3
+ 1846 0d3c FFF7FEFF 		bl	calculatePressure
+ 1847 0d40 0300     		movs	r3, r0
+ 1848 0d42 BB62     		str	r3, [r7, #40]
+ 268:bmp180.c      **** 
+ 269:bmp180.c      ****     return calculatedPressure;
+ 1849              		.loc 1 269 0
+ 1850 0d44 BB6A     		ldr	r3, [r7, #40]
+ 270:bmp180.c      **** }
+ 1851              		.loc 1 270 0
+ 1852 0d46 1800     		movs	r0, r3
+ 1853 0d48 BD46     		mov	sp, r7
+ 1854 0d4a 0FB0     		add	sp, sp, #60
+ 1855              		@ sp needed
+ 1856 0d4c F0BC     		pop	{r4, r5, r6, r7}
+ 1857 0d4e 02BC     		pop	{r1}
+ 1858 0d50 0847     		bx	r1
+ 1859              		.cfi_endproc
+ 1860              	.LFE1:
+ 1861              		.size	measurePressure, .-measurePressure
+ 1862              	.Letext0:
+ 1863              		.file 2 "general.h"
+ 1864 0d52 C046     		.section	.debug_info,"",%progbits
+ 1865              	.Ldebug_info0:
+ 1866 0000 5A030000 		.4byte	0x35a
+ 1867 0004 0200     		.2byte	0x2
+ 1868 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 1869 000a 04       		.byte	0x4
+ 1870 000b 01       		.uleb128 0x1
+ 1871 000c 47000000 		.4byte	.LASF30
+ 1872 0010 0C       		.byte	0xc
+ 1873 0011 7D010000 		.4byte	.LASF31
+ 1874 0015 5F010000 		.4byte	.LASF32
+ 1875 0019 00000000 		.4byte	.Ltext0
+ 1876 001d 520D0000 		.4byte	.Letext0
+ 1877 0021 00000000 		.4byte	.Ldebug_line0
+ 1878 0025 02       		.uleb128 0x2
+ 1879 0026 74553800 		.ascii	"tU8\000"
+ 1880 002a 02       		.byte	0x2
+ 1881 002b 20       		.byte	0x20
+ 1882 002c 30000000 		.4byte	0x30
+ 1883 0030 03       		.uleb128 0x3
+ 1884 0031 01       		.byte	0x1
+ 1885 0032 08       		.byte	0x8
+ 1886 0033 17010000 		.4byte	.LASF1
+ 1887 0037 04       		.uleb128 0x4
+ 1888 0038 B7010000 		.4byte	.LASF0
+ 1889 003c 02       		.byte	0x2
+ 1890 003d 21       		.byte	0x21
+ 1891 003e 42000000 		.4byte	0x42
+ 1892 0042 03       		.uleb128 0x3
+ 1893 0043 02       		.byte	0x2
+ 1894 0044 07       		.byte	0x7
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 39
+
+
+ 1895 0045 36010000 		.4byte	.LASF2
+ 1896 0049 04       		.uleb128 0x4
+ 1897 004a CA010000 		.4byte	.LASF3
+ 1898 004e 02       		.byte	0x2
+ 1899 004f 22       		.byte	0x22
+ 1900 0050 54000000 		.4byte	0x54
+ 1901 0054 03       		.uleb128 0x3
+ 1902 0055 04       		.byte	0x4
+ 1903 0056 07       		.byte	0x7
+ 1904 0057 86010000 		.4byte	.LASF4
+ 1905 005b 04       		.uleb128 0x4
+ 1906 005c 25010000 		.4byte	.LASF5
+ 1907 0060 02       		.byte	0x2
+ 1908 0061 23       		.byte	0x23
+ 1909 0062 66000000 		.4byte	0x66
+ 1910 0066 03       		.uleb128 0x3
+ 1911 0067 08       		.byte	0x8
+ 1912 0068 07       		.byte	0x7
+ 1913 0069 93010000 		.4byte	.LASF6
+ 1914 006d 02       		.uleb128 0x2
+ 1915 006e 74533800 		.ascii	"tS8\000"
+ 1916 0072 02       		.byte	0x2
+ 1917 0073 24       		.byte	0x24
+ 1918 0074 78000000 		.4byte	0x78
+ 1919 0078 03       		.uleb128 0x3
+ 1920 0079 01       		.byte	0x1
+ 1921 007a 06       		.byte	0x6
+ 1922 007b 28020000 		.4byte	.LASF7
+ 1923 007f 04       		.uleb128 0x4
+ 1924 0080 0B000000 		.4byte	.LASF8
+ 1925 0084 02       		.byte	0x2
+ 1926 0085 25       		.byte	0x25
+ 1927 0086 8A000000 		.4byte	0x8a
+ 1928 008a 03       		.uleb128 0x3
+ 1929 008b 02       		.byte	0x2
+ 1930 008c 05       		.byte	0x5
+ 1931 008d E0010000 		.4byte	.LASF9
+ 1932 0091 04       		.uleb128 0x4
+ 1933 0092 10000000 		.4byte	.LASF10
+ 1934 0096 02       		.byte	0x2
+ 1935 0097 26       		.byte	0x26
+ 1936 0098 9C000000 		.4byte	0x9c
+ 1937 009c 05       		.uleb128 0x5
+ 1938 009d 04       		.byte	0x4
+ 1939 009e 05       		.byte	0x5
+ 1940 009f 696E7400 		.ascii	"int\000"
+ 1941 00a3 04       		.uleb128 0x4
+ 1942 00a4 AA010000 		.4byte	.LASF11
+ 1943 00a8 02       		.byte	0x2
+ 1944 00a9 27       		.byte	0x27
+ 1945 00aa AE000000 		.4byte	0xae
+ 1946 00ae 03       		.uleb128 0x3
+ 1947 00af 08       		.byte	0x8
+ 1948 00b0 05       		.byte	0x5
+ 1949 00b1 BC010000 		.4byte	.LASF12
+ 1950 00b5 06       		.uleb128 0x6
+ 1951 00b6 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 40
+
+
+ 1952 00b7 EA010000 		.4byte	.LASF26
+ 1953 00bb 01       		.byte	0x1
+ 1954 00bc 9E       		.byte	0x9e
+ 1955 00bd 01       		.byte	0x1
+ 1956 00be 91000000 		.4byte	0x91
+ 1957 00c2 740B0000 		.4byte	.LFB1
+ 1958 00c6 520D0000 		.4byte	.LFE1
+ 1959 00ca 00000000 		.4byte	.LLST1
+ 1960 00ce 01       		.byte	0x1
+ 1961 00cf 90010000 		.4byte	0x190
+ 1962 00d3 07       		.uleb128 0x7
+ 1963 00d4 AF010000 		.4byte	.LASF13
+ 1964 00d8 01       		.byte	0x1
+ 1965 00d9 A1       		.byte	0xa1
+ 1966 00da 6D000000 		.4byte	0x6d
+ 1967 00de 02       		.byte	0x2
+ 1968 00df 91       		.byte	0x91
+ 1969 00e0 66       		.sleb128 -26
+ 1970 00e1 07       		.uleb128 0x7
+ 1971 00e2 CF010000 		.4byte	.LASF14
+ 1972 00e6 01       		.byte	0x1
+ 1973 00e7 A4       		.byte	0xa4
+ 1974 00e8 90010000 		.4byte	0x190
+ 1975 00ec 02       		.byte	0x2
+ 1976 00ed 91       		.byte	0x91
+ 1977 00ee 54       		.sleb128 -44
+ 1978 00ef 07       		.uleb128 0x7
+ 1979 00f0 34020000 		.4byte	.LASF15
+ 1980 00f4 01       		.byte	0x1
+ 1981 00f5 A7       		.byte	0xa7
+ 1982 00f6 A0010000 		.4byte	0x1a0
+ 1983 00fa 03       		.byte	0x3
+ 1984 00fb 91       		.byte	0x91
+ 1985 00fc BC7F     		.sleb128 -68
+ 1986 00fe 07       		.uleb128 0x7
+ 1987 00ff 15000000 		.4byte	.LASF16
+ 1988 0103 01       		.byte	0x1
+ 1989 0104 AA       		.byte	0xaa
+ 1990 0105 B0010000 		.4byte	0x1b0
+ 1991 0109 03       		.byte	0x3
+ 1992 010a 91       		.byte	0x91
+ 1993 010b B87F     		.sleb128 -72
+ 1994 010d 07       		.uleb128 0x7
+ 1995 010e 0C020000 		.4byte	.LASF17
+ 1996 0112 01       		.byte	0x1
+ 1997 0113 B2       		.byte	0xb2
+ 1998 0114 25000000 		.4byte	0x25
+ 1999 0118 02       		.byte	0x2
+ 2000 0119 91       		.byte	0x91
+ 2001 011a 67       		.sleb128 -25
+ 2002 011b 07       		.uleb128 0x7
+ 2003 011c 49010000 		.4byte	.LASF18
+ 2004 0120 01       		.byte	0x1
+ 2005 0121 C2       		.byte	0xc2
+ 2006 0122 B0010000 		.4byte	0x1b0
+ 2007 0126 03       		.byte	0x3
+ 2008 0127 91       		.byte	0x91
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 41
+
+
+ 2009 0128 B47F     		.sleb128 -76
+ 2010 012a 07       		.uleb128 0x7
+ 2011 012b D0000000 		.4byte	.LASF19
+ 2012 012f 01       		.byte	0x1
+ 2013 0130 C6       		.byte	0xc6
+ 2014 0131 25000000 		.4byte	0x25
+ 2015 0135 02       		.byte	0x2
+ 2016 0136 91       		.byte	0x91
+ 2017 0137 65       		.sleb128 -27
+ 2018 0138 07       		.uleb128 0x7
+ 2019 0139 F0000000 		.4byte	.LASF20
+ 2020 013d 01       		.byte	0x1
+ 2021 013e C9       		.byte	0xc9
+ 2022 013f 25000000 		.4byte	0x25
+ 2023 0143 02       		.byte	0x2
+ 2024 0144 91       		.byte	0x91
+ 2025 0145 64       		.sleb128 -28
+ 2026 0146 07       		.uleb128 0x7
+ 2027 0147 25000000 		.4byte	.LASF21
+ 2028 014b 01       		.byte	0x1
+ 2029 014c CC       		.byte	0xcc
+ 2030 014d 25000000 		.4byte	0x25
+ 2031 0151 02       		.byte	0x2
+ 2032 0152 91       		.byte	0x91
+ 2033 0153 63       		.sleb128 -29
+ 2034 0154 07       		.uleb128 0x7
+ 2035 0155 00000000 		.4byte	.LASF22
+ 2036 0159 01       		.byte	0x1
+ 2037 015a CE       		.byte	0xce
+ 2038 015b C0010000 		.4byte	0x1c0
+ 2039 015f 03       		.byte	0x3
+ 2040 0160 91       		.byte	0x91
+ 2041 0161 B07F     		.sleb128 -80
+ 2042 0163 07       		.uleb128 0x7
+ 2043 0164 C7000000 		.4byte	.LASF23
+ 2044 0168 01       		.byte	0x1
+ 2045 0169 EF       		.byte	0xef
+ 2046 016a 37000000 		.4byte	0x37
+ 2047 016e 02       		.byte	0x2
+ 2048 016f 91       		.byte	0x91
+ 2049 0170 60       		.sleb128 -32
+ 2050 0171 08       		.uleb128 0x8
+ 2051 0172 0D010000 		.4byte	.LASF24
+ 2052 0176 01       		.byte	0x1
+ 2053 0177 0401     		.2byte	0x104
+ 2054 0179 49000000 		.4byte	0x49
+ 2055 017d 02       		.byte	0x2
+ 2056 017e 91       		.byte	0x91
+ 2057 017f 5C       		.sleb128 -36
+ 2058 0180 08       		.uleb128 0x8
+ 2059 0181 15020000 		.4byte	.LASF25
+ 2060 0185 01       		.byte	0x1
+ 2061 0186 0B01     		.2byte	0x10b
+ 2062 0188 91000000 		.4byte	0x91
+ 2063 018c 02       		.byte	0x2
+ 2064 018d 91       		.byte	0x91
+ 2065 018e 58       		.sleb128 -40
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 42
+
+
+ 2066 018f 00       		.byte	0
+ 2067 0190 09       		.uleb128 0x9
+ 2068 0191 25000000 		.4byte	0x25
+ 2069 0195 A0010000 		.4byte	0x1a0
+ 2070 0199 0A       		.uleb128 0xa
+ 2071 019a 54000000 		.4byte	0x54
+ 2072 019e 02       		.byte	0x2
+ 2073 019f 00       		.byte	0
+ 2074 01a0 09       		.uleb128 0x9
+ 2075 01a1 7F000000 		.4byte	0x7f
+ 2076 01a5 B0010000 		.4byte	0x1b0
+ 2077 01a9 0A       		.uleb128 0xa
+ 2078 01aa 54000000 		.4byte	0x54
+ 2079 01ae 0A       		.byte	0xa
+ 2080 01af 00       		.byte	0
+ 2081 01b0 09       		.uleb128 0x9
+ 2082 01b1 25000000 		.4byte	0x25
+ 2083 01b5 C0010000 		.4byte	0x1c0
+ 2084 01b9 0A       		.uleb128 0xa
+ 2085 01ba 54000000 		.4byte	0x54
+ 2086 01be 00       		.byte	0
+ 2087 01bf 00       		.byte	0
+ 2088 01c0 09       		.uleb128 0x9
+ 2089 01c1 25000000 		.4byte	0x25
+ 2090 01c5 D0010000 		.4byte	0x1d0
+ 2091 01c9 0A       		.uleb128 0xa
+ 2092 01ca 54000000 		.4byte	0x54
+ 2093 01ce 01       		.byte	0x1
+ 2094 01cf 00       		.byte	0
+ 2095 01d0 06       		.uleb128 0x6
+ 2096 01d1 01       		.byte	0x1
+ 2097 01d2 35000000 		.4byte	.LASF27
+ 2098 01d6 01       		.byte	0x1
+ 2099 01d7 3C       		.byte	0x3c
+ 2100 01d8 01       		.byte	0x1
+ 2101 01d9 91000000 		.4byte	0x91
+ 2102 01dd 00000000 		.4byte	.LFB0
+ 2103 01e1 740B0000 		.4byte	.LFE0
+ 2104 01e5 3A000000 		.4byte	.LLST0
+ 2105 01e9 01       		.byte	0x1
+ 2106 01ea 57030000 		.4byte	0x357
+ 2107 01ee 0B       		.uleb128 0xb
+ 2108 01ef 0D010000 		.4byte	.LASF24
+ 2109 01f3 01       		.byte	0x1
+ 2110 01f4 3C       		.byte	0x3c
+ 2111 01f5 49000000 		.4byte	0x49
+ 2112 01f9 03       		.byte	0x3
+ 2113 01fa 91       		.byte	0x91
+ 2114 01fb EC7E     		.sleb128 -148
+ 2115 01fd 0B       		.uleb128 0xb
+ 2116 01fe C7000000 		.4byte	.LASF23
+ 2117 0202 01       		.byte	0x1
+ 2118 0203 3C       		.byte	0x3c
+ 2119 0204 37000000 		.4byte	0x37
+ 2120 0208 03       		.byte	0x3
+ 2121 0209 91       		.byte	0x91
+ 2122 020a EA7E     		.sleb128 -150
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 43
+
+
+ 2123 020c 0B       		.uleb128 0xb
+ 2124 020d 34020000 		.4byte	.LASF15
+ 2125 0211 01       		.byte	0x1
+ 2126 0212 3C       		.byte	0x3c
+ 2127 0213 57030000 		.4byte	0x357
+ 2128 0217 03       		.byte	0x3
+ 2129 0218 91       		.byte	0x91
+ 2130 0219 E47E     		.sleb128 -156
+ 2131 021b 0C       		.uleb128 0xc
+ 2132 021c 41433100 		.ascii	"AC1\000"
+ 2133 0220 01       		.byte	0x1
+ 2134 0221 3F       		.byte	0x3f
+ 2135 0222 7F000000 		.4byte	0x7f
+ 2136 0226 02       		.byte	0x2
+ 2137 0227 91       		.byte	0x91
+ 2138 0228 5E       		.sleb128 -34
+ 2139 0229 0C       		.uleb128 0xc
+ 2140 022a 41433200 		.ascii	"AC2\000"
+ 2141 022e 01       		.byte	0x1
+ 2142 022f 40       		.byte	0x40
+ 2143 0230 7F000000 		.4byte	0x7f
+ 2144 0234 02       		.byte	0x2
+ 2145 0235 91       		.byte	0x91
+ 2146 0236 5C       		.sleb128 -36
+ 2147 0237 0C       		.uleb128 0xc
+ 2148 0238 41433300 		.ascii	"AC3\000"
+ 2149 023c 01       		.byte	0x1
+ 2150 023d 41       		.byte	0x41
+ 2151 023e 7F000000 		.4byte	0x7f
+ 2152 0242 02       		.byte	0x2
+ 2153 0243 91       		.byte	0x91
+ 2154 0244 5A       		.sleb128 -38
+ 2155 0245 0C       		.uleb128 0xc
+ 2156 0246 423100   		.ascii	"B1\000"
+ 2157 0249 01       		.byte	0x1
+ 2158 024a 42       		.byte	0x42
+ 2159 024b 7F000000 		.4byte	0x7f
+ 2160 024f 02       		.byte	0x2
+ 2161 0250 91       		.byte	0x91
+ 2162 0251 52       		.sleb128 -46
+ 2163 0252 0C       		.uleb128 0xc
+ 2164 0253 423200   		.ascii	"B2\000"
+ 2165 0256 01       		.byte	0x1
+ 2166 0257 43       		.byte	0x43
+ 2167 0258 7F000000 		.4byte	0x7f
+ 2168 025c 02       		.byte	0x2
+ 2169 025d 91       		.byte	0x91
+ 2170 025e 50       		.sleb128 -48
+ 2171 025f 0C       		.uleb128 0xc
+ 2172 0260 4D4200   		.ascii	"MB\000"
+ 2173 0263 01       		.byte	0x1
+ 2174 0264 44       		.byte	0x44
+ 2175 0265 7F000000 		.4byte	0x7f
+ 2176 0269 02       		.byte	0x2
+ 2177 026a 91       		.byte	0x91
+ 2178 026b 4E       		.sleb128 -50
+ 2179 026c 0C       		.uleb128 0xc
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 44
+
+
+ 2180 026d 4D4300   		.ascii	"MC\000"
+ 2181 0270 01       		.byte	0x1
+ 2182 0271 45       		.byte	0x45
+ 2183 0272 7F000000 		.4byte	0x7f
+ 2184 0276 02       		.byte	0x2
+ 2185 0277 91       		.byte	0x91
+ 2186 0278 4C       		.sleb128 -52
+ 2187 0279 0C       		.uleb128 0xc
+ 2188 027a 4D4400   		.ascii	"MD\000"
+ 2189 027d 01       		.byte	0x1
+ 2190 027e 46       		.byte	0x46
+ 2191 027f 7F000000 		.4byte	0x7f
+ 2192 0283 02       		.byte	0x2
+ 2193 0284 91       		.byte	0x91
+ 2194 0285 4A       		.sleb128 -54
+ 2195 0286 0C       		.uleb128 0xc
+ 2196 0287 41433400 		.ascii	"AC4\000"
+ 2197 028b 01       		.byte	0x1
+ 2198 028c 47       		.byte	0x47
+ 2199 028d 37000000 		.4byte	0x37
+ 2200 0291 02       		.byte	0x2
+ 2201 0292 91       		.byte	0x91
+ 2202 0293 58       		.sleb128 -40
+ 2203 0294 0C       		.uleb128 0xc
+ 2204 0295 41433500 		.ascii	"AC5\000"
+ 2205 0299 01       		.byte	0x1
+ 2206 029a 48       		.byte	0x48
+ 2207 029b 37000000 		.4byte	0x37
+ 2208 029f 02       		.byte	0x2
+ 2209 02a0 91       		.byte	0x91
+ 2210 02a1 56       		.sleb128 -42
+ 2211 02a2 0C       		.uleb128 0xc
+ 2212 02a3 41433600 		.ascii	"AC6\000"
+ 2213 02a7 01       		.byte	0x1
+ 2214 02a8 49       		.byte	0x49
+ 2215 02a9 37000000 		.4byte	0x37
+ 2216 02ad 02       		.byte	0x2
+ 2217 02ae 91       		.byte	0x91
+ 2218 02af 54       		.sleb128 -44
+ 2219 02b0 0C       		.uleb128 0xc
+ 2220 02b1 583100   		.ascii	"X1\000"
+ 2221 02b4 01       		.byte	0x1
+ 2222 02b5 5D       		.byte	0x5d
+ 2223 02b6 A3000000 		.4byte	0xa3
+ 2224 02ba 02       		.byte	0x2
+ 2225 02bb 91       		.byte	0x91
+ 2226 02bc 40       		.sleb128 -64
+ 2227 02bd 0C       		.uleb128 0xc
+ 2228 02be 583200   		.ascii	"X2\000"
+ 2229 02c1 01       		.byte	0x1
+ 2230 02c2 5E       		.byte	0x5e
+ 2231 02c3 A3000000 		.4byte	0xa3
+ 2232 02c7 03       		.byte	0x3
+ 2233 02c8 91       		.byte	0x91
+ 2234 02c9 B87F     		.sleb128 -72
+ 2235 02cb 0C       		.uleb128 0xc
+ 2236 02cc 423500   		.ascii	"B5\000"
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 45
+
+
+ 2237 02cf 01       		.byte	0x1
+ 2238 02d0 5F       		.byte	0x5f
+ 2239 02d1 A3000000 		.4byte	0xa3
+ 2240 02d5 03       		.byte	0x3
+ 2241 02d6 91       		.byte	0x91
+ 2242 02d7 B07F     		.sleb128 -80
+ 2243 02d9 0C       		.uleb128 0xc
+ 2244 02da 5400     		.ascii	"T\000"
+ 2245 02dc 01       		.byte	0x1
+ 2246 02dd 60       		.byte	0x60
+ 2247 02de A3000000 		.4byte	0xa3
+ 2248 02e2 03       		.byte	0x3
+ 2249 02e3 91       		.byte	0x91
+ 2250 02e4 A87F     		.sleb128 -88
+ 2251 02e6 07       		.uleb128 0x7
+ 2252 02e7 2A010000 		.4byte	.LASF28
+ 2253 02eb 01       		.byte	0x1
+ 2254 02ec 66       		.byte	0x66
+ 2255 02ed 5B000000 		.4byte	0x5b
+ 2256 02f1 03       		.byte	0x3
+ 2257 02f2 91       		.byte	0x91
+ 2258 02f3 A07F     		.sleb128 -96
+ 2259 02f5 07       		.uleb128 0x7
+ 2260 02f6 FA010000 		.4byte	.LASF29
+ 2261 02fa 01       		.byte	0x1
+ 2262 02fb 67       		.byte	0x67
+ 2263 02fc A3000000 		.4byte	0xa3
+ 2264 0300 03       		.byte	0x3
+ 2265 0301 91       		.byte	0x91
+ 2266 0302 987F     		.sleb128 -104
+ 2267 0304 0C       		.uleb128 0xc
+ 2268 0305 423600   		.ascii	"B6\000"
+ 2269 0308 01       		.byte	0x1
+ 2270 0309 69       		.byte	0x69
+ 2271 030a A3000000 		.4byte	0xa3
+ 2272 030e 03       		.byte	0x3
+ 2273 030f 91       		.byte	0x91
+ 2274 0310 907F     		.sleb128 -112
+ 2275 0312 0C       		.uleb128 0xc
+ 2276 0313 583300   		.ascii	"X3\000"
+ 2277 0316 01       		.byte	0x1
+ 2278 0317 6C       		.byte	0x6c
+ 2279 0318 A3000000 		.4byte	0xa3
+ 2280 031c 03       		.byte	0x3
+ 2281 031d 91       		.byte	0x91
+ 2282 031e 887F     		.sleb128 -120
+ 2283 0320 0C       		.uleb128 0xc
+ 2284 0321 423300   		.ascii	"B3\000"
+ 2285 0324 01       		.byte	0x1
+ 2286 0325 6F       		.byte	0x6f
+ 2287 0326 A3000000 		.4byte	0xa3
+ 2288 032a 03       		.byte	0x3
+ 2289 032b 91       		.byte	0x91
+ 2290 032c 807F     		.sleb128 -128
+ 2291 032e 0C       		.uleb128 0xc
+ 2292 032f 423400   		.ascii	"B4\000"
+ 2293 0332 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 46
+
+
+ 2294 0333 75       		.byte	0x75
+ 2295 0334 5B000000 		.4byte	0x5b
+ 2296 0338 03       		.byte	0x3
+ 2297 0339 91       		.byte	0x91
+ 2298 033a F87E     		.sleb128 -136
+ 2299 033c 0C       		.uleb128 0xc
+ 2300 033d 423700   		.ascii	"B7\000"
+ 2301 0340 01       		.byte	0x1
+ 2302 0341 78       		.byte	0x78
+ 2303 0342 5B000000 		.4byte	0x5b
+ 2304 0346 03       		.byte	0x3
+ 2305 0347 91       		.byte	0x91
+ 2306 0348 F07E     		.sleb128 -144
+ 2307 034a 0C       		.uleb128 0xc
+ 2308 034b 7000     		.ascii	"p\000"
+ 2309 034d 01       		.byte	0x1
+ 2310 034e 7A       		.byte	0x7a
+ 2311 034f A3000000 		.4byte	0xa3
+ 2312 0353 02       		.byte	0x2
+ 2313 0354 91       		.byte	0x91
+ 2314 0355 60       		.sleb128 -32
+ 2315 0356 00       		.byte	0
+ 2316 0357 0D       		.uleb128 0xd
+ 2317 0358 04       		.byte	0x4
+ 2318 0359 37000000 		.4byte	0x37
+ 2319 035d 00       		.byte	0
+ 2320              		.section	.debug_abbrev,"",%progbits
+ 2321              	.Ldebug_abbrev0:
+ 2322 0000 01       		.uleb128 0x1
+ 2323 0001 11       		.uleb128 0x11
+ 2324 0002 01       		.byte	0x1
+ 2325 0003 25       		.uleb128 0x25
+ 2326 0004 0E       		.uleb128 0xe
+ 2327 0005 13       		.uleb128 0x13
+ 2328 0006 0B       		.uleb128 0xb
+ 2329 0007 03       		.uleb128 0x3
+ 2330 0008 0E       		.uleb128 0xe
+ 2331 0009 1B       		.uleb128 0x1b
+ 2332 000a 0E       		.uleb128 0xe
+ 2333 000b 11       		.uleb128 0x11
+ 2334 000c 01       		.uleb128 0x1
+ 2335 000d 12       		.uleb128 0x12
+ 2336 000e 01       		.uleb128 0x1
+ 2337 000f 10       		.uleb128 0x10
+ 2338 0010 06       		.uleb128 0x6
+ 2339 0011 00       		.byte	0
+ 2340 0012 00       		.byte	0
+ 2341 0013 02       		.uleb128 0x2
+ 2342 0014 16       		.uleb128 0x16
+ 2343 0015 00       		.byte	0
+ 2344 0016 03       		.uleb128 0x3
+ 2345 0017 08       		.uleb128 0x8
+ 2346 0018 3A       		.uleb128 0x3a
+ 2347 0019 0B       		.uleb128 0xb
+ 2348 001a 3B       		.uleb128 0x3b
+ 2349 001b 0B       		.uleb128 0xb
+ 2350 001c 49       		.uleb128 0x49
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 47
+
+
+ 2351 001d 13       		.uleb128 0x13
+ 2352 001e 00       		.byte	0
+ 2353 001f 00       		.byte	0
+ 2354 0020 03       		.uleb128 0x3
+ 2355 0021 24       		.uleb128 0x24
+ 2356 0022 00       		.byte	0
+ 2357 0023 0B       		.uleb128 0xb
+ 2358 0024 0B       		.uleb128 0xb
+ 2359 0025 3E       		.uleb128 0x3e
+ 2360 0026 0B       		.uleb128 0xb
+ 2361 0027 03       		.uleb128 0x3
+ 2362 0028 0E       		.uleb128 0xe
+ 2363 0029 00       		.byte	0
+ 2364 002a 00       		.byte	0
+ 2365 002b 04       		.uleb128 0x4
+ 2366 002c 16       		.uleb128 0x16
+ 2367 002d 00       		.byte	0
+ 2368 002e 03       		.uleb128 0x3
+ 2369 002f 0E       		.uleb128 0xe
+ 2370 0030 3A       		.uleb128 0x3a
+ 2371 0031 0B       		.uleb128 0xb
+ 2372 0032 3B       		.uleb128 0x3b
+ 2373 0033 0B       		.uleb128 0xb
+ 2374 0034 49       		.uleb128 0x49
+ 2375 0035 13       		.uleb128 0x13
+ 2376 0036 00       		.byte	0
+ 2377 0037 00       		.byte	0
+ 2378 0038 05       		.uleb128 0x5
+ 2379 0039 24       		.uleb128 0x24
+ 2380 003a 00       		.byte	0
+ 2381 003b 0B       		.uleb128 0xb
+ 2382 003c 0B       		.uleb128 0xb
+ 2383 003d 3E       		.uleb128 0x3e
+ 2384 003e 0B       		.uleb128 0xb
+ 2385 003f 03       		.uleb128 0x3
+ 2386 0040 08       		.uleb128 0x8
+ 2387 0041 00       		.byte	0
+ 2388 0042 00       		.byte	0
+ 2389 0043 06       		.uleb128 0x6
+ 2390 0044 2E       		.uleb128 0x2e
+ 2391 0045 01       		.byte	0x1
+ 2392 0046 3F       		.uleb128 0x3f
+ 2393 0047 0C       		.uleb128 0xc
+ 2394 0048 03       		.uleb128 0x3
+ 2395 0049 0E       		.uleb128 0xe
+ 2396 004a 3A       		.uleb128 0x3a
+ 2397 004b 0B       		.uleb128 0xb
+ 2398 004c 3B       		.uleb128 0x3b
+ 2399 004d 0B       		.uleb128 0xb
+ 2400 004e 27       		.uleb128 0x27
+ 2401 004f 0C       		.uleb128 0xc
+ 2402 0050 49       		.uleb128 0x49
+ 2403 0051 13       		.uleb128 0x13
+ 2404 0052 11       		.uleb128 0x11
+ 2405 0053 01       		.uleb128 0x1
+ 2406 0054 12       		.uleb128 0x12
+ 2407 0055 01       		.uleb128 0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 48
+
+
+ 2408 0056 40       		.uleb128 0x40
+ 2409 0057 06       		.uleb128 0x6
+ 2410 0058 9642     		.uleb128 0x2116
+ 2411 005a 0C       		.uleb128 0xc
+ 2412 005b 01       		.uleb128 0x1
+ 2413 005c 13       		.uleb128 0x13
+ 2414 005d 00       		.byte	0
+ 2415 005e 00       		.byte	0
+ 2416 005f 07       		.uleb128 0x7
+ 2417 0060 34       		.uleb128 0x34
+ 2418 0061 00       		.byte	0
+ 2419 0062 03       		.uleb128 0x3
+ 2420 0063 0E       		.uleb128 0xe
+ 2421 0064 3A       		.uleb128 0x3a
+ 2422 0065 0B       		.uleb128 0xb
+ 2423 0066 3B       		.uleb128 0x3b
+ 2424 0067 0B       		.uleb128 0xb
+ 2425 0068 49       		.uleb128 0x49
+ 2426 0069 13       		.uleb128 0x13
+ 2427 006a 02       		.uleb128 0x2
+ 2428 006b 0A       		.uleb128 0xa
+ 2429 006c 00       		.byte	0
+ 2430 006d 00       		.byte	0
+ 2431 006e 08       		.uleb128 0x8
+ 2432 006f 34       		.uleb128 0x34
+ 2433 0070 00       		.byte	0
+ 2434 0071 03       		.uleb128 0x3
+ 2435 0072 0E       		.uleb128 0xe
+ 2436 0073 3A       		.uleb128 0x3a
+ 2437 0074 0B       		.uleb128 0xb
+ 2438 0075 3B       		.uleb128 0x3b
+ 2439 0076 05       		.uleb128 0x5
+ 2440 0077 49       		.uleb128 0x49
+ 2441 0078 13       		.uleb128 0x13
+ 2442 0079 02       		.uleb128 0x2
+ 2443 007a 0A       		.uleb128 0xa
+ 2444 007b 00       		.byte	0
+ 2445 007c 00       		.byte	0
+ 2446 007d 09       		.uleb128 0x9
+ 2447 007e 01       		.uleb128 0x1
+ 2448 007f 01       		.byte	0x1
+ 2449 0080 49       		.uleb128 0x49
+ 2450 0081 13       		.uleb128 0x13
+ 2451 0082 01       		.uleb128 0x1
+ 2452 0083 13       		.uleb128 0x13
+ 2453 0084 00       		.byte	0
+ 2454 0085 00       		.byte	0
+ 2455 0086 0A       		.uleb128 0xa
+ 2456 0087 21       		.uleb128 0x21
+ 2457 0088 00       		.byte	0
+ 2458 0089 49       		.uleb128 0x49
+ 2459 008a 13       		.uleb128 0x13
+ 2460 008b 2F       		.uleb128 0x2f
+ 2461 008c 0B       		.uleb128 0xb
+ 2462 008d 00       		.byte	0
+ 2463 008e 00       		.byte	0
+ 2464 008f 0B       		.uleb128 0xb
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 49
+
+
+ 2465 0090 05       		.uleb128 0x5
+ 2466 0091 00       		.byte	0
+ 2467 0092 03       		.uleb128 0x3
+ 2468 0093 0E       		.uleb128 0xe
+ 2469 0094 3A       		.uleb128 0x3a
+ 2470 0095 0B       		.uleb128 0xb
+ 2471 0096 3B       		.uleb128 0x3b
+ 2472 0097 0B       		.uleb128 0xb
+ 2473 0098 49       		.uleb128 0x49
+ 2474 0099 13       		.uleb128 0x13
+ 2475 009a 02       		.uleb128 0x2
+ 2476 009b 0A       		.uleb128 0xa
+ 2477 009c 00       		.byte	0
+ 2478 009d 00       		.byte	0
+ 2479 009e 0C       		.uleb128 0xc
+ 2480 009f 34       		.uleb128 0x34
+ 2481 00a0 00       		.byte	0
+ 2482 00a1 03       		.uleb128 0x3
+ 2483 00a2 08       		.uleb128 0x8
+ 2484 00a3 3A       		.uleb128 0x3a
+ 2485 00a4 0B       		.uleb128 0xb
+ 2486 00a5 3B       		.uleb128 0x3b
+ 2487 00a6 0B       		.uleb128 0xb
+ 2488 00a7 49       		.uleb128 0x49
+ 2489 00a8 13       		.uleb128 0x13
+ 2490 00a9 02       		.uleb128 0x2
+ 2491 00aa 0A       		.uleb128 0xa
+ 2492 00ab 00       		.byte	0
+ 2493 00ac 00       		.byte	0
+ 2494 00ad 0D       		.uleb128 0xd
+ 2495 00ae 0F       		.uleb128 0xf
+ 2496 00af 00       		.byte	0
+ 2497 00b0 0B       		.uleb128 0xb
+ 2498 00b1 0B       		.uleb128 0xb
+ 2499 00b2 49       		.uleb128 0x49
+ 2500 00b3 13       		.uleb128 0x13
+ 2501 00b4 00       		.byte	0
+ 2502 00b5 00       		.byte	0
+ 2503 00b6 00       		.byte	0
+ 2504              		.section	.debug_loc,"",%progbits
+ 2505              	.Ldebug_loc0:
+ 2506              	.LLST1:
+ 2507 0000 740B0000 		.4byte	.LFB1-.Ltext0
+ 2508 0004 760B0000 		.4byte	.LCFI3-.Ltext0
+ 2509 0008 0200     		.2byte	0x2
+ 2510 000a 7D       		.byte	0x7d
+ 2511 000b 00       		.sleb128 0
+ 2512 000c 760B0000 		.4byte	.LCFI3-.Ltext0
+ 2513 0010 780B0000 		.4byte	.LCFI4-.Ltext0
+ 2514 0014 0200     		.2byte	0x2
+ 2515 0016 7D       		.byte	0x7d
+ 2516 0017 14       		.sleb128 20
+ 2517 0018 780B0000 		.4byte	.LCFI4-.Ltext0
+ 2518 001c 7A0B0000 		.4byte	.LCFI5-.Ltext0
+ 2519 0020 0300     		.2byte	0x3
+ 2520 0022 7D       		.byte	0x7d
+ 2521 0023 D000     		.sleb128 80
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 50
+
+
+ 2522 0025 7A0B0000 		.4byte	.LCFI5-.Ltext0
+ 2523 0029 520D0000 		.4byte	.LFE1-.Ltext0
+ 2524 002d 0300     		.2byte	0x3
+ 2525 002f 77       		.byte	0x77
+ 2526 0030 D000     		.sleb128 80
+ 2527 0032 00000000 		.4byte	0
+ 2528 0036 00000000 		.4byte	0
+ 2529              	.LLST0:
+ 2530 003a 00000000 		.4byte	.LFB0-.Ltext0
+ 2531 003e 02000000 		.4byte	.LCFI0-.Ltext0
+ 2532 0042 0200     		.2byte	0x2
+ 2533 0044 7D       		.byte	0x7d
+ 2534 0045 00       		.sleb128 0
+ 2535 0046 02000000 		.4byte	.LCFI0-.Ltext0
+ 2536 004a 04000000 		.4byte	.LCFI1-.Ltext0
+ 2537 004e 0200     		.2byte	0x2
+ 2538 0050 7D       		.byte	0x7d
+ 2539 0051 14       		.sleb128 20
+ 2540 0052 04000000 		.4byte	.LCFI1-.Ltext0
+ 2541 0056 06000000 		.4byte	.LCFI2-.Ltext0
+ 2542 005a 0300     		.2byte	0x3
+ 2543 005c 7D       		.byte	0x7d
+ 2544 005d B803     		.sleb128 440
+ 2545 005f 06000000 		.4byte	.LCFI2-.Ltext0
+ 2546 0063 740B0000 		.4byte	.LFE0-.Ltext0
+ 2547 0067 0300     		.2byte	0x3
+ 2548 0069 77       		.byte	0x77
+ 2549 006a B803     		.sleb128 440
+ 2550 006c 00000000 		.4byte	0
+ 2551 0070 00000000 		.4byte	0
+ 2552              		.section	.debug_aranges,"",%progbits
+ 2553 0000 1C000000 		.4byte	0x1c
+ 2554 0004 0200     		.2byte	0x2
+ 2555 0006 00000000 		.4byte	.Ldebug_info0
+ 2556 000a 04       		.byte	0x4
+ 2557 000b 00       		.byte	0
+ 2558 000c 0000     		.2byte	0
+ 2559 000e 0000     		.2byte	0
+ 2560 0010 00000000 		.4byte	.Ltext0
+ 2561 0014 520D0000 		.4byte	.Letext0-.Ltext0
+ 2562 0018 00000000 		.4byte	0
+ 2563 001c 00000000 		.4byte	0
+ 2564              		.section	.debug_line,"",%progbits
+ 2565              	.Ldebug_line0:
+ 2566 0000 D5000000 		.section	.debug_str,"MS",%progbits,1
+ 2566      02002C00 
+ 2566      00000201 
+ 2566      FB0E0D00 
+ 2566      01010101 
+ 2567              	.LASF22:
+ 2568 0000 636F6D6D 		.ascii	"commandArr\000"
+ 2568      616E6441 
+ 2568      727200
+ 2569              	.LASF8:
+ 2570 000b 74533136 		.ascii	"tS16\000"
+ 2570      00
+ 2571              	.LASF10:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 51
+
+
+ 2572 0010 74533332 		.ascii	"tS32\000"
+ 2572      00
+ 2573              	.LASF16:
+ 2574 0015 73746172 		.ascii	"staringRegister\000"
+ 2574      696E6752 
+ 2574      65676973 
+ 2574      74657200 
+ 2575              	.LASF21:
+ 2576 0025 72656769 		.ascii	"registerAddress\000"
+ 2576      73746572 
+ 2576      41646472 
+ 2576      65737300 
+ 2577              	.LASF27:
+ 2578 0035 63616C63 		.ascii	"calculatePressure\000"
+ 2578      756C6174 
+ 2578      65507265 
+ 2578      73737572 
+ 2578      6500
+ 2579              	.LASF30:
+ 2580 0047 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
+ 2580      43313120 
+ 2580      372E332E 
+ 2580      31203230 
+ 2580      31383036 
+ 2581 007a 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb -mthum"
+ 2581      20726576 
+ 2581      6973696F 
+ 2581      6E203236 
+ 2581      31393037 
+ 2582 00ad 622D696E 		.ascii	"b-interwork -gdwarf-2 -O0\000"
+ 2582      74657277 
+ 2582      6F726B20 
+ 2582      2D676477 
+ 2582      6172662D 
+ 2583              	.LASF23:
+ 2584 00c7 72656164 		.ascii	"readTemp\000"
+ 2584      54656D70 
+ 2584      00
+ 2585              	.LASF19:
+ 2586 00d0 636F6E74 		.ascii	"controlRegisterTemperatureValue\000"
+ 2586      726F6C52 
+ 2586      65676973 
+ 2586      74657254 
+ 2586      656D7065 
+ 2587              	.LASF20:
+ 2588 00f0 636F6E74 		.ascii	"controlRegisterPressureValue\000"
+ 2588      726F6C52 
+ 2588      65676973 
+ 2588      74657250 
+ 2588      72657373 
+ 2589              	.LASF24:
+ 2590 010d 72656164 		.ascii	"readPress\000"
+ 2590      50726573 
+ 2590      7300
+ 2591              	.LASF1:
+ 2592 0117 756E7369 		.ascii	"unsigned char\000"
+ 2592      676E6564 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 52
+
+
+ 2592      20636861 
+ 2592      7200
+ 2593              	.LASF5:
+ 2594 0125 74553634 		.ascii	"tU64\000"
+ 2594      00
+ 2595              	.LASF28:
+ 2596 012a 68656C70 		.ascii	"helperValue\000"
+ 2596      65725661 
+ 2596      6C756500 
+ 2597              	.LASF2:
+ 2598 0136 73686F72 		.ascii	"short unsigned int\000"
+ 2598      7420756E 
+ 2598      7369676E 
+ 2598      65642069 
+ 2598      6E7400
+ 2599              	.LASF18:
+ 2600 0149 72657375 		.ascii	"resultLocationAddress\000"
+ 2600      6C744C6F 
+ 2600      63617469 
+ 2600      6F6E4164 
+ 2600      64726573 
+ 2601              	.LASF32:
+ 2602 015f 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
+ 2602      6D626564 
+ 2602      6465645C 
+ 2602      32313338 
+ 2602      4D696E69 
+ 2603              	.LASF31:
+ 2604 017d 626D7031 		.ascii	"bmp180.c\000"
+ 2604      38302E63 
+ 2604      00
+ 2605              	.LASF4:
+ 2606 0186 756E7369 		.ascii	"unsigned int\000"
+ 2606      676E6564 
+ 2606      20696E74 
+ 2606      00
+ 2607              	.LASF6:
+ 2608 0193 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2608      206C6F6E 
+ 2608      6720756E 
+ 2608      7369676E 
+ 2608      65642069 
+ 2609              	.LASF11:
+ 2610 01aa 74533634 		.ascii	"tS64\000"
+ 2610      00
+ 2611              	.LASF13:
+ 2612 01af 72657443 		.ascii	"retCode\000"
+ 2612      6F646500 
+ 2613              	.LASF0:
+ 2614 01b7 74553136 		.ascii	"tU16\000"
+ 2614      00
+ 2615              	.LASF12:
+ 2616 01bc 6C6F6E67 		.ascii	"long long int\000"
+ 2616      206C6F6E 
+ 2616      6720696E 
+ 2616      7400
+ 2617              	.LASF3:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 53
+
+
+ 2618 01ca 74553332 		.ascii	"tU32\000"
+ 2618      00
+ 2619              	.LASF14:
+ 2620 01cf 72656769 		.ascii	"registerContents\000"
+ 2620      73746572 
+ 2620      436F6E74 
+ 2620      656E7473 
+ 2620      00
+ 2621              	.LASF9:
+ 2622 01e0 73686F72 		.ascii	"short int\000"
+ 2622      7420696E 
+ 2622      7400
+ 2623              	.LASF26:
+ 2624 01ea 6D656173 		.ascii	"measurePressure\000"
+ 2624      75726550 
+ 2624      72657373 
+ 2624      75726500 
+ 2625              	.LASF29:
+ 2626 01fa 68656C70 		.ascii	"helperValueSigned\000"
+ 2626      65725661 
+ 2626      6C756553 
+ 2626      69676E65 
+ 2626      6400
+ 2627              	.LASF17:
+ 2628 020c 69746572 		.ascii	"iterator\000"
+ 2628      61746F72 
+ 2628      00
+ 2629              	.LASF25:
+ 2630 0215 63616C63 		.ascii	"calculatedPressure\000"
+ 2630      756C6174 
+ 2630      65645072 
+ 2630      65737375 
+ 2630      726500
+ 2631              	.LASF7:
+ 2632 0228 7369676E 		.ascii	"signed char\000"
+ 2632      65642063 
+ 2632      68617200 
+ 2633              	.LASF15:
+ 2634 0234 63616C69 		.ascii	"calibrationArray\000"
+ 2634      62726174 
+ 2634      696F6E41 
+ 2634      72726179 
+ 2634      00
+ 2635              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s 			page 54
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 bmp180.c
+C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s:25     .text:00000000 calculatePressure
+C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s:33     .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s:720    .text:0000050c $d
+C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s:726    .text:0000051c $t
+C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s:1149   .text:00000844 $d
+C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s:1157   .text:0000085c $t
+C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s:1564   .text:00000b68 $d
+C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s:1570   .text:00000b74 $t
+C:\Users\embedded\AppData\Local\Temp\ccbKfeZd.s:1577   .text:00000b74 measurePressure
+
+UNDEFINED SYMBOLS
+__aeabi_lmul
+__aeabi_ldivmod
+__aeabi_uldivmod
+memset
+i2cWrite
+i2cRead
+mdelay

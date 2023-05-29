@@ -1,0 +1,1799 @@
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 1
+
+
+   1              		.cpu arm7tdmi
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 0
+  10              		.eabi_attribute 18, 4
+  11              		.file	"pca9532.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.rodata
+  16              		.align	2
+  17              	.LC0:
+  18 0000 12       		.byte	18
+  19 0001 97       		.byte	-105
+  20 0002 80       		.byte	-128
+  21 0003 00       		.byte	0
+  22 0004 40       		.byte	64
+  23 0005 00       		.byte	0
+  24 0006 00       		.byte	0
+  25 0007 00       		.byte	0
+  26 0008 00       		.byte	0
+  27              		.text
+  28              		.align	1
+  29              		.global	pca9532Init
+  30              		.syntax unified
+  31              		.code	16
+  32              		.thumb_func
+  33              		.fpu softvfp
+  34              		.type	pca9532Init, %function
+  35              	pca9532Init:
+  36              	.LFB0:
+  37              		.file 1 "pca9532.c"
+   1:pca9532.c     **** /******************************************************************************
+   2:pca9532.c     ****  *
+   3:pca9532.c     ****  * Copyright:
+   4:pca9532.c     ****  *    (C) 2006 Embedded Artists AB
+   5:pca9532.c     ****  *
+   6:pca9532.c     ****  * File:
+   7:pca9532.c     ****  *    pca9532.c
+   8:pca9532.c     ****  *
+   9:pca9532.c     ****  * Description:
+  10:pca9532.c     ****  *    Implements hardware specific routines
+  11:pca9532.c     ****  *
+  12:pca9532.c     ****  *****************************************************************************/
+  13:pca9532.c     **** 
+  14:pca9532.c     **** /******************************************************************************
+  15:pca9532.c     ****  * Includes
+  16:pca9532.c     ****  *****************************************************************************/
+  17:pca9532.c     **** 
+  18:pca9532.c     **** #include "general.h"
+  19:pca9532.c     **** #include <lpc2xxx.h>
+  20:pca9532.c     **** #include <printf_P.h>
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 2
+
+
+  21:pca9532.c     **** #include "i2c.h"
+  22:pca9532.c     **** #include "pca9532.h"
+  23:pca9532.c     **** #include "eeprom.h"
+  24:pca9532.c     **** 
+  25:pca9532.c     **** /******************************************************************************
+  26:pca9532.c     ****  * Typedefs and defines
+  27:pca9532.c     ****  *****************************************************************************/
+  28:pca9532.c     **** 
+  29:pca9532.c     **** #define NUM_OF_LEDS 			0x10 // 0x10 = 16d
+  30:pca9532.c     **** 
+  31:pca9532.c     **** // Definitions of PCA9532 Addresses (not needed since function pca9532 will be used)
+  32:pca9532.c     **** 
+  33:pca9532.c     **** /*
+  34:pca9532.c     **** 
+  35:pca9532.c     **** #define pca9532Address000 		0x60
+  36:pca9532.c     **** #define pca9532ReadAddress000 	0xC1
+  37:pca9532.c     **** #define pca9532WriteAddress000 	0xC0
+  38:pca9532.c     **** 
+  39:pca9532.c     **** #define pca9532Address001 		0x61
+  40:pca9532.c     **** #define pca9532ReadAddress001 	0xC3
+  41:pca9532.c     **** #define pca9532WriteAddress001 	0xC2
+  42:pca9532.c     **** 
+  43:pca9532.c     **** #define pca9532Address010 		0x62
+  44:pca9532.c     **** #define pca9532ReadAddress010 	0xC5
+  45:pca9532.c     **** #define pca9532WriteAddress010 	0xC4
+  46:pca9532.c     **** 
+  47:pca9532.c     **** #define pca9532Address100 		0x64
+  48:pca9532.c     **** #define pca9532ReadAddress100 	0xC9
+  49:pca9532.c     **** #define pca9532WriteAddress100 	0xC8
+  50:pca9532.c     **** 
+  51:pca9532.c     **** #define pca9532Address011 		0x63
+  52:pca9532.c     **** #define pca9532ReadAddress011 	0xC7
+  53:pca9532.c     **** #define pca9532WriteAddress011 	0xC6
+  54:pca9532.c     **** 
+  55:pca9532.c     **** #define pca9532Address101 		0x65
+  56:pca9532.c     **** #define pca9532ReadAddress101 	0xCB
+  57:pca9532.c     **** #define pca9532WriteAddress101 	0xCA
+  58:pca9532.c     **** 
+  59:pca9532.c     **** #define pca9532Address110 		0x66
+  60:pca9532.c     **** #define pca9532ReadAddress110 	0xCD
+  61:pca9532.c     **** #define pca9532WriteAddress110 	0xCC
+  62:pca9532.c     **** 
+  63:pca9532.c     **** #define pca9532Address111 		0x67
+  64:pca9532.c     **** #define pca9532ReadAddress111 	0xCF
+  65:pca9532.c     **** #define pca9532WriteAddress111 	0xCE
+  66:pca9532.c     **** 
+  67:pca9532.c     **** */
+  68:pca9532.c     **** 
+  69:pca9532.c     **** #define INPUT0 	0x00	// 0x00 = 0b 0000	(Read only)		Input Register 0
+  70:pca9532.c     **** #define INPUT1 	0x01	// 0x01 = 0b 0001	(Read only)		Input Register 1
+  71:pca9532.c     **** #define PSC0	0x02	// 0x02 = 0b 0010	(Read / Write)	Frequency Prescaler 0
+  72:pca9532.c     **** #define PWM0	0x03	// 0x03 = 0b 0011	(Read / Write)	PWM Register 0
+  73:pca9532.c     **** #define PSC1	0x04	// 0x04 = 0b 0100	(Read / Write)	Frequency Prescaler 1
+  74:pca9532.c     **** #define PWM1	0x05	// 0x05 = 0b 0101	(Read / Write)	PWM Register 1
+  75:pca9532.c     **** #define LS0		0x06	// 0x06 = 0b 0110	(Read / Write)	LED 0 - 3 Selector
+  76:pca9532.c     **** #define LS1		0x07	// 0x07 = 0b 0111	(Read / Write)	LED 4 - 7 Selector
+  77:pca9532.c     **** #define LS2		0x08	// 0x08 = 0b 1000	(Read / Write)	LED 8 - 11 Selector
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 3
+
+
+  78:pca9532.c     **** #define LS3		0x09	// 0x09 = 0b 1001	(Read / Write)	LED 12 - 15 Selector
+  79:pca9532.c     **** 
+  80:pca9532.c     **** #define BASE_ADDR 		0x00
+  81:pca9532.c     **** #define AUTO_INC_ADDR 	0x01
+  82:pca9532.c     **** 
+  83:pca9532.c     **** /*****************************************************************************
+  84:pca9532.c     ****  * Global variables
+  85:pca9532.c     ****  ****************************************************************************/
+  86:pca9532.c     **** 
+  87:pca9532.c     **** /*****************************************************************************
+  88:pca9532.c     ****  * Local variables
+  89:pca9532.c     ****  ****************************************************************************/
+  90:pca9532.c     **** 
+  91:pca9532.c     **** /*****************************************************************************
+  92:pca9532.c     ****  * Local prototypes
+  93:pca9532.c     ****  ****************************************************************************/
+  94:pca9532.c     **** 
+  95:pca9532.c     **** /*****************************************************************************
+  96:pca9532.c     ****  *
+  97:pca9532.c     ****  * Description:
+  98:pca9532.c     ****  *    Initialize the io-pins and find out if HW is ver 1.0 or ver 1.1
+  99:pca9532.c     ****  *
+ 100:pca9532.c     ****  ****************************************************************************/
+ 101:pca9532.c     **** 
+ 102:pca9532.c     **** tBool pca9532Init(void)
+ 103:pca9532.c     **** {
+  38              		.loc 1 103 0
+  39              		.cfi_startproc
+  40              		@ Function supports interworking.
+  41              		@ args = 0, pretend = 0, frame = 16
+  42              		@ frame_needed = 1, uses_anonymous_args = 0
+  43 0000 80B5     		push	{r7, lr}
+  44              	.LCFI0:
+  45              		.cfi_def_cfa_offset 8
+  46              		.cfi_offset 7, -8
+  47              		.cfi_offset 14, -4
+  48 0002 84B0     		sub	sp, sp, #16
+  49              	.LCFI1:
+  50              		.cfi_def_cfa_offset 24
+  51 0004 00AF     		add	r7, sp, #0
+  52              	.LCFI2:
+  53              		.cfi_def_cfa_register 7
+ 104:pca9532.c     **** 	tU8 initCommand[] =
+  54              		.loc 1 104 0
+  55 0006 3B1D     		adds	r3, r7, #4
+  56 0008 0F4A     		ldr	r2, .L5
+  57 000a 03CA     		ldmia	r2!, {r0, r1}
+  58 000c 03C3     		stmia	r3!, {r0, r1}
+  59 000e 1278     		ldrb	r2, [r2]
+  60 0010 1A70     		strb	r2, [r3]
+ 105:pca9532.c     **** 	{ 0x12, 0x97, 0x80, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00 };
+ 106:pca9532.c     **** 	//                                                         04 = LCD_RST# low
+ 107:pca9532.c     **** 	//                                                         10 = BT_RST# low
+ 108:pca9532.c     **** 
+ 109:pca9532.c     **** 	tBool result;
+ 110:pca9532.c     **** 
+ 111:pca9532.c     **** 	// Initialize PCA9532
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 4
+
+
+ 112:pca9532.c     **** 	if (I2C_CODE_OK == pca9532(initCommand, sizeof(initCommand), NULL, 0))
+  61              		.loc 1 112 0
+  62 0012 381D     		adds	r0, r7, #4
+  63 0014 0023     		movs	r3, #0
+  64 0016 0022     		movs	r2, #0
+  65 0018 0921     		movs	r1, #9
+  66 001a FFF7FEFF 		bl	pca9532
+  67 001e 0300     		movs	r3, r0
+  68 0020 012B     		cmp	r3, #1
+  69 0022 04D1     		bne	.L2
+ 113:pca9532.c     **** 	{
+ 114:pca9532.c     **** 		result = TRUE;
+  70              		.loc 1 114 0
+  71 0024 0F23     		movs	r3, #15
+  72 0026 FB18     		adds	r3, r7, r3
+  73 0028 0122     		movs	r2, #1
+  74 002a 1A70     		strb	r2, [r3]
+  75 002c 03E0     		b	.L3
+  76              	.L2:
+ 115:pca9532.c     **** 	}
+ 116:pca9532.c     **** 	else
+ 117:pca9532.c     **** 	{
+ 118:pca9532.c     **** 		result = FALSE;
+  77              		.loc 1 118 0
+  78 002e 0F23     		movs	r3, #15
+  79 0030 FB18     		adds	r3, r7, r3
+  80 0032 0022     		movs	r2, #0
+  81 0034 1A70     		strb	r2, [r3]
+  82              	.L3:
+ 119:pca9532.c     **** 	}
+ 120:pca9532.c     **** 	return result;
+  83              		.loc 1 120 0
+  84 0036 0F23     		movs	r3, #15
+  85 0038 FB18     		adds	r3, r7, r3
+  86 003a 1B78     		ldrb	r3, [r3]
+ 121:pca9532.c     **** }
+  87              		.loc 1 121 0
+  88 003c 1800     		movs	r0, r3
+  89 003e BD46     		mov	sp, r7
+  90 0040 04B0     		add	sp, sp, #16
+  91              		@ sp needed
+  92 0042 80BC     		pop	{r7}
+  93 0044 02BC     		pop	{r1}
+  94 0046 0847     		bx	r1
+  95              	.L6:
+  96              		.align	2
+  97              	.L5:
+  98 0048 00000000 		.word	.LC0
+  99              		.cfi_endproc
+ 100              	.LFE0:
+ 101              		.size	pca9532Init, .-pca9532Init
+ 102              		.align	1
+ 103              		.global	setPca9532Pin
+ 104              		.syntax unified
+ 105              		.code	16
+ 106              		.thumb_func
+ 107              		.fpu softvfp
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 5
+
+
+ 108              		.type	setPca9532Pin, %function
+ 109              	setPca9532Pin:
+ 110              	.LFB1:
+ 122:pca9532.c     **** 
+ 123:pca9532.c     **** /*****************************************************************************
+ 124:pca9532.c     ****  *
+ 125:pca9532.c     ****  * Description:
+ 126:pca9532.c     ****  *
+ 127:pca9532.c     ****  ****************************************************************************/
+ 128:pca9532.c     **** 
+ 129:pca9532.c     **** void setPca9532Pin(tU8 pinNum, tU8 value)
+ 130:pca9532.c     **** {
+ 111              		.loc 1 130 0
+ 112              		.cfi_startproc
+ 113              		@ Function supports interworking.
+ 114              		@ args = 0, pretend = 0, frame = 16
+ 115              		@ frame_needed = 1, uses_anonymous_args = 0
+ 116 004c B0B5     		push	{r4, r5, r7, lr}
+ 117              	.LCFI3:
+ 118              		.cfi_def_cfa_offset 16
+ 119              		.cfi_offset 4, -16
+ 120              		.cfi_offset 5, -12
+ 121              		.cfi_offset 7, -8
+ 122              		.cfi_offset 14, -4
+ 123 004e 84B0     		sub	sp, sp, #16
+ 124              	.LCFI4:
+ 125              		.cfi_def_cfa_offset 32
+ 126 0050 00AF     		add	r7, sp, #0
+ 127              	.LCFI5:
+ 128              		.cfi_def_cfa_register 7
+ 129 0052 0200     		movs	r2, r0
+ 130 0054 FB1D     		adds	r3, r7, #7
+ 131 0056 1A70     		strb	r2, [r3]
+ 132 0058 BB1D     		adds	r3, r7, #6
+ 133 005a 0A1C     		adds	r2, r1, #0
+ 134 005c 1A70     		strb	r2, [r3]
+ 131:pca9532.c     **** 	tU8 command[] = { 0x00, 0x00 };
+ 135              		.loc 1 131 0
+ 136 005e 0C21     		movs	r1, #12
+ 137 0060 7B18     		adds	r3, r7, r1
+ 138 0062 0022     		movs	r2, #0
+ 139 0064 1A70     		strb	r2, [r3]
+ 140 0066 7B18     		adds	r3, r7, r1
+ 141 0068 0022     		movs	r2, #0
+ 142 006a 5A70     		strb	r2, [r3, #1]
+ 132:pca9532.c     **** 	tU8 regValue;
+ 133:pca9532.c     **** 	tU8 mask;
+ 134:pca9532.c     **** 
+ 135:pca9532.c     **** 	tS8 retCode;
+ 136:pca9532.c     **** 
+ 137:pca9532.c     **** 	if (pinNum < (tU8)4)
+ 143              		.loc 1 137 0
+ 144 006c FB1D     		adds	r3, r7, #7
+ 145 006e 1B78     		ldrb	r3, [r3]
+ 146 0070 032B     		cmp	r3, #3
+ 147 0072 04D8     		bhi	.L8
+ 138:pca9532.c     **** 	{
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 6
+
+
+ 139:pca9532.c     **** 		command[0] = 0x06;
+ 148              		.loc 1 139 0
+ 149 0074 0C23     		movs	r3, #12
+ 150 0076 FB18     		adds	r3, r7, r3
+ 151 0078 0622     		movs	r2, #6
+ 152 007a 1A70     		strb	r2, [r3]
+ 153 007c 15E0     		b	.L9
+ 154              	.L8:
+ 140:pca9532.c     **** 	}
+ 141:pca9532.c     **** 	else if (pinNum < (tU8)8)
+ 155              		.loc 1 141 0
+ 156 007e FB1D     		adds	r3, r7, #7
+ 157 0080 1B78     		ldrb	r3, [r3]
+ 158 0082 072B     		cmp	r3, #7
+ 159 0084 04D8     		bhi	.L10
+ 142:pca9532.c     **** 	{
+ 143:pca9532.c     **** 		command[0] = 0x07;
+ 160              		.loc 1 143 0
+ 161 0086 0C23     		movs	r3, #12
+ 162 0088 FB18     		adds	r3, r7, r3
+ 163 008a 0722     		movs	r2, #7
+ 164 008c 1A70     		strb	r2, [r3]
+ 165 008e 0CE0     		b	.L9
+ 166              	.L10:
+ 144:pca9532.c     **** 	}
+ 145:pca9532.c     **** 	else if (pinNum < (tU8)12)
+ 167              		.loc 1 145 0
+ 168 0090 FB1D     		adds	r3, r7, #7
+ 169 0092 1B78     		ldrb	r3, [r3]
+ 170 0094 0B2B     		cmp	r3, #11
+ 171 0096 04D8     		bhi	.L11
+ 146:pca9532.c     **** 	{
+ 147:pca9532.c     **** 		command[0] = 0x08;
+ 172              		.loc 1 147 0
+ 173 0098 0C23     		movs	r3, #12
+ 174 009a FB18     		adds	r3, r7, r3
+ 175 009c 0822     		movs	r2, #8
+ 176 009e 1A70     		strb	r2, [r3]
+ 177 00a0 03E0     		b	.L9
+ 178              	.L11:
+ 148:pca9532.c     **** 	}
+ 149:pca9532.c     **** 	else
+ 150:pca9532.c     **** 	{
+ 151:pca9532.c     **** 		command[0] = 0x09;
+ 179              		.loc 1 151 0
+ 180 00a2 0C23     		movs	r3, #12
+ 181 00a4 FB18     		adds	r3, r7, r3
+ 182 00a6 0922     		movs	r2, #9
+ 183 00a8 1A70     		strb	r2, [r3]
+ 184              	.L9:
+ 152:pca9532.c     **** 	}
+ 153:pca9532.c     **** 
+ 154:pca9532.c     **** 	retCode = pca9532(command, 1, &regValue, 1);
+ 185              		.loc 1 154 0
+ 186 00aa 0F23     		movs	r3, #15
+ 187 00ac FC18     		adds	r4, r7, r3
+ 188 00ae 0B25     		movs	r5, #11
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 7
+
+
+ 189 00b0 7A19     		adds	r2, r7, r5
+ 190 00b2 0C23     		movs	r3, #12
+ 191 00b4 F818     		adds	r0, r7, r3
+ 192 00b6 0123     		movs	r3, #1
+ 193 00b8 0121     		movs	r1, #1
+ 194 00ba FFF7FEFF 		bl	pca9532
+ 195 00be 0300     		movs	r3, r0
+ 196 00c0 2370     		strb	r3, [r4]
+ 155:pca9532.c     **** 
+ 156:pca9532.c     **** 	mask = (tU8)((tU8)((tU8)3 << (tU8)2) * (pinNum % (tU8)4));
+ 197              		.loc 1 156 0
+ 198 00c2 FB1D     		adds	r3, r7, #7
+ 199 00c4 1B78     		ldrb	r3, [r3]
+ 200 00c6 0322     		movs	r2, #3
+ 201 00c8 1340     		ands	r3, r2
+ 202 00ca 1B06     		lsls	r3, r3, #24
+ 203 00cc 1C0E     		lsrs	r4, r3, #24
+ 204 00ce 0E20     		movs	r0, #14
+ 205 00d0 3B18     		adds	r3, r7, r0
+ 206 00d2 0C21     		movs	r1, #12
+ 207 00d4 2200     		movs	r2, r4
+ 208 00d6 4A43     		muls	r2, r1
+ 209 00d8 1A70     		strb	r2, [r3]
+ 157:pca9532.c     **** 
+ 158:pca9532.c     **** 	regValue &= ~mask;
+ 210              		.loc 1 158 0
+ 211 00da 3B18     		adds	r3, r7, r0
+ 212 00dc 1B78     		ldrb	r3, [r3]
+ 213 00de 1B06     		lsls	r3, r3, #24
+ 214 00e0 1B16     		asrs	r3, r3, #24
+ 215 00e2 DB43     		mvns	r3, r3
+ 216 00e4 1B06     		lsls	r3, r3, #24
+ 217 00e6 1B16     		asrs	r3, r3, #24
+ 218 00e8 7A19     		adds	r2, r7, r5
+ 219 00ea 1278     		ldrb	r2, [r2]
+ 220 00ec 1206     		lsls	r2, r2, #24
+ 221 00ee 1216     		asrs	r2, r2, #24
+ 222 00f0 1340     		ands	r3, r2
+ 223 00f2 1B06     		lsls	r3, r3, #24
+ 224 00f4 1B16     		asrs	r3, r3, #24
+ 225 00f6 1B06     		lsls	r3, r3, #24
+ 226 00f8 1A0E     		lsrs	r2, r3, #24
+ 227 00fa 7B19     		adds	r3, r7, r5
+ 228 00fc 1A70     		strb	r2, [r3]
+ 159:pca9532.c     **** 
+ 160:pca9532.c     **** 	if (value == (tU8)0)
+ 229              		.loc 1 160 0
+ 230 00fe BB1D     		adds	r3, r7, #6
+ 231 0100 1B78     		ldrb	r3, [r3]
+ 232 0102 002B     		cmp	r3, #0
+ 233 0104 04D1     		bne	.L12
+ 161:pca9532.c     **** 	{
+ 162:pca9532.c     **** 		command[1] = 0x02;
+ 234              		.loc 1 162 0
+ 235 0106 0C23     		movs	r3, #12
+ 236 0108 FB18     		adds	r3, r7, r3
+ 237 010a 0222     		movs	r2, #2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 8
+
+
+ 238 010c 5A70     		strb	r2, [r3, #1]
+ 239 010e 03E0     		b	.L13
+ 240              	.L12:
+ 163:pca9532.c     **** 	}
+ 164:pca9532.c     **** 	else
+ 165:pca9532.c     **** 	{
+ 166:pca9532.c     **** 		command[1] = 0x00;
+ 241              		.loc 1 166 0
+ 242 0110 0C23     		movs	r3, #12
+ 243 0112 FB18     		adds	r3, r7, r3
+ 244 0114 0022     		movs	r2, #0
+ 245 0116 5A70     		strb	r2, [r3, #1]
+ 246              	.L13:
+ 167:pca9532.c     **** 	}
+ 168:pca9532.c     **** 
+ 169:pca9532.c     **** 	command[1] = command[1] << ((tU8)2 * (pinNum % (tU8)4));
+ 247              		.loc 1 169 0
+ 248 0118 0C20     		movs	r0, #12
+ 249 011a 3B18     		adds	r3, r7, r0
+ 250 011c 5B78     		ldrb	r3, [r3, #1]
+ 251 011e 1900     		movs	r1, r3
+ 252 0120 FB1D     		adds	r3, r7, #7
+ 253 0122 1B78     		ldrb	r3, [r3]
+ 254 0124 0322     		movs	r2, #3
+ 255 0126 1340     		ands	r3, r2
+ 256 0128 5B00     		lsls	r3, r3, #1
+ 257 012a 9940     		lsls	r1, r1, r3
+ 258 012c 0B00     		movs	r3, r1
+ 259 012e 1B06     		lsls	r3, r3, #24
+ 260 0130 1A0E     		lsrs	r2, r3, #24
+ 261 0132 3B18     		adds	r3, r7, r0
+ 262 0134 5A70     		strb	r2, [r3, #1]
+ 170:pca9532.c     **** 
+ 171:pca9532.c     **** 	command[1] = command[1] | regValue;
+ 263              		.loc 1 171 0
+ 264 0136 3B18     		adds	r3, r7, r0
+ 265 0138 5A78     		ldrb	r2, [r3, #1]
+ 266 013a 0B23     		movs	r3, #11
+ 267 013c FB18     		adds	r3, r7, r3
+ 268 013e 1B78     		ldrb	r3, [r3]
+ 269 0140 1343     		orrs	r3, r2
+ 270 0142 1B06     		lsls	r3, r3, #24
+ 271 0144 1A0E     		lsrs	r2, r3, #24
+ 272 0146 3B18     		adds	r3, r7, r0
+ 273 0148 5A70     		strb	r2, [r3, #1]
+ 172:pca9532.c     **** 
+ 173:pca9532.c     **** 	retCode = pca9532(command, sizeof(command), NULL, 0);
+ 274              		.loc 1 173 0
+ 275 014a 0F23     		movs	r3, #15
+ 276 014c FC18     		adds	r4, r7, r3
+ 277 014e 3818     		adds	r0, r7, r0
+ 278 0150 0023     		movs	r3, #0
+ 279 0152 0022     		movs	r2, #0
+ 280 0154 0221     		movs	r1, #2
+ 281 0156 FFF7FEFF 		bl	pca9532
+ 282 015a 0300     		movs	r3, r0
+ 283 015c 2370     		strb	r3, [r4]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 9
+
+
+ 174:pca9532.c     **** }
+ 284              		.loc 1 174 0
+ 285 015e C046     		nop
+ 286 0160 BD46     		mov	sp, r7
+ 287 0162 04B0     		add	sp, sp, #16
+ 288              		@ sp needed
+ 289 0164 B0BC     		pop	{r4, r5, r7}
+ 290 0166 01BC     		pop	{r0}
+ 291 0168 0047     		bx	r0
+ 292              		.cfi_endproc
+ 293              	.LFE1:
+ 294              		.size	setPca9532Pin, .-setPca9532Pin
+ 295              		.align	1
+ 296              		.global	getPca9532Pin
+ 297              		.syntax unified
+ 298              		.code	16
+ 299              		.thumb_func
+ 300              		.fpu softvfp
+ 301              		.type	getPca9532Pin, %function
+ 302              	getPca9532Pin:
+ 303              	.LFB2:
+ 175:pca9532.c     **** 
+ 176:pca9532.c     **** /*****************************************************************************
+ 177:pca9532.c     ****  *
+ 178:pca9532.c     ****  * Description:
+ 179:pca9532.c     ****  *
+ 180:pca9532.c     ****  ****************************************************************************/
+ 181:pca9532.c     **** 
+ 182:pca9532.c     **** tU16 getPca9532Pin(void)
+ 183:pca9532.c     **** {
+ 304              		.loc 1 183 0
+ 305              		.cfi_startproc
+ 306              		@ Function supports interworking.
+ 307              		@ args = 0, pretend = 0, frame = 8
+ 308              		@ frame_needed = 1, uses_anonymous_args = 0
+ 309 016a 90B5     		push	{r4, r7, lr}
+ 310              	.LCFI6:
+ 311              		.cfi_def_cfa_offset 12
+ 312              		.cfi_offset 4, -12
+ 313              		.cfi_offset 7, -8
+ 314              		.cfi_offset 14, -4
+ 315 016c 83B0     		sub	sp, sp, #12
+ 316              	.LCFI7:
+ 317              		.cfi_def_cfa_offset 24
+ 318 016e 00AF     		add	r7, sp, #0
+ 319              	.LCFI8:
+ 320              		.cfi_def_cfa_register 7
+ 184:pca9532.c     **** 	tU8 command[] = { 0x19 };
+ 321              		.loc 1 184 0
+ 322 0170 3B1D     		adds	r3, r7, #4
+ 323 0172 1922     		movs	r2, #25
+ 324 0174 1A70     		strb	r2, [r3]
+ 185:pca9532.c     **** 	tU8 regValue[3];
+ 186:pca9532.c     **** 	tS8 retCode;
+ 187:pca9532.c     **** 
+ 188:pca9532.c     **** 	retCode = pca9532(command, 1, regValue, 3);
+ 325              		.loc 1 188 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 10
+
+
+ 326 0176 FC1D     		adds	r4, r7, #7
+ 327 0178 3A00     		movs	r2, r7
+ 328 017a 381D     		adds	r0, r7, #4
+ 329 017c 0323     		movs	r3, #3
+ 330 017e 0121     		movs	r1, #1
+ 331 0180 FFF7FEFF 		bl	pca9532
+ 332 0184 0300     		movs	r3, r0
+ 333 0186 2370     		strb	r3, [r4]
+ 189:pca9532.c     **** 
+ 190:pca9532.c     **** 	return (tU16) regValue[1] | ((tU16) regValue[2] << 8);
+ 334              		.loc 1 190 0
+ 335 0188 3B00     		movs	r3, r7
+ 336 018a 5B78     		ldrb	r3, [r3, #1]
+ 337 018c 1A04     		lsls	r2, r3, #16
+ 338 018e 1214     		asrs	r2, r2, #16
+ 339 0190 3B00     		movs	r3, r7
+ 340 0192 9B78     		ldrb	r3, [r3, #2]
+ 341 0194 1B02     		lsls	r3, r3, #8
+ 342 0196 1B04     		lsls	r3, r3, #16
+ 343 0198 1B14     		asrs	r3, r3, #16
+ 344 019a 1343     		orrs	r3, r2
+ 345 019c 1B04     		lsls	r3, r3, #16
+ 346 019e 1B14     		asrs	r3, r3, #16
+ 347 01a0 1B04     		lsls	r3, r3, #16
+ 348 01a2 1B0C     		lsrs	r3, r3, #16
+ 191:pca9532.c     **** }
+ 349              		.loc 1 191 0
+ 350 01a4 1800     		movs	r0, r3
+ 351 01a6 BD46     		mov	sp, r7
+ 352 01a8 03B0     		add	sp, sp, #12
+ 353              		@ sp needed
+ 354 01aa 90BC     		pop	{r4, r7}
+ 355 01ac 02BC     		pop	{r1}
+ 356 01ae 0847     		bx	r1
+ 357              		.cfi_endproc
+ 358              	.LFE2:
+ 359              		.size	getPca9532Pin, .-getPca9532Pin
+ 360              		.align	1
+ 361              		.global	manageLED
+ 362              		.syntax unified
+ 363              		.code	16
+ 364              		.thumb_func
+ 365              		.fpu softvfp
+ 366              		.type	manageLED, %function
+ 367              	manageLED:
+ 368              	.LFB3:
+ 192:pca9532.c     **** 
+ 193:pca9532.c     **** /*
+ 194:pca9532.c     ****  * @brief   Funkcja manageLED() wykorzystywana jest do kontrolowania LED'ów oznaczonych numerami o
+ 195:pca9532.c     ****  *			znajdujących się do okoła ekranu LCD, na expansion boardzie dołączonym do mikrokontrolera
+ 196:pca9532.c     ****  *			Działanie tej funkcji sprowadza sie do zapalenia po kolei LED'ów numerowanych od 1 do 16 z 3
+ 197:pca9532.c     ****  *			pomiędzy kolejnymi zapalonymi LED'ami, gdzie piny o numerach parzystych swiecą jaśniej niż
+ 198:pca9532.c     ****  *			Następnie jak wszystkie są zapalone to następuje 3 sekundowe odczekiwanie, a po jego zakoń
+ 199:pca9532.c     ****  *		 	zastosowaniem 30 ms opóźnienia. Ponadto piny, parzyste jak i nieparzyste "mrugają" co 0,5 
+ 200:pca9532.c     ****  *
+ 201:pca9532.c     ****  * @param   pca9532Present 
+ 202:pca9532.c     ****  *          Zmienna wskazująca czy PCA9532 zostało zainicjalizowane.
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 11
+
+
+ 203:pca9532.c     ****  * @returns
+ 204:pca9532.c     ****  *          void
+ 205:pca9532.c     ****  * 
+ 206:pca9532.c     ****  * @side effects: 
+ 207:pca9532.c     ****  *          Funkcja dokonuje zmiany stanu rejestrów, przy czym ich pierwotna zawartość nie jest 
+ 208:pca9532.c     ****  */
+ 209:pca9532.c     **** 
+ 210:pca9532.c     **** void manageLED(tU8 pca9532Present)
+ 211:pca9532.c     **** {
+ 369              		.loc 1 211 0
+ 370              		.cfi_startproc
+ 371              		@ Function supports interworking.
+ 372              		@ args = 0, pretend = 0, frame = 24
+ 373              		@ frame_needed = 1, uses_anonymous_args = 0
+ 374 01b0 90B5     		push	{r4, r7, lr}
+ 375              	.LCFI9:
+ 376              		.cfi_def_cfa_offset 12
+ 377              		.cfi_offset 4, -12
+ 378              		.cfi_offset 7, -8
+ 379              		.cfi_offset 14, -4
+ 380 01b2 87B0     		sub	sp, sp, #28
+ 381              	.LCFI10:
+ 382              		.cfi_def_cfa_offset 40
+ 383 01b4 00AF     		add	r7, sp, #0
+ 384              	.LCFI11:
+ 385              		.cfi_def_cfa_register 7
+ 386 01b6 0200     		movs	r2, r0
+ 387 01b8 FB1D     		adds	r3, r7, #7
+ 388 01ba 1A70     		strb	r2, [r3]
+ 212:pca9532.c     **** 	IODIR |= 0x00260000; //RGB
+ 389              		.loc 1 212 0
+ 390 01bc 454B     		ldr	r3, .L23
+ 391 01be 1A68     		ldr	r2, [r3]
+ 392 01c0 444B     		ldr	r3, .L23
+ 393 01c2 9821     		movs	r1, #152
+ 394 01c4 8903     		lsls	r1, r1, #14
+ 395 01c6 0A43     		orrs	r2, r1
+ 396 01c8 1A60     		str	r2, [r3]
+ 213:pca9532.c     **** 	IOSET = 0x00260000;
+ 397              		.loc 1 213 0
+ 398 01ca 434B     		ldr	r3, .L23+4
+ 399 01cc 9822     		movs	r2, #152
+ 400 01ce 9203     		lsls	r2, r2, #14
+ 401 01d0 1A60     		str	r2, [r3]
+ 214:pca9532.c     **** 
+ 215:pca9532.c     **** 	IODIR1 |= 0x000F0000; //LEDs
+ 402              		.loc 1 215 0
+ 403 01d2 424B     		ldr	r3, .L23+8
+ 404 01d4 1A68     		ldr	r2, [r3]
+ 405 01d6 414B     		ldr	r3, .L23+8
+ 406 01d8 F021     		movs	r1, #240
+ 407 01da 0903     		lsls	r1, r1, #12
+ 408 01dc 0A43     		orrs	r2, r1
+ 409 01de 1A60     		str	r2, [r3]
+ 216:pca9532.c     **** 	IOSET1 = 0x000F0000;
+ 410              		.loc 1 216 0
+ 411 01e0 3F4B     		ldr	r3, .L23+12
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 12
+
+
+ 412 01e2 F022     		movs	r2, #240
+ 413 01e4 1203     		lsls	r2, r2, #12
+ 414 01e6 1A60     		str	r2, [r3]
+ 217:pca9532.c     **** 	IOCLR1 = 0x00030000;
+ 415              		.loc 1 217 0
+ 416 01e8 3E4B     		ldr	r3, .L23+16
+ 417 01ea C022     		movs	r2, #192
+ 418 01ec 9202     		lsls	r2, r2, #10
+ 419 01ee 1A60     		str	r2, [r3]
+ 218:pca9532.c     **** 	IOCLR1 = 0x00050000;
+ 420              		.loc 1 218 0
+ 421 01f0 3C4B     		ldr	r3, .L23+16
+ 422 01f2 A022     		movs	r2, #160
+ 423 01f4 D202     		lsls	r2, r2, #11
+ 424 01f6 1A60     		str	r2, [r3]
+ 219:pca9532.c     **** 	IOCLR1 = 0x000c0000;
+ 425              		.loc 1 219 0
+ 426 01f8 3A4B     		ldr	r3, .L23+16
+ 427 01fa C022     		movs	r2, #192
+ 428 01fc 1203     		lsls	r2, r2, #12
+ 429 01fe 1A60     		str	r2, [r3]
+ 220:pca9532.c     **** 	IOCLR1 = 0x00090000;
+ 430              		.loc 1 220 0
+ 431 0200 384B     		ldr	r3, .L23+16
+ 432 0202 9022     		movs	r2, #144
+ 433 0204 1203     		lsls	r2, r2, #12
+ 434 0206 1A60     		str	r2, [r3]
+ 221:pca9532.c     **** 	IOSET1 = 0x000F0000;
+ 435              		.loc 1 221 0
+ 436 0208 354B     		ldr	r3, .L23+12
+ 437 020a F022     		movs	r2, #240
+ 438 020c 1203     		lsls	r2, r2, #12
+ 439 020e 1A60     		str	r2, [r3]
+ 222:pca9532.c     **** 	IODIR1 &= ~0x00F00000; //Keys
+ 440              		.loc 1 222 0
+ 441 0210 324B     		ldr	r3, .L23+8
+ 442 0212 1A68     		ldr	r2, [r3]
+ 443 0214 314B     		ldr	r3, .L23+8
+ 444 0216 3449     		ldr	r1, .L23+20
+ 445 0218 0A40     		ands	r2, r1
+ 446 021a 1A60     		str	r2, [r3]
+ 223:pca9532.c     **** 
+ 224:pca9532.c     **** 	tU8 duty75Percent = (tU8)192;
+ 447              		.loc 1 224 0
+ 448 021c 1623     		movs	r3, #22
+ 449 021e FB18     		adds	r3, r7, r3
+ 450 0220 C022     		movs	r2, #192
+ 451 0222 1A70     		strb	r2, [r3]
+ 225:pca9532.c     **** 	tU8 duty25Percent = (tU8)28;
+ 452              		.loc 1 225 0
+ 453 0224 1523     		movs	r3, #21
+ 454 0226 FB18     		adds	r3, r7, r3
+ 455 0228 1C22     		movs	r2, #28
+ 456 022a 1A70     		strb	r2, [r3]
+ 226:pca9532.c     **** 	tU8 blinkRateHalfSecond = (tU8) 75;
+ 457              		.loc 1 226 0
+ 458 022c 1423     		movs	r3, #20
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 13
+
+
+ 459 022e FB18     		adds	r3, r7, r3
+ 460 0230 4B22     		movs	r2, #75
+ 461 0232 1A70     		strb	r2, [r3]
+ 227:pca9532.c     **** 	tU8 noBlink = (tU8) 0;
+ 462              		.loc 1 227 0
+ 463 0234 1323     		movs	r3, #19
+ 464 0236 FB18     		adds	r3, r7, r3
+ 465 0238 0022     		movs	r2, #0
+ 466 023a 1A70     		strb	r2, [r3]
+ 228:pca9532.c     **** 
+ 229:pca9532.c     **** 	tU8 PWM0Address = (((tU8)BASE_ADDR << 4) | (tU8)PWM0);
+ 467              		.loc 1 229 0
+ 468 023c 1223     		movs	r3, #18
+ 469 023e FB18     		adds	r3, r7, r3
+ 470 0240 0322     		movs	r2, #3
+ 471 0242 1A70     		strb	r2, [r3]
+ 230:pca9532.c     **** 	tU8 PSC0Address = (((tU8)BASE_ADDR << 4) | (tU8)PSC0);
+ 472              		.loc 1 230 0
+ 473 0244 1123     		movs	r3, #17
+ 474 0246 FB18     		adds	r3, r7, r3
+ 475 0248 0222     		movs	r2, #2
+ 476 024a 1A70     		strb	r2, [r3]
+ 231:pca9532.c     **** 
+ 232:pca9532.c     **** 	tU8 commandToPCA[2] = {0};
+ 477              		.loc 1 232 0
+ 478 024c 0C23     		movs	r3, #12
+ 479 024e FB18     		adds	r3, r7, r3
+ 480 0250 0022     		movs	r2, #0
+ 481 0252 1A80     		strh	r2, [r3]
+ 233:pca9532.c     **** 
+ 234:pca9532.c     **** 	tU8 regValue;
+ 235:pca9532.c     **** 	tS8 retCode;
+ 236:pca9532.c     **** 
+ 237:pca9532.c     **** 	if ((tU8)TRUE == pca9532Present)
+ 482              		.loc 1 237 0
+ 483 0254 FB1D     		adds	r3, r7, #7
+ 484 0256 1B78     		ldrb	r3, [r3]
+ 485 0258 012B     		cmp	r3, #1
+ 486 025a 34D1     		bne	.L22
+ 487              	.LBB2:
+ 238:pca9532.c     **** 	{
+ 239:pca9532.c     **** 		tU8 i;
+ 240:pca9532.c     **** 		for (i = (tU8)0; i < (tU8)NUM_OF_LEDS; i = i + (tU8)1) {
+ 488              		.loc 1 240 0
+ 489 025c 1723     		movs	r3, #23
+ 490 025e FB18     		adds	r3, r7, r3
+ 491 0260 0022     		movs	r2, #0
+ 492 0262 1A70     		strb	r2, [r3]
+ 493 0264 0EE0     		b	.L18
+ 494              	.L19:
+ 241:pca9532.c     **** 			// commandToPCA[0] = PSC0Address;
+ 242:pca9532.c     **** 			// commandToPCA[1] = blinkRateHalfSecond;
+ 243:pca9532.c     **** 			// retCode = pca9532(commandToPCA, 2, NULL, 0);
+ 244:pca9532.c     **** 			/*
+ 245:pca9532.c     **** 			if ((i % (tU8)2) != (tU8)0) {
+ 246:pca9532.c     **** 				commandToPCA[0] = PWM0Address;
+ 247:pca9532.c     **** 				commandToPCA[1] = duty25Percent;
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 14
+
+
+ 248:pca9532.c     **** 				retCode = pca9532(commandToPCA, 2, NULL, 0);
+ 249:pca9532.c     **** 			}
+ 250:pca9532.c     **** 			else 
+ 251:pca9532.c     **** 			{
+ 252:pca9532.c     **** 
+ 253:pca9532.c     **** 				commandToPCA[0] = PWM0Address;
+ 254:pca9532.c     **** 				commandToPCA[1] = duty25Percent;
+ 255:pca9532.c     **** 				retCode = pca9532(commandToPCA, 2, NULL, 0);
+ 256:pca9532.c     **** 			}
+ 257:pca9532.c     **** 			*/
+ 258:pca9532.c     **** 			setPca9532Pin(i, 0);
+ 495              		.loc 1 258 0 discriminator 3
+ 496 0266 1724     		movs	r4, #23
+ 497 0268 3B19     		adds	r3, r7, r4
+ 498 026a 1B78     		ldrb	r3, [r3]
+ 499 026c 0021     		movs	r1, #0
+ 500 026e 1800     		movs	r0, r3
+ 501 0270 FFF7FEFF 		bl	setPca9532Pin
+ 259:pca9532.c     **** 			mdelay(30);
+ 502              		.loc 1 259 0 discriminator 3
+ 503 0274 1E20     		movs	r0, #30
+ 504 0276 FFF7FEFF 		bl	mdelay
+ 240:pca9532.c     **** 			// commandToPCA[0] = PSC0Address;
+ 505              		.loc 1 240 0 discriminator 3
+ 506 027a 3B19     		adds	r3, r7, r4
+ 507 027c 3A19     		adds	r2, r7, r4
+ 508 027e 1278     		ldrb	r2, [r2]
+ 509 0280 0132     		adds	r2, r2, #1
+ 510 0282 1A70     		strb	r2, [r3]
+ 511              	.L18:
+ 240:pca9532.c     **** 			// commandToPCA[0] = PSC0Address;
+ 512              		.loc 1 240 0 is_stmt 0 discriminator 1
+ 513 0284 1723     		movs	r3, #23
+ 514 0286 FB18     		adds	r3, r7, r3
+ 515 0288 1B78     		ldrb	r3, [r3]
+ 516 028a 0F2B     		cmp	r3, #15
+ 517 028c EBD9     		bls	.L19
+ 260:pca9532.c     **** 		}
+ 261:pca9532.c     **** 		sdelay(3);
+ 518              		.loc 1 261 0 is_stmt 1
+ 519 028e 0320     		movs	r0, #3
+ 520 0290 FFF7FEFF 		bl	sdelay
+ 262:pca9532.c     **** 		for (i = (tU8)0; i < (tU8)NUM_OF_LEDS; i = i + (tU8)1) {
+ 521              		.loc 1 262 0
+ 522 0294 1723     		movs	r3, #23
+ 523 0296 FB18     		adds	r3, r7, r3
+ 524 0298 0022     		movs	r2, #0
+ 525 029a 1A70     		strb	r2, [r3]
+ 526 029c 0EE0     		b	.L20
+ 527              	.L21:
+ 263:pca9532.c     **** 			setPca9532Pin(i, 1);
+ 528              		.loc 1 263 0 discriminator 3
+ 529 029e 1724     		movs	r4, #23
+ 530 02a0 3B19     		adds	r3, r7, r4
+ 531 02a2 1B78     		ldrb	r3, [r3]
+ 532 02a4 0121     		movs	r1, #1
+ 533 02a6 1800     		movs	r0, r3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 15
+
+
+ 534 02a8 FFF7FEFF 		bl	setPca9532Pin
+ 264:pca9532.c     **** 			// commandToPCA[0] = PWM0Address;
+ 265:pca9532.c     **** 			// commandToPCA[1] = (tU8)0x00;
+ 266:pca9532.c     **** 			// commandToPCA[0] = PSC0Address;
+ 267:pca9532.c     **** 			// commandToPCA[1] = noBlink;
+ 268:pca9532.c     **** 			// retCode = pca9532(commandToPCA, 2, NULL, 0);
+ 269:pca9532.c     **** 			mdelay(30);
+ 535              		.loc 1 269 0 discriminator 3
+ 536 02ac 1E20     		movs	r0, #30
+ 537 02ae FFF7FEFF 		bl	mdelay
+ 262:pca9532.c     **** 			setPca9532Pin(i, 1);
+ 538              		.loc 1 262 0 discriminator 3
+ 539 02b2 3B19     		adds	r3, r7, r4
+ 540 02b4 3A19     		adds	r2, r7, r4
+ 541 02b6 1278     		ldrb	r2, [r2]
+ 542 02b8 0132     		adds	r2, r2, #1
+ 543 02ba 1A70     		strb	r2, [r3]
+ 544              	.L20:
+ 262:pca9532.c     **** 			setPca9532Pin(i, 1);
+ 545              		.loc 1 262 0 is_stmt 0 discriminator 1
+ 546 02bc 1723     		movs	r3, #23
+ 547 02be FB18     		adds	r3, r7, r3
+ 548 02c0 1B78     		ldrb	r3, [r3]
+ 549 02c2 0F2B     		cmp	r3, #15
+ 550 02c4 EBD9     		bls	.L21
+ 551              	.L22:
+ 552              	.LBE2:
+ 270:pca9532.c     **** 		}
+ 271:pca9532.c     **** 	}
+ 272:pca9532.c     **** }
+ 553              		.loc 1 272 0 is_stmt 1
+ 554 02c6 C046     		nop
+ 555 02c8 BD46     		mov	sp, r7
+ 556 02ca 07B0     		add	sp, sp, #28
+ 557              		@ sp needed
+ 558 02cc 90BC     		pop	{r4, r7}
+ 559 02ce 01BC     		pop	{r0}
+ 560 02d0 0047     		bx	r0
+ 561              	.L24:
+ 562 02d2 C046     		.align	2
+ 563              	.L23:
+ 564 02d4 088002E0 		.word	-536707064
+ 565 02d8 048002E0 		.word	-536707068
+ 566 02dc 188002E0 		.word	-536707048
+ 567 02e0 148002E0 		.word	-536707052
+ 568 02e4 1C8002E0 		.word	-536707044
+ 569 02e8 FFFF0FFF 		.word	-15728641
+ 570              		.cfi_endproc
+ 571              	.LFE3:
+ 572              		.size	manageLED, .-manageLED
+ 573              	.Letext0:
+ 574              		.file 2 "general.h"
+ 575              		.section	.debug_info,"",%progbits
+ 576              	.Ldebug_info0:
+ 577 0000 86020000 		.4byte	0x286
+ 578 0004 0200     		.2byte	0x2
+ 579 0006 00000000 		.4byte	.Ldebug_abbrev0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 16
+
+
+ 580 000a 04       		.byte	0x4
+ 581 000b 01       		.uleb128 0x1
+ 582 000c C9000000 		.4byte	.LASF31
+ 583 0010 0C       		.byte	0xc
+ 584 0011 AF010000 		.4byte	.LASF32
+ 585 0015 7E010000 		.4byte	.LASF33
+ 586 0019 00000000 		.4byte	.Ltext0
+ 587 001d EC020000 		.4byte	.Letext0
+ 588 0021 00000000 		.4byte	.Ldebug_line0
+ 589 0025 02       		.uleb128 0x2
+ 590 0026 74553800 		.ascii	"tU8\000"
+ 591 002a 02       		.byte	0x2
+ 592 002b 20       		.byte	0x20
+ 593 002c 30000000 		.4byte	0x30
+ 594 0030 03       		.uleb128 0x3
+ 595 0031 01       		.byte	0x1
+ 596 0032 08       		.byte	0x8
+ 597 0033 94000000 		.4byte	.LASF1
+ 598 0037 04       		.uleb128 0x4
+ 599 0038 D5010000 		.4byte	.LASF0
+ 600 003c 02       		.byte	0x2
+ 601 003d 21       		.byte	0x21
+ 602 003e 42000000 		.4byte	0x42
+ 603 0042 03       		.uleb128 0x3
+ 604 0043 02       		.byte	0x2
+ 605 0044 07       		.byte	0x7
+ 606 0045 9C010000 		.4byte	.LASF2
+ 607 0049 03       		.uleb128 0x3
+ 608 004a 04       		.byte	0x4
+ 609 004b 07       		.byte	0x7
+ 610 004c 14000000 		.4byte	.LASF3
+ 611 0050 03       		.uleb128 0x3
+ 612 0051 08       		.byte	0x8
+ 613 0052 07       		.byte	0x7
+ 614 0053 5C000000 		.4byte	.LASF4
+ 615 0057 02       		.uleb128 0x2
+ 616 0058 74533800 		.ascii	"tS8\000"
+ 617 005c 02       		.byte	0x2
+ 618 005d 24       		.byte	0x24
+ 619 005e 62000000 		.4byte	0x62
+ 620 0062 03       		.uleb128 0x3
+ 621 0063 01       		.byte	0x1
+ 622 0064 06       		.byte	0x6
+ 623 0065 EA010000 		.4byte	.LASF5
+ 624 0069 03       		.uleb128 0x3
+ 625 006a 02       		.byte	0x2
+ 626 006b 05       		.byte	0x5
+ 627 006c E0010000 		.4byte	.LASF6
+ 628 0070 05       		.uleb128 0x5
+ 629 0071 04       		.byte	0x4
+ 630 0072 05       		.byte	0x5
+ 631 0073 696E7400 		.ascii	"int\000"
+ 632 0077 03       		.uleb128 0x3
+ 633 0078 08       		.byte	0x8
+ 634 0079 05       		.byte	0x5
+ 635 007a 00000000 		.4byte	.LASF7
+ 636 007e 06       		.uleb128 0x6
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 17
+
+
+ 637 007f 07       		.byte	0x7
+ 638 0080 01       		.byte	0x1
+ 639 0081 30000000 		.4byte	0x30
+ 640 0085 02       		.byte	0x2
+ 641 0086 28       		.byte	0x28
+ 642 0087 98000000 		.4byte	0x98
+ 643 008b 07       		.uleb128 0x7
+ 644 008c 4A000000 		.4byte	.LASF8
+ 645 0090 00       		.byte	0
+ 646 0091 07       		.uleb128 0x7
+ 647 0092 A2000000 		.4byte	.LASF9
+ 648 0096 01       		.byte	0x1
+ 649 0097 00       		.byte	0
+ 650 0098 04       		.uleb128 0x4
+ 651 0099 DA010000 		.4byte	.LASF10
+ 652 009d 02       		.byte	0x2
+ 653 009e 29       		.byte	0x29
+ 654 009f 7E000000 		.4byte	0x7e
+ 655 00a3 08       		.uleb128 0x8
+ 656 00a4 01       		.byte	0x1
+ 657 00a5 6B010000 		.4byte	.LASF21
+ 658 00a9 01       		.byte	0x1
+ 659 00aa D2       		.byte	0xd2
+ 660 00ab 01       		.byte	0x1
+ 661 00ac B0010000 		.4byte	.LFB3
+ 662 00b0 EC020000 		.4byte	.LFE3
+ 663 00b4 00000000 		.4byte	.LLST3
+ 664 00b8 01       		.byte	0x1
+ 665 00b9 5A010000 		.4byte	0x15a
+ 666 00bd 09       		.uleb128 0x9
+ 667 00be BA000000 		.4byte	.LASF23
+ 668 00c2 01       		.byte	0x1
+ 669 00c3 D2       		.byte	0xd2
+ 670 00c4 25000000 		.4byte	0x25
+ 671 00c8 02       		.byte	0x2
+ 672 00c9 91       		.byte	0x91
+ 673 00ca 5F       		.sleb128 -33
+ 674 00cb 0A       		.uleb128 0xa
+ 675 00cc 5D010000 		.4byte	.LASF11
+ 676 00d0 01       		.byte	0x1
+ 677 00d1 E0       		.byte	0xe0
+ 678 00d2 25000000 		.4byte	0x25
+ 679 00d6 02       		.byte	0x2
+ 680 00d7 91       		.byte	0x91
+ 681 00d8 6E       		.sleb128 -18
+ 682 00d9 0A       		.uleb128 0xa
+ 683 00da C7010000 		.4byte	.LASF12
+ 684 00de 01       		.byte	0x1
+ 685 00df E1       		.byte	0xe1
+ 686 00e0 25000000 		.4byte	0x25
+ 687 00e4 02       		.byte	0x2
+ 688 00e5 91       		.byte	0x91
+ 689 00e6 6D       		.sleb128 -19
+ 690 00e7 0A       		.uleb128 0xa
+ 691 00e8 73000000 		.4byte	.LASF13
+ 692 00ec 01       		.byte	0x1
+ 693 00ed E2       		.byte	0xe2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 18
+
+
+ 694 00ee 25000000 		.4byte	0x25
+ 695 00f2 02       		.byte	0x2
+ 696 00f3 91       		.byte	0x91
+ 697 00f4 6C       		.sleb128 -20
+ 698 00f5 0A       		.uleb128 0xa
+ 699 00f6 87000000 		.4byte	.LASF14
+ 700 00fa 01       		.byte	0x1
+ 701 00fb E3       		.byte	0xe3
+ 702 00fc 25000000 		.4byte	0x25
+ 703 0100 02       		.byte	0x2
+ 704 0101 91       		.byte	0x91
+ 705 0102 6B       		.sleb128 -21
+ 706 0103 0A       		.uleb128 0xa
+ 707 0104 A7000000 		.4byte	.LASF15
+ 708 0108 01       		.byte	0x1
+ 709 0109 E5       		.byte	0xe5
+ 710 010a 25000000 		.4byte	0x25
+ 711 010e 02       		.byte	0x2
+ 712 010f 91       		.byte	0x91
+ 713 0110 6A       		.sleb128 -22
+ 714 0111 0A       		.uleb128 0xa
+ 715 0112 50000000 		.4byte	.LASF16
+ 716 0116 01       		.byte	0x1
+ 717 0117 E6       		.byte	0xe6
+ 718 0118 25000000 		.4byte	0x25
+ 719 011c 02       		.byte	0x2
+ 720 011d 91       		.byte	0x91
+ 721 011e 69       		.sleb128 -23
+ 722 011f 0A       		.uleb128 0xa
+ 723 0120 F6010000 		.4byte	.LASF17
+ 724 0124 01       		.byte	0x1
+ 725 0125 E8       		.byte	0xe8
+ 726 0126 5A010000 		.4byte	0x15a
+ 727 012a 02       		.byte	0x2
+ 728 012b 91       		.byte	0x91
+ 729 012c 64       		.sleb128 -28
+ 730 012d 0B       		.uleb128 0xb
+ 731 012e 75010000 		.4byte	.LASF18
+ 732 0132 01       		.byte	0x1
+ 733 0133 EA       		.byte	0xea
+ 734 0134 25000000 		.4byte	0x25
+ 735 0138 0B       		.uleb128 0xb
+ 736 0139 36000000 		.4byte	.LASF19
+ 737 013d 01       		.byte	0x1
+ 738 013e EB       		.byte	0xeb
+ 739 013f 57000000 		.4byte	0x57
+ 740 0143 0C       		.uleb128 0xc
+ 741 0144 5C020000 		.4byte	.LBB2
+ 742 0148 C6020000 		.4byte	.LBE2
+ 743 014c 0D       		.uleb128 0xd
+ 744 014d 6900     		.ascii	"i\000"
+ 745 014f 01       		.byte	0x1
+ 746 0150 EF       		.byte	0xef
+ 747 0151 25000000 		.4byte	0x25
+ 748 0155 02       		.byte	0x2
+ 749 0156 91       		.byte	0x91
+ 750 0157 6F       		.sleb128 -17
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 19
+
+
+ 751 0158 00       		.byte	0
+ 752 0159 00       		.byte	0
+ 753 015a 0E       		.uleb128 0xe
+ 754 015b 25000000 		.4byte	0x25
+ 755 015f 6A010000 		.4byte	0x16a
+ 756 0163 0F       		.uleb128 0xf
+ 757 0164 49000000 		.4byte	0x49
+ 758 0168 01       		.byte	0x1
+ 759 0169 00       		.byte	0
+ 760 016a 10       		.uleb128 0x10
+ 761 016b 01       		.byte	0x1
+ 762 016c 21000000 		.4byte	.LASF27
+ 763 0170 01       		.byte	0x1
+ 764 0171 B6       		.byte	0xb6
+ 765 0172 01       		.byte	0x1
+ 766 0173 37000000 		.4byte	0x37
+ 767 0177 6A010000 		.4byte	.LFB2
+ 768 017b B0010000 		.4byte	.LFE2
+ 769 017f 38000000 		.4byte	.LLST2
+ 770 0183 01       		.byte	0x1
+ 771 0184 B3010000 		.4byte	0x1b3
+ 772 0188 0A       		.uleb128 0xa
+ 773 0189 55010000 		.4byte	.LASF20
+ 774 018d 01       		.byte	0x1
+ 775 018e B8       		.byte	0xb8
+ 776 018f B3010000 		.4byte	0x1b3
+ 777 0193 02       		.byte	0x2
+ 778 0194 91       		.byte	0x91
+ 779 0195 6C       		.sleb128 -20
+ 780 0196 0A       		.uleb128 0xa
+ 781 0197 75010000 		.4byte	.LASF18
+ 782 019b 01       		.byte	0x1
+ 783 019c B9       		.byte	0xb9
+ 784 019d C3010000 		.4byte	0x1c3
+ 785 01a1 02       		.byte	0x2
+ 786 01a2 91       		.byte	0x91
+ 787 01a3 68       		.sleb128 -24
+ 788 01a4 0A       		.uleb128 0xa
+ 789 01a5 36000000 		.4byte	.LASF19
+ 790 01a9 01       		.byte	0x1
+ 791 01aa BA       		.byte	0xba
+ 792 01ab 57000000 		.4byte	0x57
+ 793 01af 02       		.byte	0x2
+ 794 01b0 91       		.byte	0x91
+ 795 01b1 6F       		.sleb128 -17
+ 796 01b2 00       		.byte	0
+ 797 01b3 0E       		.uleb128 0xe
+ 798 01b4 25000000 		.4byte	0x25
+ 799 01b8 C3010000 		.4byte	0x1c3
+ 800 01bc 0F       		.uleb128 0xf
+ 801 01bd 49000000 		.4byte	0x49
+ 802 01c1 00       		.byte	0
+ 803 01c2 00       		.byte	0
+ 804 01c3 0E       		.uleb128 0xe
+ 805 01c4 25000000 		.4byte	0x25
+ 806 01c8 D3010000 		.4byte	0x1d3
+ 807 01cc 0F       		.uleb128 0xf
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 20
+
+
+ 808 01cd 49000000 		.4byte	0x49
+ 809 01d1 02       		.byte	0x2
+ 810 01d2 00       		.byte	0
+ 811 01d3 08       		.uleb128 0x8
+ 812 01d4 01       		.byte	0x1
+ 813 01d5 B9010000 		.4byte	.LASF22
+ 814 01d9 01       		.byte	0x1
+ 815 01da 81       		.byte	0x81
+ 816 01db 01       		.byte	0x1
+ 817 01dc 4C000000 		.4byte	.LFB1
+ 818 01e0 6A010000 		.4byte	.LFE1
+ 819 01e4 70000000 		.4byte	.LLST1
+ 820 01e8 01       		.byte	0x1
+ 821 01e9 42020000 		.4byte	0x242
+ 822 01ed 09       		.uleb128 0x9
+ 823 01ee 2F000000 		.4byte	.LASF24
+ 824 01f2 01       		.byte	0x1
+ 825 01f3 81       		.byte	0x81
+ 826 01f4 25000000 		.4byte	0x25
+ 827 01f8 02       		.byte	0x2
+ 828 01f9 91       		.byte	0x91
+ 829 01fa 67       		.sleb128 -25
+ 830 01fb 09       		.uleb128 0x9
+ 831 01fc 0E000000 		.4byte	.LASF25
+ 832 0200 01       		.byte	0x1
+ 833 0201 81       		.byte	0x81
+ 834 0202 25000000 		.4byte	0x25
+ 835 0206 02       		.byte	0x2
+ 836 0207 91       		.byte	0x91
+ 837 0208 66       		.sleb128 -26
+ 838 0209 0A       		.uleb128 0xa
+ 839 020a 55010000 		.4byte	.LASF20
+ 840 020e 01       		.byte	0x1
+ 841 020f 83       		.byte	0x83
+ 842 0210 5A010000 		.4byte	0x15a
+ 843 0214 02       		.byte	0x2
+ 844 0215 91       		.byte	0x91
+ 845 0216 6C       		.sleb128 -20
+ 846 0217 0A       		.uleb128 0xa
+ 847 0218 75010000 		.4byte	.LASF18
+ 848 021c 01       		.byte	0x1
+ 849 021d 84       		.byte	0x84
+ 850 021e 25000000 		.4byte	0x25
+ 851 0222 02       		.byte	0x2
+ 852 0223 91       		.byte	0x91
+ 853 0224 6B       		.sleb128 -21
+ 854 0225 0A       		.uleb128 0xa
+ 855 0226 8F000000 		.4byte	.LASF26
+ 856 022a 01       		.byte	0x1
+ 857 022b 85       		.byte	0x85
+ 858 022c 25000000 		.4byte	0x25
+ 859 0230 02       		.byte	0x2
+ 860 0231 91       		.byte	0x91
+ 861 0232 6E       		.sleb128 -18
+ 862 0233 0A       		.uleb128 0xa
+ 863 0234 36000000 		.4byte	.LASF19
+ 864 0238 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 21
+
+
+ 865 0239 87       		.byte	0x87
+ 866 023a 57000000 		.4byte	0x57
+ 867 023e 02       		.byte	0x2
+ 868 023f 91       		.byte	0x91
+ 869 0240 6F       		.sleb128 -17
+ 870 0241 00       		.byte	0
+ 871 0242 10       		.uleb128 0x10
+ 872 0243 01       		.byte	0x1
+ 873 0244 3E000000 		.4byte	.LASF28
+ 874 0248 01       		.byte	0x1
+ 875 0249 66       		.byte	0x66
+ 876 024a 01       		.byte	0x1
+ 877 024b 98000000 		.4byte	0x98
+ 878 024f 00000000 		.4byte	.LFB0
+ 879 0253 4C000000 		.4byte	.LFE0
+ 880 0257 A8000000 		.4byte	.LLST0
+ 881 025b 01       		.byte	0x1
+ 882 025c 7D020000 		.4byte	0x27d
+ 883 0260 0A       		.uleb128 0xa
+ 884 0261 49010000 		.4byte	.LASF29
+ 885 0265 01       		.byte	0x1
+ 886 0266 68       		.byte	0x68
+ 887 0267 7D020000 		.4byte	0x27d
+ 888 026b 02       		.byte	0x2
+ 889 026c 91       		.byte	0x91
+ 890 026d 6C       		.sleb128 -20
+ 891 026e 0A       		.uleb128 0xa
+ 892 026f B3000000 		.4byte	.LASF30
+ 893 0273 01       		.byte	0x1
+ 894 0274 6D       		.byte	0x6d
+ 895 0275 98000000 		.4byte	0x98
+ 896 0279 02       		.byte	0x2
+ 897 027a 91       		.byte	0x91
+ 898 027b 77       		.sleb128 -9
+ 899 027c 00       		.byte	0
+ 900 027d 11       		.uleb128 0x11
+ 901 027e 25000000 		.4byte	0x25
+ 902 0282 0F       		.uleb128 0xf
+ 903 0283 49000000 		.4byte	0x49
+ 904 0287 08       		.byte	0x8
+ 905 0288 00       		.byte	0
+ 906 0289 00       		.byte	0
+ 907              		.section	.debug_abbrev,"",%progbits
+ 908              	.Ldebug_abbrev0:
+ 909 0000 01       		.uleb128 0x1
+ 910 0001 11       		.uleb128 0x11
+ 911 0002 01       		.byte	0x1
+ 912 0003 25       		.uleb128 0x25
+ 913 0004 0E       		.uleb128 0xe
+ 914 0005 13       		.uleb128 0x13
+ 915 0006 0B       		.uleb128 0xb
+ 916 0007 03       		.uleb128 0x3
+ 917 0008 0E       		.uleb128 0xe
+ 918 0009 1B       		.uleb128 0x1b
+ 919 000a 0E       		.uleb128 0xe
+ 920 000b 11       		.uleb128 0x11
+ 921 000c 01       		.uleb128 0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 22
+
+
+ 922 000d 12       		.uleb128 0x12
+ 923 000e 01       		.uleb128 0x1
+ 924 000f 10       		.uleb128 0x10
+ 925 0010 06       		.uleb128 0x6
+ 926 0011 00       		.byte	0
+ 927 0012 00       		.byte	0
+ 928 0013 02       		.uleb128 0x2
+ 929 0014 16       		.uleb128 0x16
+ 930 0015 00       		.byte	0
+ 931 0016 03       		.uleb128 0x3
+ 932 0017 08       		.uleb128 0x8
+ 933 0018 3A       		.uleb128 0x3a
+ 934 0019 0B       		.uleb128 0xb
+ 935 001a 3B       		.uleb128 0x3b
+ 936 001b 0B       		.uleb128 0xb
+ 937 001c 49       		.uleb128 0x49
+ 938 001d 13       		.uleb128 0x13
+ 939 001e 00       		.byte	0
+ 940 001f 00       		.byte	0
+ 941 0020 03       		.uleb128 0x3
+ 942 0021 24       		.uleb128 0x24
+ 943 0022 00       		.byte	0
+ 944 0023 0B       		.uleb128 0xb
+ 945 0024 0B       		.uleb128 0xb
+ 946 0025 3E       		.uleb128 0x3e
+ 947 0026 0B       		.uleb128 0xb
+ 948 0027 03       		.uleb128 0x3
+ 949 0028 0E       		.uleb128 0xe
+ 950 0029 00       		.byte	0
+ 951 002a 00       		.byte	0
+ 952 002b 04       		.uleb128 0x4
+ 953 002c 16       		.uleb128 0x16
+ 954 002d 00       		.byte	0
+ 955 002e 03       		.uleb128 0x3
+ 956 002f 0E       		.uleb128 0xe
+ 957 0030 3A       		.uleb128 0x3a
+ 958 0031 0B       		.uleb128 0xb
+ 959 0032 3B       		.uleb128 0x3b
+ 960 0033 0B       		.uleb128 0xb
+ 961 0034 49       		.uleb128 0x49
+ 962 0035 13       		.uleb128 0x13
+ 963 0036 00       		.byte	0
+ 964 0037 00       		.byte	0
+ 965 0038 05       		.uleb128 0x5
+ 966 0039 24       		.uleb128 0x24
+ 967 003a 00       		.byte	0
+ 968 003b 0B       		.uleb128 0xb
+ 969 003c 0B       		.uleb128 0xb
+ 970 003d 3E       		.uleb128 0x3e
+ 971 003e 0B       		.uleb128 0xb
+ 972 003f 03       		.uleb128 0x3
+ 973 0040 08       		.uleb128 0x8
+ 974 0041 00       		.byte	0
+ 975 0042 00       		.byte	0
+ 976 0043 06       		.uleb128 0x6
+ 977 0044 04       		.uleb128 0x4
+ 978 0045 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 23
+
+
+ 979 0046 3E       		.uleb128 0x3e
+ 980 0047 0B       		.uleb128 0xb
+ 981 0048 0B       		.uleb128 0xb
+ 982 0049 0B       		.uleb128 0xb
+ 983 004a 49       		.uleb128 0x49
+ 984 004b 13       		.uleb128 0x13
+ 985 004c 3A       		.uleb128 0x3a
+ 986 004d 0B       		.uleb128 0xb
+ 987 004e 3B       		.uleb128 0x3b
+ 988 004f 0B       		.uleb128 0xb
+ 989 0050 01       		.uleb128 0x1
+ 990 0051 13       		.uleb128 0x13
+ 991 0052 00       		.byte	0
+ 992 0053 00       		.byte	0
+ 993 0054 07       		.uleb128 0x7
+ 994 0055 28       		.uleb128 0x28
+ 995 0056 00       		.byte	0
+ 996 0057 03       		.uleb128 0x3
+ 997 0058 0E       		.uleb128 0xe
+ 998 0059 1C       		.uleb128 0x1c
+ 999 005a 0B       		.uleb128 0xb
+ 1000 005b 00       		.byte	0
+ 1001 005c 00       		.byte	0
+ 1002 005d 08       		.uleb128 0x8
+ 1003 005e 2E       		.uleb128 0x2e
+ 1004 005f 01       		.byte	0x1
+ 1005 0060 3F       		.uleb128 0x3f
+ 1006 0061 0C       		.uleb128 0xc
+ 1007 0062 03       		.uleb128 0x3
+ 1008 0063 0E       		.uleb128 0xe
+ 1009 0064 3A       		.uleb128 0x3a
+ 1010 0065 0B       		.uleb128 0xb
+ 1011 0066 3B       		.uleb128 0x3b
+ 1012 0067 0B       		.uleb128 0xb
+ 1013 0068 27       		.uleb128 0x27
+ 1014 0069 0C       		.uleb128 0xc
+ 1015 006a 11       		.uleb128 0x11
+ 1016 006b 01       		.uleb128 0x1
+ 1017 006c 12       		.uleb128 0x12
+ 1018 006d 01       		.uleb128 0x1
+ 1019 006e 40       		.uleb128 0x40
+ 1020 006f 06       		.uleb128 0x6
+ 1021 0070 9642     		.uleb128 0x2116
+ 1022 0072 0C       		.uleb128 0xc
+ 1023 0073 01       		.uleb128 0x1
+ 1024 0074 13       		.uleb128 0x13
+ 1025 0075 00       		.byte	0
+ 1026 0076 00       		.byte	0
+ 1027 0077 09       		.uleb128 0x9
+ 1028 0078 05       		.uleb128 0x5
+ 1029 0079 00       		.byte	0
+ 1030 007a 03       		.uleb128 0x3
+ 1031 007b 0E       		.uleb128 0xe
+ 1032 007c 3A       		.uleb128 0x3a
+ 1033 007d 0B       		.uleb128 0xb
+ 1034 007e 3B       		.uleb128 0x3b
+ 1035 007f 0B       		.uleb128 0xb
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 24
+
+
+ 1036 0080 49       		.uleb128 0x49
+ 1037 0081 13       		.uleb128 0x13
+ 1038 0082 02       		.uleb128 0x2
+ 1039 0083 0A       		.uleb128 0xa
+ 1040 0084 00       		.byte	0
+ 1041 0085 00       		.byte	0
+ 1042 0086 0A       		.uleb128 0xa
+ 1043 0087 34       		.uleb128 0x34
+ 1044 0088 00       		.byte	0
+ 1045 0089 03       		.uleb128 0x3
+ 1046 008a 0E       		.uleb128 0xe
+ 1047 008b 3A       		.uleb128 0x3a
+ 1048 008c 0B       		.uleb128 0xb
+ 1049 008d 3B       		.uleb128 0x3b
+ 1050 008e 0B       		.uleb128 0xb
+ 1051 008f 49       		.uleb128 0x49
+ 1052 0090 13       		.uleb128 0x13
+ 1053 0091 02       		.uleb128 0x2
+ 1054 0092 0A       		.uleb128 0xa
+ 1055 0093 00       		.byte	0
+ 1056 0094 00       		.byte	0
+ 1057 0095 0B       		.uleb128 0xb
+ 1058 0096 34       		.uleb128 0x34
+ 1059 0097 00       		.byte	0
+ 1060 0098 03       		.uleb128 0x3
+ 1061 0099 0E       		.uleb128 0xe
+ 1062 009a 3A       		.uleb128 0x3a
+ 1063 009b 0B       		.uleb128 0xb
+ 1064 009c 3B       		.uleb128 0x3b
+ 1065 009d 0B       		.uleb128 0xb
+ 1066 009e 49       		.uleb128 0x49
+ 1067 009f 13       		.uleb128 0x13
+ 1068 00a0 00       		.byte	0
+ 1069 00a1 00       		.byte	0
+ 1070 00a2 0C       		.uleb128 0xc
+ 1071 00a3 0B       		.uleb128 0xb
+ 1072 00a4 01       		.byte	0x1
+ 1073 00a5 11       		.uleb128 0x11
+ 1074 00a6 01       		.uleb128 0x1
+ 1075 00a7 12       		.uleb128 0x12
+ 1076 00a8 01       		.uleb128 0x1
+ 1077 00a9 00       		.byte	0
+ 1078 00aa 00       		.byte	0
+ 1079 00ab 0D       		.uleb128 0xd
+ 1080 00ac 34       		.uleb128 0x34
+ 1081 00ad 00       		.byte	0
+ 1082 00ae 03       		.uleb128 0x3
+ 1083 00af 08       		.uleb128 0x8
+ 1084 00b0 3A       		.uleb128 0x3a
+ 1085 00b1 0B       		.uleb128 0xb
+ 1086 00b2 3B       		.uleb128 0x3b
+ 1087 00b3 0B       		.uleb128 0xb
+ 1088 00b4 49       		.uleb128 0x49
+ 1089 00b5 13       		.uleb128 0x13
+ 1090 00b6 02       		.uleb128 0x2
+ 1091 00b7 0A       		.uleb128 0xa
+ 1092 00b8 00       		.byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 25
+
+
+ 1093 00b9 00       		.byte	0
+ 1094 00ba 0E       		.uleb128 0xe
+ 1095 00bb 01       		.uleb128 0x1
+ 1096 00bc 01       		.byte	0x1
+ 1097 00bd 49       		.uleb128 0x49
+ 1098 00be 13       		.uleb128 0x13
+ 1099 00bf 01       		.uleb128 0x1
+ 1100 00c0 13       		.uleb128 0x13
+ 1101 00c1 00       		.byte	0
+ 1102 00c2 00       		.byte	0
+ 1103 00c3 0F       		.uleb128 0xf
+ 1104 00c4 21       		.uleb128 0x21
+ 1105 00c5 00       		.byte	0
+ 1106 00c6 49       		.uleb128 0x49
+ 1107 00c7 13       		.uleb128 0x13
+ 1108 00c8 2F       		.uleb128 0x2f
+ 1109 00c9 0B       		.uleb128 0xb
+ 1110 00ca 00       		.byte	0
+ 1111 00cb 00       		.byte	0
+ 1112 00cc 10       		.uleb128 0x10
+ 1113 00cd 2E       		.uleb128 0x2e
+ 1114 00ce 01       		.byte	0x1
+ 1115 00cf 3F       		.uleb128 0x3f
+ 1116 00d0 0C       		.uleb128 0xc
+ 1117 00d1 03       		.uleb128 0x3
+ 1118 00d2 0E       		.uleb128 0xe
+ 1119 00d3 3A       		.uleb128 0x3a
+ 1120 00d4 0B       		.uleb128 0xb
+ 1121 00d5 3B       		.uleb128 0x3b
+ 1122 00d6 0B       		.uleb128 0xb
+ 1123 00d7 27       		.uleb128 0x27
+ 1124 00d8 0C       		.uleb128 0xc
+ 1125 00d9 49       		.uleb128 0x49
+ 1126 00da 13       		.uleb128 0x13
+ 1127 00db 11       		.uleb128 0x11
+ 1128 00dc 01       		.uleb128 0x1
+ 1129 00dd 12       		.uleb128 0x12
+ 1130 00de 01       		.uleb128 0x1
+ 1131 00df 40       		.uleb128 0x40
+ 1132 00e0 06       		.uleb128 0x6
+ 1133 00e1 9642     		.uleb128 0x2116
+ 1134 00e3 0C       		.uleb128 0xc
+ 1135 00e4 01       		.uleb128 0x1
+ 1136 00e5 13       		.uleb128 0x13
+ 1137 00e6 00       		.byte	0
+ 1138 00e7 00       		.byte	0
+ 1139 00e8 11       		.uleb128 0x11
+ 1140 00e9 01       		.uleb128 0x1
+ 1141 00ea 01       		.byte	0x1
+ 1142 00eb 49       		.uleb128 0x49
+ 1143 00ec 13       		.uleb128 0x13
+ 1144 00ed 00       		.byte	0
+ 1145 00ee 00       		.byte	0
+ 1146 00ef 00       		.byte	0
+ 1147              		.section	.debug_loc,"",%progbits
+ 1148              	.Ldebug_loc0:
+ 1149              	.LLST3:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 26
+
+
+ 1150 0000 B0010000 		.4byte	.LFB3-.Ltext0
+ 1151 0004 B2010000 		.4byte	.LCFI9-.Ltext0
+ 1152 0008 0200     		.2byte	0x2
+ 1153 000a 7D       		.byte	0x7d
+ 1154 000b 00       		.sleb128 0
+ 1155 000c B2010000 		.4byte	.LCFI9-.Ltext0
+ 1156 0010 B4010000 		.4byte	.LCFI10-.Ltext0
+ 1157 0014 0200     		.2byte	0x2
+ 1158 0016 7D       		.byte	0x7d
+ 1159 0017 0C       		.sleb128 12
+ 1160 0018 B4010000 		.4byte	.LCFI10-.Ltext0
+ 1161 001c B6010000 		.4byte	.LCFI11-.Ltext0
+ 1162 0020 0200     		.2byte	0x2
+ 1163 0022 7D       		.byte	0x7d
+ 1164 0023 28       		.sleb128 40
+ 1165 0024 B6010000 		.4byte	.LCFI11-.Ltext0
+ 1166 0028 EC020000 		.4byte	.LFE3-.Ltext0
+ 1167 002c 0200     		.2byte	0x2
+ 1168 002e 77       		.byte	0x77
+ 1169 002f 28       		.sleb128 40
+ 1170 0030 00000000 		.4byte	0
+ 1171 0034 00000000 		.4byte	0
+ 1172              	.LLST2:
+ 1173 0038 6A010000 		.4byte	.LFB2-.Ltext0
+ 1174 003c 6C010000 		.4byte	.LCFI6-.Ltext0
+ 1175 0040 0200     		.2byte	0x2
+ 1176 0042 7D       		.byte	0x7d
+ 1177 0043 00       		.sleb128 0
+ 1178 0044 6C010000 		.4byte	.LCFI6-.Ltext0
+ 1179 0048 6E010000 		.4byte	.LCFI7-.Ltext0
+ 1180 004c 0200     		.2byte	0x2
+ 1181 004e 7D       		.byte	0x7d
+ 1182 004f 0C       		.sleb128 12
+ 1183 0050 6E010000 		.4byte	.LCFI7-.Ltext0
+ 1184 0054 70010000 		.4byte	.LCFI8-.Ltext0
+ 1185 0058 0200     		.2byte	0x2
+ 1186 005a 7D       		.byte	0x7d
+ 1187 005b 18       		.sleb128 24
+ 1188 005c 70010000 		.4byte	.LCFI8-.Ltext0
+ 1189 0060 B0010000 		.4byte	.LFE2-.Ltext0
+ 1190 0064 0200     		.2byte	0x2
+ 1191 0066 77       		.byte	0x77
+ 1192 0067 18       		.sleb128 24
+ 1193 0068 00000000 		.4byte	0
+ 1194 006c 00000000 		.4byte	0
+ 1195              	.LLST1:
+ 1196 0070 4C000000 		.4byte	.LFB1-.Ltext0
+ 1197 0074 4E000000 		.4byte	.LCFI3-.Ltext0
+ 1198 0078 0200     		.2byte	0x2
+ 1199 007a 7D       		.byte	0x7d
+ 1200 007b 00       		.sleb128 0
+ 1201 007c 4E000000 		.4byte	.LCFI3-.Ltext0
+ 1202 0080 50000000 		.4byte	.LCFI4-.Ltext0
+ 1203 0084 0200     		.2byte	0x2
+ 1204 0086 7D       		.byte	0x7d
+ 1205 0087 10       		.sleb128 16
+ 1206 0088 50000000 		.4byte	.LCFI4-.Ltext0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 27
+
+
+ 1207 008c 52000000 		.4byte	.LCFI5-.Ltext0
+ 1208 0090 0200     		.2byte	0x2
+ 1209 0092 7D       		.byte	0x7d
+ 1210 0093 20       		.sleb128 32
+ 1211 0094 52000000 		.4byte	.LCFI5-.Ltext0
+ 1212 0098 6A010000 		.4byte	.LFE1-.Ltext0
+ 1213 009c 0200     		.2byte	0x2
+ 1214 009e 77       		.byte	0x77
+ 1215 009f 20       		.sleb128 32
+ 1216 00a0 00000000 		.4byte	0
+ 1217 00a4 00000000 		.4byte	0
+ 1218              	.LLST0:
+ 1219 00a8 00000000 		.4byte	.LFB0-.Ltext0
+ 1220 00ac 02000000 		.4byte	.LCFI0-.Ltext0
+ 1221 00b0 0200     		.2byte	0x2
+ 1222 00b2 7D       		.byte	0x7d
+ 1223 00b3 00       		.sleb128 0
+ 1224 00b4 02000000 		.4byte	.LCFI0-.Ltext0
+ 1225 00b8 04000000 		.4byte	.LCFI1-.Ltext0
+ 1226 00bc 0200     		.2byte	0x2
+ 1227 00be 7D       		.byte	0x7d
+ 1228 00bf 08       		.sleb128 8
+ 1229 00c0 04000000 		.4byte	.LCFI1-.Ltext0
+ 1230 00c4 06000000 		.4byte	.LCFI2-.Ltext0
+ 1231 00c8 0200     		.2byte	0x2
+ 1232 00ca 7D       		.byte	0x7d
+ 1233 00cb 18       		.sleb128 24
+ 1234 00cc 06000000 		.4byte	.LCFI2-.Ltext0
+ 1235 00d0 4C000000 		.4byte	.LFE0-.Ltext0
+ 1236 00d4 0200     		.2byte	0x2
+ 1237 00d6 77       		.byte	0x77
+ 1238 00d7 18       		.sleb128 24
+ 1239 00d8 00000000 		.4byte	0
+ 1240 00dc 00000000 		.4byte	0
+ 1241              		.section	.debug_aranges,"",%progbits
+ 1242 0000 1C000000 		.4byte	0x1c
+ 1243 0004 0200     		.2byte	0x2
+ 1244 0006 00000000 		.4byte	.Ldebug_info0
+ 1245 000a 04       		.byte	0x4
+ 1246 000b 00       		.byte	0
+ 1247 000c 0000     		.2byte	0
+ 1248 000e 0000     		.2byte	0
+ 1249 0010 00000000 		.4byte	.Ltext0
+ 1250 0014 EC020000 		.4byte	.Letext0-.Ltext0
+ 1251 0018 00000000 		.4byte	0
+ 1252 001c 00000000 		.4byte	0
+ 1253              		.section	.debug_line,"",%progbits
+ 1254              	.Ldebug_line0:
+ 1255 0000 B5000000 		.section	.debug_str,"MS",%progbits,1
+ 1255      02002D00 
+ 1255      00000201 
+ 1255      FB0E0D00 
+ 1255      01010101 
+ 1256              	.LASF7:
+ 1257 0000 6C6F6E67 		.ascii	"long long int\000"
+ 1257      206C6F6E 
+ 1257      6720696E 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 28
+
+
+ 1257      7400
+ 1258              	.LASF25:
+ 1259 000e 76616C75 		.ascii	"value\000"
+ 1259      6500
+ 1260              	.LASF3:
+ 1261 0014 756E7369 		.ascii	"unsigned int\000"
+ 1261      676E6564 
+ 1261      20696E74 
+ 1261      00
+ 1262              	.LASF27:
+ 1263 0021 67657450 		.ascii	"getPca9532Pin\000"
+ 1263      63613935 
+ 1263      33325069 
+ 1263      6E00
+ 1264              	.LASF24:
+ 1265 002f 70696E4E 		.ascii	"pinNum\000"
+ 1265      756D00
+ 1266              	.LASF19:
+ 1267 0036 72657443 		.ascii	"retCode\000"
+ 1267      6F646500 
+ 1268              	.LASF28:
+ 1269 003e 70636139 		.ascii	"pca9532Init\000"
+ 1269      35333249 
+ 1269      6E697400 
+ 1270              	.LASF8:
+ 1271 004a 46414C53 		.ascii	"FALSE\000"
+ 1271      4500
+ 1272              	.LASF16:
+ 1273 0050 50534330 		.ascii	"PSC0Address\000"
+ 1273      41646472 
+ 1273      65737300 
+ 1274              	.LASF4:
+ 1275 005c 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1275      206C6F6E 
+ 1275      6720756E 
+ 1275      7369676E 
+ 1275      65642069 
+ 1276              	.LASF13:
+ 1277 0073 626C696E 		.ascii	"blinkRateHalfSecond\000"
+ 1277      6B526174 
+ 1277      6548616C 
+ 1277      66536563 
+ 1277      6F6E6400 
+ 1278              	.LASF14:
+ 1279 0087 6E6F426C 		.ascii	"noBlink\000"
+ 1279      696E6B00 
+ 1280              	.LASF26:
+ 1281 008f 6D61736B 		.ascii	"mask\000"
+ 1281      00
+ 1282              	.LASF1:
+ 1283 0094 756E7369 		.ascii	"unsigned char\000"
+ 1283      676E6564 
+ 1283      20636861 
+ 1283      7200
+ 1284              	.LASF9:
+ 1285 00a2 54525545 		.ascii	"TRUE\000"
+ 1285      00
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 29
+
+
+ 1286              	.LASF15:
+ 1287 00a7 50574D30 		.ascii	"PWM0Address\000"
+ 1287      41646472 
+ 1287      65737300 
+ 1288              	.LASF30:
+ 1289 00b3 72657375 		.ascii	"result\000"
+ 1289      6C7400
+ 1290              	.LASF23:
+ 1291 00ba 70636139 		.ascii	"pca9532Present\000"
+ 1291      35333250 
+ 1291      72657365 
+ 1291      6E7400
+ 1292              	.LASF31:
+ 1293 00c9 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
+ 1293      43313120 
+ 1293      372E332E 
+ 1293      31203230 
+ 1293      31383036 
+ 1294 00fc 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb -mthum"
+ 1294      20726576 
+ 1294      6973696F 
+ 1294      6E203236 
+ 1294      31393037 
+ 1295 012f 622D696E 		.ascii	"b-interwork -gdwarf-2 -O0\000"
+ 1295      74657277 
+ 1295      6F726B20 
+ 1295      2D676477 
+ 1295      6172662D 
+ 1296              	.LASF29:
+ 1297 0149 696E6974 		.ascii	"initCommand\000"
+ 1297      436F6D6D 
+ 1297      616E6400 
+ 1298              	.LASF20:
+ 1299 0155 636F6D6D 		.ascii	"command\000"
+ 1299      616E6400 
+ 1300              	.LASF11:
+ 1301 015d 64757479 		.ascii	"duty75Percent\000"
+ 1301      37355065 
+ 1301      7263656E 
+ 1301      7400
+ 1302              	.LASF21:
+ 1303 016b 6D616E61 		.ascii	"manageLED\000"
+ 1303      67654C45 
+ 1303      4400
+ 1304              	.LASF18:
+ 1305 0175 72656756 		.ascii	"regValue\000"
+ 1305      616C7565 
+ 1305      00
+ 1306              	.LASF33:
+ 1307 017e 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
+ 1307      6D626564 
+ 1307      6465645C 
+ 1307      32313338 
+ 1307      4D696E69 
+ 1308              	.LASF2:
+ 1309 019c 73686F72 		.ascii	"short unsigned int\000"
+ 1309      7420756E 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 30
+
+
+ 1309      7369676E 
+ 1309      65642069 
+ 1309      6E7400
+ 1310              	.LASF32:
+ 1311 01af 70636139 		.ascii	"pca9532.c\000"
+ 1311      3533322E 
+ 1311      6300
+ 1312              	.LASF22:
+ 1313 01b9 73657450 		.ascii	"setPca9532Pin\000"
+ 1313      63613935 
+ 1313      33325069 
+ 1313      6E00
+ 1314              	.LASF12:
+ 1315 01c7 64757479 		.ascii	"duty25Percent\000"
+ 1315      32355065 
+ 1315      7263656E 
+ 1315      7400
+ 1316              	.LASF0:
+ 1317 01d5 74553136 		.ascii	"tU16\000"
+ 1317      00
+ 1318              	.LASF10:
+ 1319 01da 74426F6F 		.ascii	"tBool\000"
+ 1319      6C00
+ 1320              	.LASF6:
+ 1321 01e0 73686F72 		.ascii	"short int\000"
+ 1321      7420696E 
+ 1321      7400
+ 1322              	.LASF5:
+ 1323 01ea 7369676E 		.ascii	"signed char\000"
+ 1323      65642063 
+ 1323      68617200 
+ 1324              	.LASF17:
+ 1325 01f6 636F6D6D 		.ascii	"commandToPCA\000"
+ 1325      616E6454 
+ 1325      6F504341 
+ 1325      00
+ 1326              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s 			page 31
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 pca9532.c
+C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s:16     .rodata:00000000 $d
+C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s:35     .text:00000000 pca9532Init
+C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s:43     .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s:98     .text:00000048 $d
+C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s:102    .text:0000004c $t
+C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s:109    .text:0000004c setPca9532Pin
+C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s:302    .text:0000016a getPca9532Pin
+C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s:367    .text:000001b0 manageLED
+C:\Users\embedded\AppData\Local\Temp\ccroN1Q1.s:564    .text:000002d4 $d
+
+UNDEFINED SYMBOLS
+pca9532
+mdelay
+sdelay

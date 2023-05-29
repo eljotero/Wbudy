@@ -1,0 +1,771 @@
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 1
+
+
+   1              		.cpu arm7tdmi
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 0
+  10              		.eabi_attribute 18, 4
+  11              		.file	"additional.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.global	__aeabi_uldivmod
+  16              		.align	1
+  17              		.global	mdelay
+  18              		.syntax unified
+  19              		.code	16
+  20              		.thumb_func
+  21              		.fpu softvfp
+  22              		.type	mdelay, %function
+  23              	mdelay:
+  24              	.LFB0:
+  25              		.file 1 "additional.c"
+   1:additional.c  **** /******************************************************************************
+   2:additional.c  ****  *  Funkcje pomocnicze - wykorzystywane do realizacji timer'a, itp.
+   3:additional.c  ****  * 
+   4:additional.c  ****  *  Plik z kodem źródłowym funkcji.
+   5:additional.c  ****  *****************************************************************************/
+   6:additional.c  **** 
+   7:additional.c  **** /******************************************************************************
+   8:additional.c  ****  * Includes
+   9:additional.c  ****  *****************************************************************************/
+  10:additional.c  **** 
+  11:additional.c  **** #include "additional.h"
+  12:additional.c  **** 
+  13:additional.c  **** /******************************************************************************
+  14:additional.c  ****  * Defines and typedefs
+  15:additional.c  ****  *****************************************************************************/
+  16:additional.c  **** 
+  17:additional.c  **** /*****************************************************************************
+  18:additional.c  ****  * Global variables
+  19:additional.c  ****  ****************************************************************************/
+  20:additional.c  **** 
+  21:additional.c  **** /*****************************************************************************
+  22:additional.c  ****  * Local variables
+  23:additional.c  ****  ****************************************************************************/
+  24:additional.c  **** 
+  25:additional.c  **** /*****************************************************************************
+  26:additional.c  ****  * Local prototypes
+  27:additional.c  ****  ****************************************************************************/
+  28:additional.c  **** 
+  29:additional.c  **** /*
+  30:additional.c  ****  * @brief   Funkcja mdelay() służy do odmierzenia wskazanego w milisekundach okresu czasu, po up�
+  31:additional.c  ****  *          którego funkcja się kończy. Przed upłynięciem czasu, wykonywana jest zawartość p
+  32:additional.c  ****  *          za pomocą tej funkcji można wstrzymać wykonywanie programu na pewien zadany czas.
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 2
+
+
+  33:additional.c  ****  *            
+  34:additional.c  ****  * @param   delayInMs  
+  35:additional.c  ****  *          Długość okresu oczekiwania, podana w milisekundach.
+  36:additional.c  ****  * @returns void
+  37:additional.c  ****  * 
+  38:additional.c  ****  * @side effects: 
+  39:additional.c  ****  *          Brak
+  40:additional.c  ****  */
+  41:additional.c  **** 
+  42:additional.c  **** void mdelay(tU32 delayInMs)
+  43:additional.c  **** {
+  26              		.loc 1 43 0
+  27              		.cfi_startproc
+  28              		@ Function supports interworking.
+  29              		@ args = 0, pretend = 0, frame = 24
+  30              		@ frame_needed = 1, uses_anonymous_args = 0
+  31 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 20
+  34              		.cfi_offset 4, -20
+  35              		.cfi_offset 5, -16
+  36              		.cfi_offset 6, -12
+  37              		.cfi_offset 7, -8
+  38              		.cfi_offset 14, -4
+  39 0002 87B0     		sub	sp, sp, #28
+  40              	.LCFI1:
+  41              		.cfi_def_cfa_offset 48
+  42 0004 00AF     		add	r7, sp, #0
+  43              	.LCFI2:
+  44              		.cfi_def_cfa_register 7
+  45 0006 7861     		str	r0, [r7, #20]
+  44:additional.c  ****   /*
+  45:additional.c  ****    * Setup timer #1 for delay
+  46:additional.c  ****    */
+  47:additional.c  **** 
+  48:additional.c  ****   T1TCR = 0x02;          // 0x02 = 0b 10 -> Timer counter and Prescle counter are synchronously res
+  46              		.loc 1 48 0
+  47 0008 264A     		ldr	r2, .L3
+  48 000a 0221     		movs	r1, #2
+  49 000c 1160     		str	r1, [r2]
+  49:additional.c  ****   T1PR  = 0x00;          // Set prescaler to zero.
+  50              		.loc 1 49 0
+  51 000e 264A     		ldr	r2, .L3+4
+  52 0010 0021     		movs	r1, #0
+  53 0012 1160     		str	r1, [r2]
+  50:additional.c  **** 
+  51:additional.c  ****   // Since PCLK = CORE_FREQ:
+  52:additional.c  ****   // Basic delay: basic_delay[s] = (1 / CORE_FREQ)[s], then: time_delay [ms] = (delayInMs * (1 / CO
+  53:additional.c  **** 
+  54:additional.c  ****   // Maximum delay value that can be achieved by this function:
+  55:additional.c  ****   // MAX_DELAY = ((2 ^ 63 - 1) / CORE_FREQ) = 9 2223 372 036 854 775 807 / 58 982 400 = 156 374 987
+  56:additional.c  ****   // Max value of delayInMs: (2 ^ 32 - 1) = 4 294 967 295
+  57:additional.c  **** 
+  58:additional.c  ****   T1MR0 = (((tU64)delayInMs) * (tU64)CORE_FREQ) / 1000;
+  54              		.loc 1 58 0
+  55 0014 7A69     		ldr	r2, [r7, #20]
+  56 0016 3A60     		str	r2, [r7]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 3
+
+
+  57 0018 0022     		movs	r2, #0
+  58 001a 7A60     		str	r2, [r7, #4]
+  59 001c 3968     		ldr	r1, [r7]
+  60 001e 7A68     		ldr	r2, [r7, #4]
+  61 0020 080F     		lsrs	r0, r1, #28
+  62 0022 1601     		lsls	r6, r2, #4
+  63 0024 0643     		orrs	r6, r0
+  64 0026 0D01     		lsls	r5, r1, #4
+  65 0028 2900     		movs	r1, r5
+  66 002a 3200     		movs	r2, r6
+  67 002c 3D68     		ldr	r5, [r7]
+  68 002e 7E68     		ldr	r6, [r7, #4]
+  69 0030 491B     		subs	r1, r1, r5
+  70 0032 B241     		sbcs	r2, r2, r6
+  71 0034 080F     		lsrs	r0, r1, #28
+  72 0036 1401     		lsls	r4, r2, #4
+  73 0038 0443     		orrs	r4, r0
+  74 003a 0B01     		lsls	r3, r1, #4
+  75 003c 5B1A     		subs	r3, r3, r1
+  76 003e 9441     		sbcs	r4, r4, r2
+  77 0040 9A0B     		lsrs	r2, r3, #14
+  78 0042 A104     		lsls	r1, r4, #18
+  79 0044 F960     		str	r1, [r7, #12]
+  80 0046 F968     		ldr	r1, [r7, #12]
+  81 0048 1143     		orrs	r1, r2
+  82 004a F960     		str	r1, [r7, #12]
+  83 004c 9B04     		lsls	r3, r3, #18
+  84 004e BB60     		str	r3, [r7, #8]
+  85 0050 BB68     		ldr	r3, [r7, #8]
+  86 0052 FC68     		ldr	r4, [r7, #12]
+  87 0054 1800     		movs	r0, r3
+  88 0056 2100     		movs	r1, r4
+  89 0058 FA22     		movs	r2, #250
+  90 005a 9200     		lsls	r2, r2, #2
+  91 005c 0023     		movs	r3, #0
+  92 005e FFF7FEFF 		bl	__aeabi_uldivmod
+  93              	.LVL0:
+  94 0062 0300     		movs	r3, r0
+  95 0064 0C00     		movs	r4, r1
+  96 0066 1900     		movs	r1, r3
+  97 0068 2200     		movs	r2, r4
+  98 006a 104B     		ldr	r3, .L3+8
+  99 006c 0A00     		movs	r2, r1
+ 100 006e 1A60     		str	r2, [r3]
+  59:additional.c  **** 
+  60:additional.c  ****   T1IR  = 0xFF;          // Reset all interrrupt flags in interrupt register of Timer 1.
+ 101              		.loc 1 60 0
+ 102 0070 0F4B     		ldr	r3, .L3+12
+ 103 0072 FF22     		movs	r2, #255
+ 104 0074 1A60     		str	r2, [r3]
+  61:additional.c  ****   T1MCR = 0x04;          // Stop timer on match, effectively disabling Timer Counter and Prescale C
+ 105              		.loc 1 61 0
+ 106 0076 0F4B     		ldr	r3, .L3+16
+ 107 0078 0422     		movs	r2, #4
+ 108 007a 1A60     		str	r2, [r3]
+  62:additional.c  ****   T1TCR = 0x01;          // 0x01 = 0b 1 -> Timer counter and Prescale counter are enabled to count.
+ 109              		.loc 1 62 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 4
+
+
+ 110 007c 094B     		ldr	r3, .L3
+ 111 007e 0122     		movs	r2, #1
+ 112 0080 1A60     		str	r2, [r3]
+  63:additional.c  ****   
+  64:additional.c  ****   // Wait until delay time has elapsed (This loop will be terminated when there will be a match bet
+  65:additional.c  **** 
+  66:additional.c  ****   while ((T1TCR & 0x01) == 1)
+ 113              		.loc 1 66 0
+ 114 0082 C046     		nop
+ 115              	.L2:
+ 116              		.loc 1 66 0 is_stmt 0 discriminator 1
+ 117 0084 074B     		ldr	r3, .L3
+ 118 0086 1B68     		ldr	r3, [r3]
+ 119 0088 0122     		movs	r2, #1
+ 120 008a 1340     		ands	r3, r2
+ 121 008c 012B     		cmp	r3, #1
+ 122 008e F9D0     		beq	.L2
+  67:additional.c  ****   {
+  68:additional.c  ****     ;
+  69:additional.c  ****   }
+  70:additional.c  **** 
+  71:additional.c  ****   T1TCR = 0x00;         // Resetting entire TCR register of Timer 1.
+ 123              		.loc 1 71 0 is_stmt 1
+ 124 0090 044B     		ldr	r3, .L3
+ 125 0092 0022     		movs	r2, #0
+ 126 0094 1A60     		str	r2, [r3]
+  72:additional.c  **** }
+ 127              		.loc 1 72 0
+ 128 0096 C046     		nop
+ 129 0098 BD46     		mov	sp, r7
+ 130 009a 07B0     		add	sp, sp, #28
+ 131              		@ sp needed
+ 132 009c F0BC     		pop	{r4, r5, r6, r7}
+ 133 009e 01BC     		pop	{r0}
+ 134 00a0 0047     		bx	r0
+ 135              	.L4:
+ 136 00a2 C046     		.align	2
+ 137              	.L3:
+ 138 00a4 048000E0 		.word	-536838140
+ 139 00a8 0C8000E0 		.word	-536838132
+ 140 00ac 188000E0 		.word	-536838120
+ 141 00b0 008000E0 		.word	-536838144
+ 142 00b4 148000E0 		.word	-536838124
+ 143              		.cfi_endproc
+ 144              	.LFE0:
+ 145              		.size	mdelay, .-mdelay
+ 146              		.align	1
+ 147              		.global	sdelay
+ 148              		.syntax unified
+ 149              		.code	16
+ 150              		.thumb_func
+ 151              		.fpu softvfp
+ 152              		.type	sdelay, %function
+ 153              	sdelay:
+ 154              	.LFB1:
+  73:additional.c  **** 
+  74:additional.c  **** /*
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 5
+
+
+  75:additional.c  ****  * @brief   Funkcja sdelay() służy do odmierzenia wskazanego w sekundach okresu czasu, po upłyni
+  76:additional.c  ****  *          którego funkcja się kończy. Przed upłynięciem czasu, wykonywana jest zawartość p
+  77:additional.c  ****  *          za pomocą tej funkcji można wstrzymać wykonywanie programu na pewien zadany czas.
+  78:additional.c  ****             
+  79:additional.c  ****  * @param   delayInS 
+  80:additional.c  ****  *          Długość okresu oczekiwania, podana w sekundach.
+  81:additional.c  ****  * @returns void    
+  82:additional.c  ****  * 
+  83:additional.c  ****  * @side effects: 
+  84:additional.c  ****  *          Brak
+  85:additional.c  ****  */
+  86:additional.c  **** 
+  87:additional.c  **** void sdelay(tU32 delayInS)
+  88:additional.c  **** {
+ 155              		.loc 1 88 0
+ 156              		.cfi_startproc
+ 157              		@ Function supports interworking.
+ 158              		@ args = 0, pretend = 0, frame = 8
+ 159              		@ frame_needed = 1, uses_anonymous_args = 0
+ 160 00b8 80B5     		push	{r7, lr}
+ 161              	.LCFI3:
+ 162              		.cfi_def_cfa_offset 8
+ 163              		.cfi_offset 7, -8
+ 164              		.cfi_offset 14, -4
+ 165 00ba 82B0     		sub	sp, sp, #8
+ 166              	.LCFI4:
+ 167              		.cfi_def_cfa_offset 16
+ 168 00bc 00AF     		add	r7, sp, #0
+ 169              	.LCFI5:
+ 170              		.cfi_def_cfa_register 7
+ 171 00be 7860     		str	r0, [r7, #4]
+  89:additional.c  ****   /*
+  90:additional.c  ****    * Setup timer #1 for delay
+  91:additional.c  ****    */
+  92:additional.c  **** 
+  93:additional.c  ****   T1TCR = 0x02;          // 0x02 = 0b 10 -> Timer counter and Prescle counter are synchronously res
+ 172              		.loc 1 93 0
+ 173 00c0 144B     		ldr	r3, .L7
+ 174 00c2 0222     		movs	r2, #2
+ 175 00c4 1A60     		str	r2, [r3]
+  94:additional.c  ****   T1PR  = 0x00;          // Set prescaler to zero.
+ 176              		.loc 1 94 0
+ 177 00c6 144B     		ldr	r3, .L7+4
+ 178 00c8 0022     		movs	r2, #0
+ 179 00ca 1A60     		str	r2, [r3]
+  95:additional.c  **** 
+  96:additional.c  ****   // Maximum delay value that can be achieved by this function:
+  97:additional.c  ****   // MAX_DELAY = ((2 ^ 63 - 1) / CORE_FREQ) = 9 2223 372 036 854 775 807 / 58 982 400 = 156 374 987
+  98:additional.c  ****   // Max value of delayInS: (2 ^ 32 - 1) = 4 294 967 295
+  99:additional.c  **** 
+ 100:additional.c  ****   T1MR0 = (((tU64)delayInS) * (tU64)CORE_FREQ);
+ 180              		.loc 1 100 0
+ 181 00cc 1349     		ldr	r1, .L7+8
+ 182 00ce 7A68     		ldr	r2, [r7, #4]
+ 183 00d0 1300     		movs	r3, r2
+ 184 00d2 1B01     		lsls	r3, r3, #4
+ 185 00d4 9B1A     		subs	r3, r3, r2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 6
+
+
+ 186 00d6 1A01     		lsls	r2, r3, #4
+ 187 00d8 D21A     		subs	r2, r2, r3
+ 188 00da 9304     		lsls	r3, r2, #18
+ 189 00dc 1A00     		movs	r2, r3
+ 190 00de 1300     		movs	r3, r2
+ 191 00e0 0B60     		str	r3, [r1]
+ 101:additional.c  **** 
+ 102:additional.c  ****   T1IR  = 0xFF;          // Reset all interrrupt flags in interrupt register of Timer 1.
+ 192              		.loc 1 102 0
+ 193 00e2 0F4B     		ldr	r3, .L7+12
+ 194 00e4 FF22     		movs	r2, #255
+ 195 00e6 1A60     		str	r2, [r3]
+ 103:additional.c  ****   T1MCR = 0x04;          // Stop timer on match, effectively disabling Timer Counter and Prescale C
+ 196              		.loc 1 103 0
+ 197 00e8 0E4B     		ldr	r3, .L7+16
+ 198 00ea 0422     		movs	r2, #4
+ 199 00ec 1A60     		str	r2, [r3]
+ 104:additional.c  ****   T1TCR = 0x01;          // 0x01 = 0b 1 -> Timer counter and Prescale counter are enabled to count.
+ 200              		.loc 1 104 0
+ 201 00ee 094B     		ldr	r3, .L7
+ 202 00f0 0122     		movs	r2, #1
+ 203 00f2 1A60     		str	r2, [r3]
+ 105:additional.c  **** 
+ 106:additional.c  ****   // Wait until delay time has elapsed (This loop will be terminated when there will be a match bet
+ 107:additional.c  **** 
+ 108:additional.c  ****   while ((T1TCR & 0x01) == 1)
+ 204              		.loc 1 108 0
+ 205 00f4 C046     		nop
+ 206              	.L6:
+ 207              		.loc 1 108 0 is_stmt 0 discriminator 1
+ 208 00f6 074B     		ldr	r3, .L7
+ 209 00f8 1B68     		ldr	r3, [r3]
+ 210 00fa 0122     		movs	r2, #1
+ 211 00fc 1340     		ands	r3, r2
+ 212 00fe 012B     		cmp	r3, #1
+ 213 0100 F9D0     		beq	.L6
+ 109:additional.c  ****   {
+ 110:additional.c  ****     ;
+ 111:additional.c  ****   }
+ 112:additional.c  **** 
+ 113:additional.c  ****   T1TCR = 0x00;         // Resetting entire TCR register of Timer 1.
+ 214              		.loc 1 113 0 is_stmt 1
+ 215 0102 044B     		ldr	r3, .L7
+ 216 0104 0022     		movs	r2, #0
+ 217 0106 1A60     		str	r2, [r3]
+ 114:additional.c  **** }
+ 218              		.loc 1 114 0
+ 219 0108 C046     		nop
+ 220 010a BD46     		mov	sp, r7
+ 221 010c 02B0     		add	sp, sp, #8
+ 222              		@ sp needed
+ 223 010e 80BC     		pop	{r7}
+ 224 0110 01BC     		pop	{r0}
+ 225 0112 0047     		bx	r0
+ 226              	.L8:
+ 227              		.align	2
+ 228              	.L7:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 7
+
+
+ 229 0114 048000E0 		.word	-536838140
+ 230 0118 0C8000E0 		.word	-536838132
+ 231 011c 188000E0 		.word	-536838120
+ 232 0120 008000E0 		.word	-536838144
+ 233 0124 148000E0 		.word	-536838124
+ 234              		.cfi_endproc
+ 235              	.LFE1:
+ 236              		.size	sdelay, .-sdelay
+ 237              	.Letext0:
+ 238              		.file 2 "general.h"
+ 239              		.section	.debug_info,"",%progbits
+ 240              	.Ldebug_info0:
+ 241 0000 BE000000 		.4byte	0xbe
+ 242 0004 0200     		.2byte	0x2
+ 243 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 244 000a 04       		.byte	0x4
+ 245 000b 01       		.uleb128 0x1
+ 246 000c 6C000000 		.4byte	.LASF11
+ 247 0010 0C       		.byte	0xc
+ 248 0011 58000000 		.4byte	.LASF12
+ 249 0015 EC000000 		.4byte	.LASF13
+ 250 0019 00000000 		.4byte	.Ltext0
+ 251 001d 28010000 		.4byte	.Letext0
+ 252 0021 00000000 		.4byte	.Ldebug_line0
+ 253 0025 02       		.uleb128 0x2
+ 254 0026 01       		.byte	0x1
+ 255 0027 08       		.byte	0x8
+ 256 0028 40000000 		.4byte	.LASF0
+ 257 002c 02       		.uleb128 0x2
+ 258 002d 02       		.byte	0x2
+ 259 002e 07       		.byte	0x7
+ 260 002f 0A010000 		.4byte	.LASF1
+ 261 0033 03       		.uleb128 0x3
+ 262 0034 3A010000 		.4byte	.LASF3
+ 263 0038 02       		.byte	0x2
+ 264 0039 22       		.byte	0x22
+ 265 003a 3E000000 		.4byte	0x3e
+ 266 003e 02       		.uleb128 0x2
+ 267 003f 04       		.byte	0x4
+ 268 0040 07       		.byte	0x7
+ 269 0041 17000000 		.4byte	.LASF2
+ 270 0045 03       		.uleb128 0x3
+ 271 0046 24000000 		.4byte	.LASF4
+ 272 004a 02       		.byte	0x2
+ 273 004b 23       		.byte	0x23
+ 274 004c 50000000 		.4byte	0x50
+ 275 0050 02       		.uleb128 0x2
+ 276 0051 08       		.byte	0x8
+ 277 0052 07       		.byte	0x7
+ 278 0053 29000000 		.4byte	.LASF5
+ 279 0057 02       		.uleb128 0x2
+ 280 0058 01       		.byte	0x1
+ 281 0059 06       		.byte	0x6
+ 282 005a 1D010000 		.4byte	.LASF6
+ 283 005e 02       		.uleb128 0x2
+ 284 005f 02       		.byte	0x2
+ 285 0060 05       		.byte	0x5
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 8
+
+
+ 286 0061 29010000 		.4byte	.LASF7
+ 287 0065 04       		.uleb128 0x4
+ 288 0066 04       		.byte	0x4
+ 289 0067 05       		.byte	0x5
+ 290 0068 696E7400 		.ascii	"int\000"
+ 291 006c 02       		.uleb128 0x2
+ 292 006d 08       		.byte	0x8
+ 293 006e 05       		.byte	0x5
+ 294 006f 00000000 		.4byte	.LASF8
+ 295 0073 05       		.uleb128 0x5
+ 296 0074 01       		.byte	0x1
+ 297 0075 65000000 		.4byte	.LASF14
+ 298 0079 01       		.byte	0x1
+ 299 007a 57       		.byte	0x57
+ 300 007b 01       		.byte	0x1
+ 301 007c B8000000 		.4byte	.LFB1
+ 302 0080 28010000 		.4byte	.LFE1
+ 303 0084 00000000 		.4byte	.LLST1
+ 304 0088 01       		.byte	0x1
+ 305 0089 9C000000 		.4byte	0x9c
+ 306 008d 06       		.uleb128 0x6
+ 307 008e 0E000000 		.4byte	.LASF9
+ 308 0092 01       		.byte	0x1
+ 309 0093 57       		.byte	0x57
+ 310 0094 33000000 		.4byte	0x33
+ 311 0098 02       		.byte	0x2
+ 312 0099 91       		.byte	0x91
+ 313 009a 74       		.sleb128 -12
+ 314 009b 00       		.byte	0
+ 315 009c 07       		.uleb128 0x7
+ 316 009d 01       		.byte	0x1
+ 317 009e 33010000 		.4byte	.LASF15
+ 318 00a2 01       		.byte	0x1
+ 319 00a3 2A       		.byte	0x2a
+ 320 00a4 01       		.byte	0x1
+ 321 00a5 00000000 		.4byte	.LFB0
+ 322 00a9 B8000000 		.4byte	.LFE0
+ 323 00ad 38000000 		.4byte	.LLST0
+ 324 00b1 01       		.byte	0x1
+ 325 00b2 06       		.uleb128 0x6
+ 326 00b3 4E000000 		.4byte	.LASF10
+ 327 00b7 01       		.byte	0x1
+ 328 00b8 2A       		.byte	0x2a
+ 329 00b9 33000000 		.4byte	0x33
+ 330 00bd 02       		.byte	0x2
+ 331 00be 91       		.byte	0x91
+ 332 00bf 64       		.sleb128 -28
+ 333 00c0 00       		.byte	0
+ 334 00c1 00       		.byte	0
+ 335              		.section	.debug_abbrev,"",%progbits
+ 336              	.Ldebug_abbrev0:
+ 337 0000 01       		.uleb128 0x1
+ 338 0001 11       		.uleb128 0x11
+ 339 0002 01       		.byte	0x1
+ 340 0003 25       		.uleb128 0x25
+ 341 0004 0E       		.uleb128 0xe
+ 342 0005 13       		.uleb128 0x13
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 9
+
+
+ 343 0006 0B       		.uleb128 0xb
+ 344 0007 03       		.uleb128 0x3
+ 345 0008 0E       		.uleb128 0xe
+ 346 0009 1B       		.uleb128 0x1b
+ 347 000a 0E       		.uleb128 0xe
+ 348 000b 11       		.uleb128 0x11
+ 349 000c 01       		.uleb128 0x1
+ 350 000d 12       		.uleb128 0x12
+ 351 000e 01       		.uleb128 0x1
+ 352 000f 10       		.uleb128 0x10
+ 353 0010 06       		.uleb128 0x6
+ 354 0011 00       		.byte	0
+ 355 0012 00       		.byte	0
+ 356 0013 02       		.uleb128 0x2
+ 357 0014 24       		.uleb128 0x24
+ 358 0015 00       		.byte	0
+ 359 0016 0B       		.uleb128 0xb
+ 360 0017 0B       		.uleb128 0xb
+ 361 0018 3E       		.uleb128 0x3e
+ 362 0019 0B       		.uleb128 0xb
+ 363 001a 03       		.uleb128 0x3
+ 364 001b 0E       		.uleb128 0xe
+ 365 001c 00       		.byte	0
+ 366 001d 00       		.byte	0
+ 367 001e 03       		.uleb128 0x3
+ 368 001f 16       		.uleb128 0x16
+ 369 0020 00       		.byte	0
+ 370 0021 03       		.uleb128 0x3
+ 371 0022 0E       		.uleb128 0xe
+ 372 0023 3A       		.uleb128 0x3a
+ 373 0024 0B       		.uleb128 0xb
+ 374 0025 3B       		.uleb128 0x3b
+ 375 0026 0B       		.uleb128 0xb
+ 376 0027 49       		.uleb128 0x49
+ 377 0028 13       		.uleb128 0x13
+ 378 0029 00       		.byte	0
+ 379 002a 00       		.byte	0
+ 380 002b 04       		.uleb128 0x4
+ 381 002c 24       		.uleb128 0x24
+ 382 002d 00       		.byte	0
+ 383 002e 0B       		.uleb128 0xb
+ 384 002f 0B       		.uleb128 0xb
+ 385 0030 3E       		.uleb128 0x3e
+ 386 0031 0B       		.uleb128 0xb
+ 387 0032 03       		.uleb128 0x3
+ 388 0033 08       		.uleb128 0x8
+ 389 0034 00       		.byte	0
+ 390 0035 00       		.byte	0
+ 391 0036 05       		.uleb128 0x5
+ 392 0037 2E       		.uleb128 0x2e
+ 393 0038 01       		.byte	0x1
+ 394 0039 3F       		.uleb128 0x3f
+ 395 003a 0C       		.uleb128 0xc
+ 396 003b 03       		.uleb128 0x3
+ 397 003c 0E       		.uleb128 0xe
+ 398 003d 3A       		.uleb128 0x3a
+ 399 003e 0B       		.uleb128 0xb
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 10
+
+
+ 400 003f 3B       		.uleb128 0x3b
+ 401 0040 0B       		.uleb128 0xb
+ 402 0041 27       		.uleb128 0x27
+ 403 0042 0C       		.uleb128 0xc
+ 404 0043 11       		.uleb128 0x11
+ 405 0044 01       		.uleb128 0x1
+ 406 0045 12       		.uleb128 0x12
+ 407 0046 01       		.uleb128 0x1
+ 408 0047 40       		.uleb128 0x40
+ 409 0048 06       		.uleb128 0x6
+ 410 0049 9742     		.uleb128 0x2117
+ 411 004b 0C       		.uleb128 0xc
+ 412 004c 01       		.uleb128 0x1
+ 413 004d 13       		.uleb128 0x13
+ 414 004e 00       		.byte	0
+ 415 004f 00       		.byte	0
+ 416 0050 06       		.uleb128 0x6
+ 417 0051 05       		.uleb128 0x5
+ 418 0052 00       		.byte	0
+ 419 0053 03       		.uleb128 0x3
+ 420 0054 0E       		.uleb128 0xe
+ 421 0055 3A       		.uleb128 0x3a
+ 422 0056 0B       		.uleb128 0xb
+ 423 0057 3B       		.uleb128 0x3b
+ 424 0058 0B       		.uleb128 0xb
+ 425 0059 49       		.uleb128 0x49
+ 426 005a 13       		.uleb128 0x13
+ 427 005b 02       		.uleb128 0x2
+ 428 005c 0A       		.uleb128 0xa
+ 429 005d 00       		.byte	0
+ 430 005e 00       		.byte	0
+ 431 005f 07       		.uleb128 0x7
+ 432 0060 2E       		.uleb128 0x2e
+ 433 0061 01       		.byte	0x1
+ 434 0062 3F       		.uleb128 0x3f
+ 435 0063 0C       		.uleb128 0xc
+ 436 0064 03       		.uleb128 0x3
+ 437 0065 0E       		.uleb128 0xe
+ 438 0066 3A       		.uleb128 0x3a
+ 439 0067 0B       		.uleb128 0xb
+ 440 0068 3B       		.uleb128 0x3b
+ 441 0069 0B       		.uleb128 0xb
+ 442 006a 27       		.uleb128 0x27
+ 443 006b 0C       		.uleb128 0xc
+ 444 006c 11       		.uleb128 0x11
+ 445 006d 01       		.uleb128 0x1
+ 446 006e 12       		.uleb128 0x12
+ 447 006f 01       		.uleb128 0x1
+ 448 0070 40       		.uleb128 0x40
+ 449 0071 06       		.uleb128 0x6
+ 450 0072 9642     		.uleb128 0x2116
+ 451 0074 0C       		.uleb128 0xc
+ 452 0075 00       		.byte	0
+ 453 0076 00       		.byte	0
+ 454 0077 00       		.byte	0
+ 455              		.section	.debug_loc,"",%progbits
+ 456              	.Ldebug_loc0:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 11
+
+
+ 457              	.LLST1:
+ 458 0000 B8000000 		.4byte	.LFB1-.Ltext0
+ 459 0004 BA000000 		.4byte	.LCFI3-.Ltext0
+ 460 0008 0200     		.2byte	0x2
+ 461 000a 7D       		.byte	0x7d
+ 462 000b 00       		.sleb128 0
+ 463 000c BA000000 		.4byte	.LCFI3-.Ltext0
+ 464 0010 BC000000 		.4byte	.LCFI4-.Ltext0
+ 465 0014 0200     		.2byte	0x2
+ 466 0016 7D       		.byte	0x7d
+ 467 0017 08       		.sleb128 8
+ 468 0018 BC000000 		.4byte	.LCFI4-.Ltext0
+ 469 001c BE000000 		.4byte	.LCFI5-.Ltext0
+ 470 0020 0200     		.2byte	0x2
+ 471 0022 7D       		.byte	0x7d
+ 472 0023 10       		.sleb128 16
+ 473 0024 BE000000 		.4byte	.LCFI5-.Ltext0
+ 474 0028 28010000 		.4byte	.LFE1-.Ltext0
+ 475 002c 0200     		.2byte	0x2
+ 476 002e 77       		.byte	0x77
+ 477 002f 10       		.sleb128 16
+ 478 0030 00000000 		.4byte	0
+ 479 0034 00000000 		.4byte	0
+ 480              	.LLST0:
+ 481 0038 00000000 		.4byte	.LFB0-.Ltext0
+ 482 003c 02000000 		.4byte	.LCFI0-.Ltext0
+ 483 0040 0200     		.2byte	0x2
+ 484 0042 7D       		.byte	0x7d
+ 485 0043 00       		.sleb128 0
+ 486 0044 02000000 		.4byte	.LCFI0-.Ltext0
+ 487 0048 04000000 		.4byte	.LCFI1-.Ltext0
+ 488 004c 0200     		.2byte	0x2
+ 489 004e 7D       		.byte	0x7d
+ 490 004f 14       		.sleb128 20
+ 491 0050 04000000 		.4byte	.LCFI1-.Ltext0
+ 492 0054 06000000 		.4byte	.LCFI2-.Ltext0
+ 493 0058 0200     		.2byte	0x2
+ 494 005a 7D       		.byte	0x7d
+ 495 005b 30       		.sleb128 48
+ 496 005c 06000000 		.4byte	.LCFI2-.Ltext0
+ 497 0060 B8000000 		.4byte	.LFE0-.Ltext0
+ 498 0064 0200     		.2byte	0x2
+ 499 0066 77       		.byte	0x77
+ 500 0067 30       		.sleb128 48
+ 501 0068 00000000 		.4byte	0
+ 502 006c 00000000 		.4byte	0
+ 503              		.section	.debug_aranges,"",%progbits
+ 504 0000 1C000000 		.4byte	0x1c
+ 505 0004 0200     		.2byte	0x2
+ 506 0006 00000000 		.4byte	.Ldebug_info0
+ 507 000a 04       		.byte	0x4
+ 508 000b 00       		.byte	0
+ 509 000c 0000     		.2byte	0
+ 510 000e 0000     		.2byte	0
+ 511 0010 00000000 		.4byte	.Ltext0
+ 512 0014 28010000 		.4byte	.Letext0-.Ltext0
+ 513 0018 00000000 		.4byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 12
+
+
+ 514 001c 00000000 		.4byte	0
+ 515              		.section	.debug_line,"",%progbits
+ 516              	.Ldebug_line0:
+ 517 0000 6D000000 		.section	.debug_str,"MS",%progbits,1
+ 517      02003000 
+ 517      00000201 
+ 517      FB0E0D00 
+ 517      01010101 
+ 518              	.LASF8:
+ 519 0000 6C6F6E67 		.ascii	"long long int\000"
+ 519      206C6F6E 
+ 519      6720696E 
+ 519      7400
+ 520              	.LASF9:
+ 521 000e 64656C61 		.ascii	"delayInS\000"
+ 521      79496E53 
+ 521      00
+ 522              	.LASF2:
+ 523 0017 756E7369 		.ascii	"unsigned int\000"
+ 523      676E6564 
+ 523      20696E74 
+ 523      00
+ 524              	.LASF4:
+ 525 0024 74553634 		.ascii	"tU64\000"
+ 525      00
+ 526              	.LASF5:
+ 527 0029 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 527      206C6F6E 
+ 527      6720756E 
+ 527      7369676E 
+ 527      65642069 
+ 528              	.LASF0:
+ 529 0040 756E7369 		.ascii	"unsigned char\000"
+ 529      676E6564 
+ 529      20636861 
+ 529      7200
+ 530              	.LASF10:
+ 531 004e 64656C61 		.ascii	"delayInMs\000"
+ 531      79496E4D 
+ 531      7300
+ 532              	.LASF12:
+ 533 0058 61646469 		.ascii	"additional.c\000"
+ 533      74696F6E 
+ 533      616C2E63 
+ 533      00
+ 534              	.LASF14:
+ 535 0065 7364656C 		.ascii	"sdelay\000"
+ 535      617900
+ 536              	.LASF11:
+ 537 006c 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
+ 537      43313120 
+ 537      372E332E 
+ 537      31203230 
+ 537      31383036 
+ 538 009f 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb -mthum"
+ 538      20726576 
+ 538      6973696F 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 13
+
+
+ 538      6E203236 
+ 538      31393037 
+ 539 00d2 622D696E 		.ascii	"b-interwork -gdwarf-2 -O0\000"
+ 539      74657277 
+ 539      6F726B20 
+ 539      2D676477 
+ 539      6172662D 
+ 540              	.LASF13:
+ 541 00ec 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
+ 541      6D626564 
+ 541      6465645C 
+ 541      32313338 
+ 541      4D696E69 
+ 542              	.LASF1:
+ 543 010a 73686F72 		.ascii	"short unsigned int\000"
+ 543      7420756E 
+ 543      7369676E 
+ 543      65642069 
+ 543      6E7400
+ 544              	.LASF6:
+ 545 011d 7369676E 		.ascii	"signed char\000"
+ 545      65642063 
+ 545      68617200 
+ 546              	.LASF7:
+ 547 0129 73686F72 		.ascii	"short int\000"
+ 547      7420696E 
+ 547      7400
+ 548              	.LASF15:
+ 549 0133 6D64656C 		.ascii	"mdelay\000"
+ 549      617900
+ 550              	.LASF3:
+ 551 013a 74553332 		.ascii	"tU32\000"
+ 551      00
+ 552              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s 			page 14
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 additional.c
+C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s:23     .text:00000000 mdelay
+C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s:31     .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s:138    .text:000000a4 $d
+C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s:146    .text:000000b8 $t
+C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s:153    .text:000000b8 sdelay
+C:\Users\embedded\AppData\Local\Temp\ccd7RfvQ.s:229    .text:00000114 $d
+
+UNDEFINED SYMBOLS
+__aeabi_uldivmod

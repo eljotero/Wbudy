@@ -1,0 +1,749 @@
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
+
+
+   1              		.cpu arm7tdmi
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 0
+  10              		.eabi_attribute 18, 4
+  11              		.file	"htu21df.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.align	1
+  16              		.global	measureHumidity
+  17              		.syntax unified
+  18              		.code	16
+  19              		.thumb_func
+  20              		.fpu softvfp
+  21              		.type	measureHumidity, %function
+  22              	measureHumidity:
+  23              	.LFB0:
+  24              		.file 1 "htu21df.c"
+   1:htu21df.c     **** /******************************************************************************
+   2:htu21df.c     ****  *  Obsługa pomiaru wilgotności przy pomocy czujnika wilgotności HTU21D(F).
+   3:htu21df.c     ****  * 
+   4:htu21df.c     ****  *  Plik z kodem źródłowym funkcji.
+   5:htu21df.c     ****  *****************************************************************************/
+   6:htu21df.c     **** 
+   7:htu21df.c     **** /******************************************************************************
+   8:htu21df.c     ****  * Includes
+   9:htu21df.c     ****  *****************************************************************************/
+  10:htu21df.c     **** 
+  11:htu21df.c     **** #include "htu21df.h"
+  12:htu21df.c     **** 
+  13:htu21df.c     **** /******************************************************************************
+  14:htu21df.c     ****  * Defines and typedefs
+  15:htu21df.c     ****  *****************************************************************************/
+  16:htu21df.c     **** 
+  17:htu21df.c     **** #define htu21Address        0x40 // 0x40 = 0b 0100 0000
+  18:htu21df.c     **** #define htu21ReadAddress    0x81 // 0x81 = 0b 1000 0001
+  19:htu21df.c     **** #define htu21WriteAddress   0x80 // 0x80 = 0b 1000 0000
+  20:htu21df.c     **** 
+  21:htu21df.c     **** /*****************************************************************************
+  22:htu21df.c     ****  * Global variables
+  23:htu21df.c     ****  ****************************************************************************/
+  24:htu21df.c     **** 
+  25:htu21df.c     **** /*****************************************************************************
+  26:htu21df.c     ****  * Local variables
+  27:htu21df.c     ****  ****************************************************************************/
+  28:htu21df.c     **** 
+  29:htu21df.c     **** /*****************************************************************************
+  30:htu21df.c     ****  * Local prototypes
+  31:htu21df.c     ****  ****************************************************************************/
+  32:htu21df.c     **** 
+  33:htu21df.c     **** /*
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 2
+
+
+  34:htu21df.c     ****  * @brief   Funkcja measureHumidity() wykorzystywana jest do odczytania z czujnika wilgotności
+  35:htu21df.c     ****  *          nieprzeliczonej wartości wilgotności i następnie jej przeliczenie, tak aby reprezent
+  36:htu21df.c     ****  *          wilgotność wyrażoną w procentach.
+  37:htu21df.c     ****  *
+  38:htu21df.c     ****  * @param   void
+  39:htu21df.c     ****  *
+  40:htu21df.c     ****  * @returns
+  41:htu21df.c     ****  *          Przeliczona wartość ciśnienia, która wyrażona jest w procentach.
+  42:htu21df.c     ****  *
+  43:htu21df.c     ****  * @side effects:
+  44:htu21df.c     ****  *          Brak
+  45:htu21df.c     ****  */
+  46:htu21df.c     **** 
+  47:htu21df.c     **** tS8 measureHumidity(void)
+  48:htu21df.c     **** {
+  25              		.loc 1 48 0
+  26              		.cfi_startproc
+  27              		@ Function supports interworking.
+  28              		@ args = 0, pretend = 0, frame = 24
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  31              	.LCFI0:
+  32              		.cfi_def_cfa_offset 20
+  33              		.cfi_offset 4, -20
+  34              		.cfi_offset 5, -16
+  35              		.cfi_offset 6, -12
+  36              		.cfi_offset 7, -8
+  37              		.cfi_offset 14, -4
+  38 0002 87B0     		sub	sp, sp, #28
+  39              	.LCFI1:
+  40              		.cfi_def_cfa_offset 48
+  41 0004 00AF     		add	r7, sp, #0
+  42              	.LCFI2:
+  43              		.cfi_def_cfa_register 7
+  49:htu21df.c     ****     // Bufor 2-bajtowy do przechowania wartości odczytanej z czujnika HTU21DF
+  50:htu21df.c     ****     tU8 readHumidity[2] = {0};
+  44              		.loc 1 50 0
+  45 0006 0825     		movs	r5, #8
+  46 0008 7B19     		adds	r3, r7, r5
+  47 000a 0022     		movs	r2, #0
+  48 000c 1A80     		strh	r2, [r3]
+  51:htu21df.c     **** 
+  52:htu21df.c     ****     /*
+  53:htu21df.c     ****         Adres rejestru do którego trzeba wpisać komendę: (0x40 << 1)
+  54:htu21df.c     ****         Adres rejestru z którego trzeba odczytać wynik pomiaru: ((0x40 << 1) | 1)
+  55:htu21df.c     ****     */
+  56:htu21df.c     **** 
+  57:htu21df.c     ****     tS8 retCode;
+  58:htu21df.c     **** 
+  59:htu21df.c     ****     // Komenda odczytu wilgotności w trybie "No Hold Master".
+  60:htu21df.c     ****     tU8 commandNoHoldMaster[1] = {0};
+  49              		.loc 1 60 0
+  50 000e 3B1D     		adds	r3, r7, #4
+  51 0010 0022     		movs	r2, #0
+  52 0012 1A70     		strb	r2, [r3]
+  61:htu21df.c     ****     commandNoHoldMaster[0] = 0xF5;
+  53              		.loc 1 61 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 3
+
+
+  54 0014 3B1D     		adds	r3, r7, #4
+  55 0016 F522     		movs	r2, #245
+  56 0018 1A70     		strb	r2, [r3]
+  62:htu21df.c     ****     retCode = i2cWrite(htu21WriteAddress, commandNoHoldMaster, 1);
+  57              		.loc 1 62 0
+  58 001a 1626     		movs	r6, #22
+  59 001c BC19     		adds	r4, r7, r6
+  60 001e 3B1D     		adds	r3, r7, #4
+  61 0020 0122     		movs	r2, #1
+  62 0022 1900     		movs	r1, r3
+  63 0024 8020     		movs	r0, #128
+  64 0026 FFF7FEFF 		bl	i2cWrite
+  65 002a 0300     		movs	r3, r0
+  66 002c 2370     		strb	r3, [r4]
+  63:htu21df.c     ****     mdelay(16);
+  67              		.loc 1 63 0
+  68 002e 1020     		movs	r0, #16
+  69 0030 FFF7FEFF 		bl	mdelay
+  64:htu21df.c     ****     retCode = i2cRead(htu21ReadAddress, readHumidity, 2);
+  70              		.loc 1 64 0
+  71 0034 BC19     		adds	r4, r7, r6
+  72 0036 7B19     		adds	r3, r7, r5
+  73 0038 0222     		movs	r2, #2
+  74 003a 1900     		movs	r1, r3
+  75 003c 8120     		movs	r0, #129
+  76 003e FFF7FEFF 		bl	i2cRead
+  77 0042 0300     		movs	r3, r0
+  78 0044 2370     		strb	r3, [r4]
+  65:htu21df.c     **** 
+  66:htu21df.c     ****     /*
+  67:htu21df.c     ****         Konwersja tablicy 2 bajtów na jedną zmienną 16 bitową.
+  68:htu21df.c     ****         Wyłączenie bitów stanu - dla wilgotności są to ostatnie 4 bity.
+  69:htu21df.c     ****     */
+  70:htu21df.c     **** 
+  71:htu21df.c     ****     tU8 mask = ~(0x0F);
+  79              		.loc 1 71 0
+  80 0046 1521     		movs	r1, #21
+  81 0048 7B18     		adds	r3, r7, r1
+  82 004a F022     		movs	r2, #240
+  83 004c 1A70     		strb	r2, [r3]
+  72:htu21df.c     **** 	readHumidity[1] = (readHumidity[1] & mask);
+  84              		.loc 1 72 0
+  85 004e 7B19     		adds	r3, r7, r5
+  86 0050 5B78     		ldrb	r3, [r3, #1]
+  87 0052 7A18     		adds	r2, r7, r1
+  88 0054 1278     		ldrb	r2, [r2]
+  89 0056 1340     		ands	r3, r2
+  90 0058 1B06     		lsls	r3, r3, #24
+  91 005a 1A0E     		lsrs	r2, r3, #24
+  92 005c 7B19     		adds	r3, r7, r5
+  93 005e 5A70     		strb	r2, [r3, #1]
+  73:htu21df.c     ****     tU16 readData = ((readHumidity[0] << 8) | readHumidity[1]);
+  94              		.loc 1 73 0
+  95 0060 7B19     		adds	r3, r7, r5
+  96 0062 1B78     		ldrb	r3, [r3]
+  97 0064 1B02     		lsls	r3, r3, #8
+  98 0066 1A04     		lsls	r2, r3, #16
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 4
+
+
+  99 0068 1214     		asrs	r2, r2, #16
+ 100 006a 7B19     		adds	r3, r7, r5
+ 101 006c 5B78     		ldrb	r3, [r3, #1]
+ 102 006e 1B04     		lsls	r3, r3, #16
+ 103 0070 1B14     		asrs	r3, r3, #16
+ 104 0072 1343     		orrs	r3, r2
+ 105 0074 1B04     		lsls	r3, r3, #16
+ 106 0076 1B14     		asrs	r3, r3, #16
+ 107 0078 1221     		movs	r1, #18
+ 108 007a 7A18     		adds	r2, r7, r1
+ 109 007c 1380     		strh	r3, [r2]
+  74:htu21df.c     **** 
+  75:htu21df.c     ****     tU32 upperValue = (((tU32)125 * (tU32)readData) / (tU32)65536);
+ 110              		.loc 1 75 0
+ 111 007e 7B18     		adds	r3, r7, r1
+ 112 0080 1A88     		ldrh	r2, [r3]
+ 113 0082 1300     		movs	r3, r2
+ 114 0084 5B01     		lsls	r3, r3, #5
+ 115 0086 9B1A     		subs	r3, r3, r2
+ 116 0088 9B00     		lsls	r3, r3, #2
+ 117 008a 9B18     		adds	r3, r3, r2
+ 118 008c 1B0C     		lsrs	r3, r3, #16
+ 119 008e FB60     		str	r3, [r7, #12]
+  76:htu21df.c     ****     tS8 humidityValue = ((tS8)(upperValue) - (tS8)6);
+ 120              		.loc 1 76 0
+ 121 0090 FB68     		ldr	r3, [r7, #12]
+ 122 0092 1B06     		lsls	r3, r3, #24
+ 123 0094 1B0E     		lsrs	r3, r3, #24
+ 124 0096 063B     		subs	r3, r3, #6
+ 125 0098 1B06     		lsls	r3, r3, #24
+ 126 009a 1A0E     		lsrs	r2, r3, #24
+ 127 009c 1721     		movs	r1, #23
+ 128 009e 7B18     		adds	r3, r7, r1
+ 129 00a0 1A70     		strb	r2, [r3]
+  77:htu21df.c     **** 
+  78:htu21df.c     ****     if (humidityValue < 0) {
+ 130              		.loc 1 78 0
+ 131 00a2 7B18     		adds	r3, r7, r1
+ 132 00a4 1B78     		ldrb	r3, [r3]
+ 133 00a6 7F2B     		cmp	r3, #127
+ 134 00a8 04D9     		bls	.L2
+  79:htu21df.c     ****         humidityValue = 0;
+ 135              		.loc 1 79 0
+ 136 00aa 1723     		movs	r3, #23
+ 137 00ac FB18     		adds	r3, r7, r3
+ 138 00ae 0022     		movs	r2, #0
+ 139 00b0 1A70     		strb	r2, [r3]
+ 140 00b2 0AE0     		b	.L3
+ 141              	.L2:
+  80:htu21df.c     ****     }
+  81:htu21df.c     ****     else if (humidityValue > 100)
+ 142              		.loc 1 81 0
+ 143 00b4 1723     		movs	r3, #23
+ 144 00b6 FB18     		adds	r3, r7, r3
+ 145 00b8 1B78     		ldrb	r3, [r3]
+ 146 00ba 1B06     		lsls	r3, r3, #24
+ 147 00bc 1B16     		asrs	r3, r3, #24
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 5
+
+
+ 148 00be 642B     		cmp	r3, #100
+ 149 00c0 03DD     		ble	.L3
+  82:htu21df.c     ****     {
+  83:htu21df.c     ****         humidityValue = 100;
+ 150              		.loc 1 83 0
+ 151 00c2 1723     		movs	r3, #23
+ 152 00c4 FB18     		adds	r3, r7, r3
+ 153 00c6 6422     		movs	r2, #100
+ 154 00c8 1A70     		strb	r2, [r3]
+ 155              	.L3:
+  84:htu21df.c     ****     }
+  85:htu21df.c     ****     else 
+  86:htu21df.c     ****     {
+  87:htu21df.c     ****         ;
+  88:htu21df.c     ****     }
+  89:htu21df.c     **** 
+  90:htu21df.c     ****     return humidityValue;
+ 156              		.loc 1 90 0
+ 157 00ca 1723     		movs	r3, #23
+ 158 00cc FB18     		adds	r3, r7, r3
+ 159 00ce 1B78     		ldrb	r3, [r3]
+ 160 00d0 1B06     		lsls	r3, r3, #24
+ 161 00d2 1B16     		asrs	r3, r3, #24
+  91:htu21df.c     **** }
+ 162              		.loc 1 91 0
+ 163 00d4 1800     		movs	r0, r3
+ 164 00d6 BD46     		mov	sp, r7
+ 165 00d8 07B0     		add	sp, sp, #28
+ 166              		@ sp needed
+ 167 00da F0BC     		pop	{r4, r5, r6, r7}
+ 168 00dc 02BC     		pop	{r1}
+ 169 00de 0847     		bx	r1
+ 170              		.cfi_endproc
+ 171              	.LFE0:
+ 172              		.size	measureHumidity, .-measureHumidity
+ 173              	.Letext0:
+ 174              		.file 2 "general.h"
+ 175              		.section	.debug_info,"",%progbits
+ 176              	.Ldebug_info0:
+ 177 0000 23010000 		.4byte	0x123
+ 178 0004 0200     		.2byte	0x2
+ 179 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 180 000a 04       		.byte	0x4
+ 181 000b 01       		.uleb128 0x1
+ 182 000c 7D000000 		.4byte	.LASF16
+ 183 0010 0C       		.byte	0xc
+ 184 0011 3C000000 		.4byte	.LASF17
+ 185 0015 FD000000 		.4byte	.LASF18
+ 186 0019 00000000 		.4byte	.Ltext0
+ 187 001d E0000000 		.4byte	.Letext0
+ 188 0021 00000000 		.4byte	.Ldebug_line0
+ 189 0025 02       		.uleb128 0x2
+ 190 0026 74553800 		.ascii	"tU8\000"
+ 191 002a 02       		.byte	0x2
+ 192 002b 20       		.byte	0x20
+ 193 002c 30000000 		.4byte	0x30
+ 194 0030 03       		.uleb128 0x3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 6
+
+
+ 195 0031 01       		.byte	0x1
+ 196 0032 08       		.byte	0x8
+ 197 0033 6F000000 		.4byte	.LASF1
+ 198 0037 04       		.uleb128 0x4
+ 199 0038 4E010000 		.4byte	.LASF0
+ 200 003c 02       		.byte	0x2
+ 201 003d 21       		.byte	0x21
+ 202 003e 42000000 		.4byte	0x42
+ 203 0042 03       		.uleb128 0x3
+ 204 0043 02       		.byte	0x2
+ 205 0044 07       		.byte	0x7
+ 206 0045 1B010000 		.4byte	.LASF2
+ 207 0049 04       		.uleb128 0x4
+ 208 004a 76010000 		.4byte	.LASF3
+ 209 004e 02       		.byte	0x2
+ 210 004f 22       		.byte	0x22
+ 211 0050 54000000 		.4byte	0x54
+ 212 0054 03       		.uleb128 0x3
+ 213 0055 04       		.byte	0x4
+ 214 0056 07       		.byte	0x7
+ 215 0057 0E000000 		.4byte	.LASF4
+ 216 005b 03       		.uleb128 0x3
+ 217 005c 08       		.byte	0x8
+ 218 005d 07       		.byte	0x7
+ 219 005e 46000000 		.4byte	.LASF5
+ 220 0062 02       		.uleb128 0x2
+ 221 0063 74533800 		.ascii	"tS8\000"
+ 222 0067 02       		.byte	0x2
+ 223 0068 24       		.byte	0x24
+ 224 0069 6D000000 		.4byte	0x6d
+ 225 006d 03       		.uleb128 0x3
+ 226 006e 01       		.byte	0x1
+ 227 006f 06       		.byte	0x6
+ 228 0070 2E010000 		.4byte	.LASF6
+ 229 0074 03       		.uleb128 0x3
+ 230 0075 02       		.byte	0x2
+ 231 0076 05       		.byte	0x5
+ 232 0077 53010000 		.4byte	.LASF7
+ 233 007b 05       		.uleb128 0x5
+ 234 007c 04       		.byte	0x4
+ 235 007d 05       		.byte	0x5
+ 236 007e 696E7400 		.ascii	"int\000"
+ 237 0082 03       		.uleb128 0x3
+ 238 0083 08       		.byte	0x8
+ 239 0084 05       		.byte	0x5
+ 240 0085 00000000 		.4byte	.LASF8
+ 241 0089 06       		.uleb128 0x6
+ 242 008a 01       		.byte	0x1
+ 243 008b 5D010000 		.4byte	.LASF19
+ 244 008f 01       		.byte	0x1
+ 245 0090 2F       		.byte	0x2f
+ 246 0091 01       		.byte	0x1
+ 247 0092 62000000 		.4byte	0x62
+ 248 0096 00000000 		.4byte	.LFB0
+ 249 009a E0000000 		.4byte	.LFE0
+ 250 009e 00000000 		.4byte	.LLST0
+ 251 00a2 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 7
+
+
+ 252 00a3 0A010000 		.4byte	0x10a
+ 253 00a7 07       		.uleb128 0x7
+ 254 00a8 62000000 		.4byte	.LASF9
+ 255 00ac 01       		.byte	0x1
+ 256 00ad 32       		.byte	0x32
+ 257 00ae 0A010000 		.4byte	0x10a
+ 258 00b2 02       		.byte	0x2
+ 259 00b3 91       		.byte	0x91
+ 260 00b4 58       		.sleb128 -40
+ 261 00b5 07       		.uleb128 0x7
+ 262 00b6 29000000 		.4byte	.LASF10
+ 263 00ba 01       		.byte	0x1
+ 264 00bb 39       		.byte	0x39
+ 265 00bc 62000000 		.4byte	0x62
+ 266 00c0 02       		.byte	0x2
+ 267 00c1 91       		.byte	0x91
+ 268 00c2 66       		.sleb128 -26
+ 269 00c3 07       		.uleb128 0x7
+ 270 00c4 3A010000 		.4byte	.LASF11
+ 271 00c8 01       		.byte	0x1
+ 272 00c9 3C       		.byte	0x3c
+ 273 00ca 1A010000 		.4byte	0x11a
+ 274 00ce 02       		.byte	0x2
+ 275 00cf 91       		.byte	0x91
+ 276 00d0 54       		.sleb128 -44
+ 277 00d1 07       		.uleb128 0x7
+ 278 00d2 5D000000 		.4byte	.LASF12
+ 279 00d6 01       		.byte	0x1
+ 280 00d7 47       		.byte	0x47
+ 281 00d8 25000000 		.4byte	0x25
+ 282 00dc 02       		.byte	0x2
+ 283 00dd 91       		.byte	0x91
+ 284 00de 65       		.sleb128 -27
+ 285 00df 07       		.uleb128 0x7
+ 286 00e0 6D010000 		.4byte	.LASF13
+ 287 00e4 01       		.byte	0x1
+ 288 00e5 49       		.byte	0x49
+ 289 00e6 37000000 		.4byte	0x37
+ 290 00ea 02       		.byte	0x2
+ 291 00eb 91       		.byte	0x91
+ 292 00ec 62       		.sleb128 -30
+ 293 00ed 07       		.uleb128 0x7
+ 294 00ee 31000000 		.4byte	.LASF14
+ 295 00f2 01       		.byte	0x1
+ 296 00f3 4B       		.byte	0x4b
+ 297 00f4 49000000 		.4byte	0x49
+ 298 00f8 02       		.byte	0x2
+ 299 00f9 91       		.byte	0x91
+ 300 00fa 5C       		.sleb128 -36
+ 301 00fb 07       		.uleb128 0x7
+ 302 00fc 1B000000 		.4byte	.LASF15
+ 303 0100 01       		.byte	0x1
+ 304 0101 4C       		.byte	0x4c
+ 305 0102 62000000 		.4byte	0x62
+ 306 0106 02       		.byte	0x2
+ 307 0107 91       		.byte	0x91
+ 308 0108 67       		.sleb128 -25
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 8
+
+
+ 309 0109 00       		.byte	0
+ 310 010a 08       		.uleb128 0x8
+ 311 010b 25000000 		.4byte	0x25
+ 312 010f 1A010000 		.4byte	0x11a
+ 313 0113 09       		.uleb128 0x9
+ 314 0114 54000000 		.4byte	0x54
+ 315 0118 01       		.byte	0x1
+ 316 0119 00       		.byte	0
+ 317 011a 0A       		.uleb128 0xa
+ 318 011b 25000000 		.4byte	0x25
+ 319 011f 09       		.uleb128 0x9
+ 320 0120 54000000 		.4byte	0x54
+ 321 0124 00       		.byte	0
+ 322 0125 00       		.byte	0
+ 323 0126 00       		.byte	0
+ 324              		.section	.debug_abbrev,"",%progbits
+ 325              	.Ldebug_abbrev0:
+ 326 0000 01       		.uleb128 0x1
+ 327 0001 11       		.uleb128 0x11
+ 328 0002 01       		.byte	0x1
+ 329 0003 25       		.uleb128 0x25
+ 330 0004 0E       		.uleb128 0xe
+ 331 0005 13       		.uleb128 0x13
+ 332 0006 0B       		.uleb128 0xb
+ 333 0007 03       		.uleb128 0x3
+ 334 0008 0E       		.uleb128 0xe
+ 335 0009 1B       		.uleb128 0x1b
+ 336 000a 0E       		.uleb128 0xe
+ 337 000b 11       		.uleb128 0x11
+ 338 000c 01       		.uleb128 0x1
+ 339 000d 12       		.uleb128 0x12
+ 340 000e 01       		.uleb128 0x1
+ 341 000f 10       		.uleb128 0x10
+ 342 0010 06       		.uleb128 0x6
+ 343 0011 00       		.byte	0
+ 344 0012 00       		.byte	0
+ 345 0013 02       		.uleb128 0x2
+ 346 0014 16       		.uleb128 0x16
+ 347 0015 00       		.byte	0
+ 348 0016 03       		.uleb128 0x3
+ 349 0017 08       		.uleb128 0x8
+ 350 0018 3A       		.uleb128 0x3a
+ 351 0019 0B       		.uleb128 0xb
+ 352 001a 3B       		.uleb128 0x3b
+ 353 001b 0B       		.uleb128 0xb
+ 354 001c 49       		.uleb128 0x49
+ 355 001d 13       		.uleb128 0x13
+ 356 001e 00       		.byte	0
+ 357 001f 00       		.byte	0
+ 358 0020 03       		.uleb128 0x3
+ 359 0021 24       		.uleb128 0x24
+ 360 0022 00       		.byte	0
+ 361 0023 0B       		.uleb128 0xb
+ 362 0024 0B       		.uleb128 0xb
+ 363 0025 3E       		.uleb128 0x3e
+ 364 0026 0B       		.uleb128 0xb
+ 365 0027 03       		.uleb128 0x3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 9
+
+
+ 366 0028 0E       		.uleb128 0xe
+ 367 0029 00       		.byte	0
+ 368 002a 00       		.byte	0
+ 369 002b 04       		.uleb128 0x4
+ 370 002c 16       		.uleb128 0x16
+ 371 002d 00       		.byte	0
+ 372 002e 03       		.uleb128 0x3
+ 373 002f 0E       		.uleb128 0xe
+ 374 0030 3A       		.uleb128 0x3a
+ 375 0031 0B       		.uleb128 0xb
+ 376 0032 3B       		.uleb128 0x3b
+ 377 0033 0B       		.uleb128 0xb
+ 378 0034 49       		.uleb128 0x49
+ 379 0035 13       		.uleb128 0x13
+ 380 0036 00       		.byte	0
+ 381 0037 00       		.byte	0
+ 382 0038 05       		.uleb128 0x5
+ 383 0039 24       		.uleb128 0x24
+ 384 003a 00       		.byte	0
+ 385 003b 0B       		.uleb128 0xb
+ 386 003c 0B       		.uleb128 0xb
+ 387 003d 3E       		.uleb128 0x3e
+ 388 003e 0B       		.uleb128 0xb
+ 389 003f 03       		.uleb128 0x3
+ 390 0040 08       		.uleb128 0x8
+ 391 0041 00       		.byte	0
+ 392 0042 00       		.byte	0
+ 393 0043 06       		.uleb128 0x6
+ 394 0044 2E       		.uleb128 0x2e
+ 395 0045 01       		.byte	0x1
+ 396 0046 3F       		.uleb128 0x3f
+ 397 0047 0C       		.uleb128 0xc
+ 398 0048 03       		.uleb128 0x3
+ 399 0049 0E       		.uleb128 0xe
+ 400 004a 3A       		.uleb128 0x3a
+ 401 004b 0B       		.uleb128 0xb
+ 402 004c 3B       		.uleb128 0x3b
+ 403 004d 0B       		.uleb128 0xb
+ 404 004e 27       		.uleb128 0x27
+ 405 004f 0C       		.uleb128 0xc
+ 406 0050 49       		.uleb128 0x49
+ 407 0051 13       		.uleb128 0x13
+ 408 0052 11       		.uleb128 0x11
+ 409 0053 01       		.uleb128 0x1
+ 410 0054 12       		.uleb128 0x12
+ 411 0055 01       		.uleb128 0x1
+ 412 0056 40       		.uleb128 0x40
+ 413 0057 06       		.uleb128 0x6
+ 414 0058 9642     		.uleb128 0x2116
+ 415 005a 0C       		.uleb128 0xc
+ 416 005b 01       		.uleb128 0x1
+ 417 005c 13       		.uleb128 0x13
+ 418 005d 00       		.byte	0
+ 419 005e 00       		.byte	0
+ 420 005f 07       		.uleb128 0x7
+ 421 0060 34       		.uleb128 0x34
+ 422 0061 00       		.byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 10
+
+
+ 423 0062 03       		.uleb128 0x3
+ 424 0063 0E       		.uleb128 0xe
+ 425 0064 3A       		.uleb128 0x3a
+ 426 0065 0B       		.uleb128 0xb
+ 427 0066 3B       		.uleb128 0x3b
+ 428 0067 0B       		.uleb128 0xb
+ 429 0068 49       		.uleb128 0x49
+ 430 0069 13       		.uleb128 0x13
+ 431 006a 02       		.uleb128 0x2
+ 432 006b 0A       		.uleb128 0xa
+ 433 006c 00       		.byte	0
+ 434 006d 00       		.byte	0
+ 435 006e 08       		.uleb128 0x8
+ 436 006f 01       		.uleb128 0x1
+ 437 0070 01       		.byte	0x1
+ 438 0071 49       		.uleb128 0x49
+ 439 0072 13       		.uleb128 0x13
+ 440 0073 01       		.uleb128 0x1
+ 441 0074 13       		.uleb128 0x13
+ 442 0075 00       		.byte	0
+ 443 0076 00       		.byte	0
+ 444 0077 09       		.uleb128 0x9
+ 445 0078 21       		.uleb128 0x21
+ 446 0079 00       		.byte	0
+ 447 007a 49       		.uleb128 0x49
+ 448 007b 13       		.uleb128 0x13
+ 449 007c 2F       		.uleb128 0x2f
+ 450 007d 0B       		.uleb128 0xb
+ 451 007e 00       		.byte	0
+ 452 007f 00       		.byte	0
+ 453 0080 0A       		.uleb128 0xa
+ 454 0081 01       		.uleb128 0x1
+ 455 0082 01       		.byte	0x1
+ 456 0083 49       		.uleb128 0x49
+ 457 0084 13       		.uleb128 0x13
+ 458 0085 00       		.byte	0
+ 459 0086 00       		.byte	0
+ 460 0087 00       		.byte	0
+ 461              		.section	.debug_loc,"",%progbits
+ 462              	.Ldebug_loc0:
+ 463              	.LLST0:
+ 464 0000 00000000 		.4byte	.LFB0-.Ltext0
+ 465 0004 02000000 		.4byte	.LCFI0-.Ltext0
+ 466 0008 0200     		.2byte	0x2
+ 467 000a 7D       		.byte	0x7d
+ 468 000b 00       		.sleb128 0
+ 469 000c 02000000 		.4byte	.LCFI0-.Ltext0
+ 470 0010 04000000 		.4byte	.LCFI1-.Ltext0
+ 471 0014 0200     		.2byte	0x2
+ 472 0016 7D       		.byte	0x7d
+ 473 0017 14       		.sleb128 20
+ 474 0018 04000000 		.4byte	.LCFI1-.Ltext0
+ 475 001c 06000000 		.4byte	.LCFI2-.Ltext0
+ 476 0020 0200     		.2byte	0x2
+ 477 0022 7D       		.byte	0x7d
+ 478 0023 30       		.sleb128 48
+ 479 0024 06000000 		.4byte	.LCFI2-.Ltext0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 11
+
+
+ 480 0028 E0000000 		.4byte	.LFE0-.Ltext0
+ 481 002c 0200     		.2byte	0x2
+ 482 002e 77       		.byte	0x77
+ 483 002f 30       		.sleb128 48
+ 484 0030 00000000 		.4byte	0
+ 485 0034 00000000 		.4byte	0
+ 486              		.section	.debug_aranges,"",%progbits
+ 487 0000 1C000000 		.4byte	0x1c
+ 488 0004 0200     		.2byte	0x2
+ 489 0006 00000000 		.4byte	.Ldebug_info0
+ 490 000a 04       		.byte	0x4
+ 491 000b 00       		.byte	0
+ 492 000c 0000     		.2byte	0
+ 493 000e 0000     		.2byte	0
+ 494 0010 00000000 		.4byte	.Ltext0
+ 495 0014 E0000000 		.4byte	.Letext0-.Ltext0
+ 496 0018 00000000 		.4byte	0
+ 497 001c 00000000 		.4byte	0
+ 498              		.section	.debug_line,"",%progbits
+ 499              	.Ldebug_line0:
+ 500 0000 55000000 		.section	.debug_str,"MS",%progbits,1
+ 500      02002D00 
+ 500      00000201 
+ 500      FB0E0D00 
+ 500      01010101 
+ 501              	.LASF8:
+ 502 0000 6C6F6E67 		.ascii	"long long int\000"
+ 502      206C6F6E 
+ 502      6720696E 
+ 502      7400
+ 503              	.LASF4:
+ 504 000e 756E7369 		.ascii	"unsigned int\000"
+ 504      676E6564 
+ 504      20696E74 
+ 504      00
+ 505              	.LASF15:
+ 506 001b 68756D69 		.ascii	"humidityValue\000"
+ 506      64697479 
+ 506      56616C75 
+ 506      6500
+ 507              	.LASF10:
+ 508 0029 72657443 		.ascii	"retCode\000"
+ 508      6F646500 
+ 509              	.LASF14:
+ 510 0031 75707065 		.ascii	"upperValue\000"
+ 510      7256616C 
+ 510      756500
+ 511              	.LASF17:
+ 512 003c 68747532 		.ascii	"htu21df.c\000"
+ 512      3164662E 
+ 512      6300
+ 513              	.LASF5:
+ 514 0046 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 514      206C6F6E 
+ 514      6720756E 
+ 514      7369676E 
+ 514      65642069 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 12
+
+
+ 515              	.LASF12:
+ 516 005d 6D61736B 		.ascii	"mask\000"
+ 516      00
+ 517              	.LASF9:
+ 518 0062 72656164 		.ascii	"readHumidity\000"
+ 518      48756D69 
+ 518      64697479 
+ 518      00
+ 519              	.LASF1:
+ 520 006f 756E7369 		.ascii	"unsigned char\000"
+ 520      676E6564 
+ 520      20636861 
+ 520      7200
+ 521              	.LASF16:
+ 522 007d 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
+ 522      43313120 
+ 522      372E332E 
+ 522      31203230 
+ 522      31383036 
+ 523 00b0 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb -mthum"
+ 523      20726576 
+ 523      6973696F 
+ 523      6E203236 
+ 523      31393037 
+ 524 00e3 622D696E 		.ascii	"b-interwork -gdwarf-2 -O0\000"
+ 524      74657277 
+ 524      6F726B20 
+ 524      2D676477 
+ 524      6172662D 
+ 525              	.LASF18:
+ 526 00fd 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
+ 526      6D626564 
+ 526      6465645C 
+ 526      32313338 
+ 526      4D696E69 
+ 527              	.LASF2:
+ 528 011b 73686F72 		.ascii	"short unsigned int\000"
+ 528      7420756E 
+ 528      7369676E 
+ 528      65642069 
+ 528      6E7400
+ 529              	.LASF6:
+ 530 012e 7369676E 		.ascii	"signed char\000"
+ 530      65642063 
+ 530      68617200 
+ 531              	.LASF11:
+ 532 013a 636F6D6D 		.ascii	"commandNoHoldMaster\000"
+ 532      616E644E 
+ 532      6F486F6C 
+ 532      644D6173 
+ 532      74657200 
+ 533              	.LASF0:
+ 534 014e 74553136 		.ascii	"tU16\000"
+ 534      00
+ 535              	.LASF7:
+ 536 0153 73686F72 		.ascii	"short int\000"
+ 536      7420696E 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 13
+
+
+ 536      7400
+ 537              	.LASF19:
+ 538 015d 6D656173 		.ascii	"measureHumidity\000"
+ 538      75726548 
+ 538      756D6964 
+ 538      69747900 
+ 539              	.LASF13:
+ 540 016d 72656164 		.ascii	"readData\000"
+ 540      44617461 
+ 540      00
+ 541              	.LASF3:
+ 542 0176 74553332 		.ascii	"tU32\000"
+ 542      00
+ 543              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 14
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 htu21df.c
+C:\Users\embedded\AppData\Local\Temp\cchfljt7.s:22     .text:00000000 measureHumidity
+C:\Users\embedded\AppData\Local\Temp\cchfljt7.s:30     .text:00000000 $t
+
+UNDEFINED SYMBOLS
+i2cWrite
+mdelay
+i2cRead

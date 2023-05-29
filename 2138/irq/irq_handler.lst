@@ -1,0 +1,410 @@
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s 			page 1
+
+
+   1              		.cpu arm7tdmi
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 0
+  10              		.eabi_attribute 18, 4
+  11              		.file	"irq_handler.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.align	2
+  16              		.global	IRQ_Test
+  17              		.syntax unified
+  18              		.arm
+  19              		.fpu softvfp
+  20              		.type	IRQ_Test, %function
+  21              	IRQ_Test:
+  22              	.LFB0:
+  23              		.file 1 "irq_handler.c"
+   1:irq_handler.c **** /*************************************************************************************
+   2:irq_handler.c ****  *
+   3:irq_handler.c ****  * @Description:
+   4:irq_handler.c ****  * Przykładowa procedura obsługi przerwania dostosowania do 
+   5:irq_handler.c ****  * obsługi przerwań wektoryzowanych.
+   6:irq_handler.c ****  * Procedura ta przełącza stan diody P0.9.
+   7:irq_handler.c ****  * 
+   8:irq_handler.c ****  * 
+   9:irq_handler.c ****  * @Authors: Michał Morawski, 
+  10:irq_handler.c ****  *           Daniel Arendt, 
+  11:irq_handler.c ****  *           Przemysław Ignaciuk,
+  12:irq_handler.c ****  *           Marcin Kwapisz
+  13:irq_handler.c ****  *
+  14:irq_handler.c ****  * @Change log:
+  15:irq_handler.c ****  *           2016.12.01: Wersja oryginalna.
+  16:irq_handler.c ****  *
+  17:irq_handler.c ****  ******************************************************************************/
+  18:irq_handler.c **** 
+  19:irq_handler.c **** #include "../general.h"
+  20:irq_handler.c **** #include <lpc2xxx.h>
+  21:irq_handler.c **** #include "irq_handler.h"
+  22:irq_handler.c **** #include "../timer.h"
+  23:irq_handler.c **** 
+  24:irq_handler.c **** #include "../Common_Def.h"
+  25:irq_handler.c **** 
+  26:irq_handler.c **** void IRQ_Test(void)
+  27:irq_handler.c **** {
+  24              		.loc 1 27 0
+  25              		.cfi_startproc
+  26              		@ Interrupt Service Routine.
+  27              		@ args = 0, pretend = 0, frame = 0
+  28              		@ frame_needed = 1, uses_anonymous_args = 0
+  29              		@ link register save eliminated.
+  30 0000 0C082DE9 		push	{r2, r3, fp}
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s 			page 2
+
+
+  31              	.LCFI0:
+  32              		.cfi_def_cfa_offset 12
+  33              		.cfi_offset 2, -12
+  34              		.cfi_offset 3, -8
+  35              		.cfi_offset 11, -4
+  36 0004 08B08DE2 		add	fp, sp, #8
+  37              	.LCFI1:
+  38              		.cfi_def_cfa 11, 4
+  28:irq_handler.c **** 	if (TIMER_MR0_INT & T1IR)
+  39              		.loc 1 28 0
+  40 0008 70309FE5 		ldr	r3, .L4
+  41 000c 003093E5 		ldr	r3, [r3]
+  42 0010 013003E2 		and	r3, r3, #1
+  43 0014 000053E3 		cmp	r3, #0
+  44 0018 0600000A 		beq	.L2
+  29:irq_handler.c ****     {
+  30:irq_handler.c **** 		IOCLR1 = DIODA_PRAWA;         // (1 << 17)
+  45              		.loc 1 30 0
+  46 001c 60309FE5 		ldr	r3, .L4+4
+  47 0020 0228A0E3 		mov	r2, #131072
+  48 0024 002083E5 		str	r2, [r3]
+  31:irq_handler.c ****         T1IR   = TIMER_MR0_INT;       // Informacja dla Timera #1,
+  49              		.loc 1 31 0
+  50 0028 50309FE5 		ldr	r3, .L4
+  51 002c 0120A0E3 		mov	r2, #1
+  52 0030 002083E5 		str	r2, [r3]
+  53 0034 0A0000EA 		b	.L3
+  54              	.L2:
+  32:irq_handler.c **** 	                                  // że jego przerwanie zostało obsłużone.
+  33:irq_handler.c ****     }
+  34:irq_handler.c ****     else if (TIMER_MR1_INT & T1IR)
+  55              		.loc 1 34 0
+  56 0038 40309FE5 		ldr	r3, .L4
+  57 003c 003093E5 		ldr	r3, [r3]
+  58 0040 023003E2 		and	r3, r3, #2
+  59 0044 000053E3 		cmp	r3, #0
+  60 0048 0500000A 		beq	.L3
+  35:irq_handler.c ****     {
+  36:irq_handler.c ****         IOSET1 = DIODA_PRAWA;         // (1 << 17)
+  61              		.loc 1 36 0
+  62 004c 34309FE5 		ldr	r3, .L4+8
+  63 0050 0228A0E3 		mov	r2, #131072
+  64 0054 002083E5 		str	r2, [r3]
+  37:irq_handler.c ****         T1IR   = TIMER_MR1_INT;       // Informacja dla Timera #1,
+  65              		.loc 1 37 0
+  66 0058 20309FE5 		ldr	r3, .L4
+  67 005c 0220A0E3 		mov	r2, #2
+  68 0060 002083E5 		str	r2, [r3]
+  69              	.L3:
+  38:irq_handler.c **** 	                                  // że jego przerwanie zostało obsłużone.
+  39:irq_handler.c ****     }
+  40:irq_handler.c ****     VICVectAddr = 0;                  // End of Interrupt -> informacja dla
+  70              		.loc 1 40 0
+  71 0064 20309FE5 		ldr	r3, .L4+12
+  72 0068 0020A0E3 		mov	r2, #0
+  73 006c 002083E5 		str	r2, [r3]
+  41:irq_handler.c ****                                       // kontrolera przerwań
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s 			page 3
+
+
+  42:irq_handler.c **** }
+  74              		.loc 1 42 0
+  75 0070 0000A0E1 		nop
+  76 0074 08D04BE2 		sub	sp, fp, #8
+  77              	.LCFI2:
+  78              		.cfi_def_cfa 13, 12
+  79              		@ sp needed
+  80 0078 0C08BDE8 		pop	{r2, r3, fp}
+  81              	.LCFI3:
+  82              		.cfi_restore 11
+  83              		.cfi_restore 3
+  84              		.cfi_restore 2
+  85              		.cfi_def_cfa_offset 0
+  86 007c 04F05EE2 		subs	pc, lr, #4
+  87              	.L5:
+  88              		.align	2
+  89              	.L4:
+  90 0080 008000E0 		.word	-536838144
+  91 0084 1C8002E0 		.word	-536707044
+  92 0088 148002E0 		.word	-536707052
+  93 008c 30F0FFFF 		.word	-4048
+  94              		.cfi_endproc
+  95              	.LFE0:
+  96              		.size	IRQ_Test, .-IRQ_Test
+  97              	.Letext0:
+  98              		.section	.debug_info,"",%progbits
+  99              	.Ldebug_info0:
+ 100 0000 70000000 		.4byte	0x70
+ 101 0004 0200     		.2byte	0x2
+ 102 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 103 000a 04       		.byte	0x4
+ 104 000b 01       		.uleb128 0x1
+ 105 000c 94000000 		.4byte	.LASF7
+ 106 0010 0C       		.byte	0xc
+ 107 0011 4E000000 		.4byte	.LASF8
+ 108 0015 0D000000 		.4byte	.LASF9
+ 109 0019 00000000 		.4byte	.Ltext0
+ 110 001d 90000000 		.4byte	.Letext0
+ 111 0021 00000000 		.4byte	.Ldebug_line0
+ 112 0025 02       		.uleb128 0x2
+ 113 0026 01       		.byte	0x1
+ 114 0027 08       		.byte	0x8
+ 115 0028 86000000 		.4byte	.LASF0
+ 116 002c 02       		.uleb128 0x2
+ 117 002d 02       		.byte	0x2
+ 118 002e 07       		.byte	0x7
+ 119 002f 3B000000 		.4byte	.LASF1
+ 120 0033 02       		.uleb128 0x2
+ 121 0034 04       		.byte	0x4
+ 122 0035 07       		.byte	0x7
+ 123 0036 00000000 		.4byte	.LASF2
+ 124 003a 02       		.uleb128 0x2
+ 125 003b 08       		.byte	0x8
+ 126 003c 07       		.byte	0x7
+ 127 003d 6F000000 		.4byte	.LASF3
+ 128 0041 02       		.uleb128 0x2
+ 129 0042 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s 			page 4
+
+
+ 130 0043 06       		.byte	0x6
+ 131 0044 2F000000 		.4byte	.LASF4
+ 132 0048 02       		.uleb128 0x2
+ 133 0049 02       		.byte	0x2
+ 134 004a 05       		.byte	0x5
+ 135 004b 5C000000 		.4byte	.LASF5
+ 136 004f 03       		.uleb128 0x3
+ 137 0050 04       		.byte	0x4
+ 138 0051 05       		.byte	0x5
+ 139 0052 696E7400 		.ascii	"int\000"
+ 140 0056 02       		.uleb128 0x2
+ 141 0057 08       		.byte	0x8
+ 142 0058 05       		.byte	0x5
+ 143 0059 0C010000 		.4byte	.LASF6
+ 144 005d 04       		.uleb128 0x4
+ 145 005e 01       		.byte	0x1
+ 146 005f 66000000 		.4byte	.LASF10
+ 147 0063 01       		.byte	0x1
+ 148 0064 1A       		.byte	0x1a
+ 149 0065 01       		.byte	0x1
+ 150 0066 00000000 		.4byte	.LFB0
+ 151 006a 90000000 		.4byte	.LFE0
+ 152 006e 00000000 		.4byte	.LLST0
+ 153 0072 01       		.byte	0x1
+ 154 0073 00       		.byte	0
+ 155              		.section	.debug_abbrev,"",%progbits
+ 156              	.Ldebug_abbrev0:
+ 157 0000 01       		.uleb128 0x1
+ 158 0001 11       		.uleb128 0x11
+ 159 0002 01       		.byte	0x1
+ 160 0003 25       		.uleb128 0x25
+ 161 0004 0E       		.uleb128 0xe
+ 162 0005 13       		.uleb128 0x13
+ 163 0006 0B       		.uleb128 0xb
+ 164 0007 03       		.uleb128 0x3
+ 165 0008 0E       		.uleb128 0xe
+ 166 0009 1B       		.uleb128 0x1b
+ 167 000a 0E       		.uleb128 0xe
+ 168 000b 11       		.uleb128 0x11
+ 169 000c 01       		.uleb128 0x1
+ 170 000d 12       		.uleb128 0x12
+ 171 000e 01       		.uleb128 0x1
+ 172 000f 10       		.uleb128 0x10
+ 173 0010 06       		.uleb128 0x6
+ 174 0011 00       		.byte	0
+ 175 0012 00       		.byte	0
+ 176 0013 02       		.uleb128 0x2
+ 177 0014 24       		.uleb128 0x24
+ 178 0015 00       		.byte	0
+ 179 0016 0B       		.uleb128 0xb
+ 180 0017 0B       		.uleb128 0xb
+ 181 0018 3E       		.uleb128 0x3e
+ 182 0019 0B       		.uleb128 0xb
+ 183 001a 03       		.uleb128 0x3
+ 184 001b 0E       		.uleb128 0xe
+ 185 001c 00       		.byte	0
+ 186 001d 00       		.byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s 			page 5
+
+
+ 187 001e 03       		.uleb128 0x3
+ 188 001f 24       		.uleb128 0x24
+ 189 0020 00       		.byte	0
+ 190 0021 0B       		.uleb128 0xb
+ 191 0022 0B       		.uleb128 0xb
+ 192 0023 3E       		.uleb128 0x3e
+ 193 0024 0B       		.uleb128 0xb
+ 194 0025 03       		.uleb128 0x3
+ 195 0026 08       		.uleb128 0x8
+ 196 0027 00       		.byte	0
+ 197 0028 00       		.byte	0
+ 198 0029 04       		.uleb128 0x4
+ 199 002a 2E       		.uleb128 0x2e
+ 200 002b 00       		.byte	0
+ 201 002c 3F       		.uleb128 0x3f
+ 202 002d 0C       		.uleb128 0xc
+ 203 002e 03       		.uleb128 0x3
+ 204 002f 0E       		.uleb128 0xe
+ 205 0030 3A       		.uleb128 0x3a
+ 206 0031 0B       		.uleb128 0xb
+ 207 0032 3B       		.uleb128 0x3b
+ 208 0033 0B       		.uleb128 0xb
+ 209 0034 27       		.uleb128 0x27
+ 210 0035 0C       		.uleb128 0xc
+ 211 0036 11       		.uleb128 0x11
+ 212 0037 01       		.uleb128 0x1
+ 213 0038 12       		.uleb128 0x12
+ 214 0039 01       		.uleb128 0x1
+ 215 003a 40       		.uleb128 0x40
+ 216 003b 06       		.uleb128 0x6
+ 217 003c 9742     		.uleb128 0x2117
+ 218 003e 0C       		.uleb128 0xc
+ 219 003f 00       		.byte	0
+ 220 0040 00       		.byte	0
+ 221 0041 00       		.byte	0
+ 222              		.section	.debug_loc,"",%progbits
+ 223              	.Ldebug_loc0:
+ 224              	.LLST0:
+ 225 0000 00000000 		.4byte	.LFB0-.Ltext0
+ 226 0004 04000000 		.4byte	.LCFI0-.Ltext0
+ 227 0008 0200     		.2byte	0x2
+ 228 000a 7D       		.byte	0x7d
+ 229 000b 00       		.sleb128 0
+ 230 000c 04000000 		.4byte	.LCFI0-.Ltext0
+ 231 0010 08000000 		.4byte	.LCFI1-.Ltext0
+ 232 0014 0200     		.2byte	0x2
+ 233 0016 7D       		.byte	0x7d
+ 234 0017 0C       		.sleb128 12
+ 235 0018 08000000 		.4byte	.LCFI1-.Ltext0
+ 236 001c 78000000 		.4byte	.LCFI2-.Ltext0
+ 237 0020 0200     		.2byte	0x2
+ 238 0022 7B       		.byte	0x7b
+ 239 0023 04       		.sleb128 4
+ 240 0024 78000000 		.4byte	.LCFI2-.Ltext0
+ 241 0028 7C000000 		.4byte	.LCFI3-.Ltext0
+ 242 002c 0200     		.2byte	0x2
+ 243 002e 7D       		.byte	0x7d
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s 			page 6
+
+
+ 244 002f 0C       		.sleb128 12
+ 245 0030 7C000000 		.4byte	.LCFI3-.Ltext0
+ 246 0034 90000000 		.4byte	.LFE0-.Ltext0
+ 247 0038 0200     		.2byte	0x2
+ 248 003a 7D       		.byte	0x7d
+ 249 003b 00       		.sleb128 0
+ 250 003c 00000000 		.4byte	0
+ 251 0040 00000000 		.4byte	0
+ 252              		.section	.debug_aranges,"",%progbits
+ 253 0000 1C000000 		.4byte	0x1c
+ 254 0004 0200     		.2byte	0x2
+ 255 0006 00000000 		.4byte	.Ldebug_info0
+ 256 000a 04       		.byte	0x4
+ 257 000b 00       		.byte	0
+ 258 000c 0000     		.2byte	0
+ 259 000e 0000     		.2byte	0
+ 260 0010 00000000 		.4byte	.Ltext0
+ 261 0014 90000000 		.4byte	.Letext0-.Ltext0
+ 262 0018 00000000 		.4byte	0
+ 263 001c 00000000 		.4byte	0
+ 264              		.section	.debug_line,"",%progbits
+ 265              	.Ldebug_line0:
+ 266 0000 41000000 		.section	.debug_str,"MS",%progbits,1
+ 266      02002400 
+ 266      00000201 
+ 266      FB0E0D00 
+ 266      01010101 
+ 267              	.LASF2:
+ 268 0000 756E7369 		.ascii	"unsigned int\000"
+ 268      676E6564 
+ 268      20696E74 
+ 268      00
+ 269              	.LASF9:
+ 270 000d 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\\irq\000"
+ 270      6D626564 
+ 270      6465645C 
+ 270      32313338 
+ 270      4D696E69 
+ 271              	.LASF4:
+ 272 002f 7369676E 		.ascii	"signed char\000"
+ 272      65642063 
+ 272      68617200 
+ 273              	.LASF1:
+ 274 003b 73686F72 		.ascii	"short unsigned int\000"
+ 274      7420756E 
+ 274      7369676E 
+ 274      65642069 
+ 274      6E7400
+ 275              	.LASF8:
+ 276 004e 6972715F 		.ascii	"irq_handler.c\000"
+ 276      68616E64 
+ 276      6C65722E 
+ 276      6300
+ 277              	.LASF5:
+ 278 005c 73686F72 		.ascii	"short int\000"
+ 278      7420696E 
+ 278      7400
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s 			page 7
+
+
+ 279              	.LASF10:
+ 280 0066 4952515F 		.ascii	"IRQ_Test\000"
+ 280      54657374 
+ 280      00
+ 281              	.LASF3:
+ 282 006f 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 282      206C6F6E 
+ 282      6720756E 
+ 282      7369676E 
+ 282      65642069 
+ 283              	.LASF0:
+ 284 0086 756E7369 		.ascii	"unsigned char\000"
+ 284      676E6564 
+ 284      20636861 
+ 284      7200
+ 285              	.LASF7:
+ 286 0094 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
+ 286      43313120 
+ 286      372E332E 
+ 286      31203230 
+ 286      31383036 
+ 287 00c7 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb-interw"
+ 287      20726576 
+ 287      6973696F 
+ 287      6E203236 
+ 287      31393037 
+ 288 00fa 6F726B20 		.ascii	"ork -gdwarf-2 -O0\000"
+ 288      2D676477 
+ 288      6172662D 
+ 288      32202D4F 
+ 288      3000
+ 289              	.LASF6:
+ 290 010c 6C6F6E67 		.ascii	"long long int\000"
+ 290      206C6F6E 
+ 290      6720696E 
+ 290      7400
+ 291              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 irq_handler.c
+C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s:15     .text:00000000 $a
+C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s:21     .text:00000000 IRQ_Test
+C:\Users\embedded\AppData\Local\Temp\ccP2EPQA.s:90     .text:00000080 $d
+
+NO UNDEFINED SYMBOLS

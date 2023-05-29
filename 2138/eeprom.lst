@@ -1,0 +1,2928 @@
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 1
+
+
+   1              		.cpu arm7tdmi
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 6
+   9              		.eabi_attribute 34, 0
+  10              		.eabi_attribute 18, 4
+  11              		.file	"eeprom.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.align	1
+  16              		.global	eepromPoll
+  17              		.syntax unified
+  18              		.code	16
+  19              		.thumb_func
+  20              		.fpu softvfp
+  21              		.type	eepromPoll, %function
+  22              	eepromPoll:
+  23              	.LFB0:
+  24              		.file 1 "eeprom.c"
+   1:eeprom.c      **** /******************************************************************************
+   2:eeprom.c      ****  * Includes
+   3:eeprom.c      ****  *****************************************************************************/
+   4:eeprom.c      **** 
+   5:eeprom.c      **** #include "general.h"
+   6:eeprom.c      **** #include "i2c.h"
+   7:eeprom.c      **** 
+   8:eeprom.c      **** /******************************************************************************
+   9:eeprom.c      ****  * Defines and typedefs
+  10:eeprom.c      ****  *****************************************************************************/
+  11:eeprom.c      **** 
+  12:eeprom.c      **** #define EEPROM_SIZE       0x2000  //64kbit = 8KByte
+  13:eeprom.c      **** #define LOCAL_EEPROM_ADDR 0x0
+  14:eeprom.c      **** #define EEPROM_ADDR       0xA0
+  15:eeprom.c      **** 
+  16:eeprom.c      **** #define I2C_EEPROM_ADDR   (EEPROM_ADDR + (LOCAL_EEPROM_ADDR << 1))
+  17:eeprom.c      **** #define I2C_EEPROM_RCV    (EEPROM_ADDR + (LOCAL_EEPROM_ADDR << 1) + 0x01)
+  18:eeprom.c      **** #define I2C_EEPROM_SND    (EEPROM_ADDR + (LOCAL_EEPROM_ADDR << 1) + 0x00)
+  19:eeprom.c      **** 
+  20:eeprom.c      **** 
+  21:eeprom.c      **** /*****************************************************************************
+  22:eeprom.c      ****  * Global variables
+  23:eeprom.c      ****  ****************************************************************************/
+  24:eeprom.c      **** 
+  25:eeprom.c      **** // None
+  26:eeprom.c      **** 
+  27:eeprom.c      **** /*****************************************************************************
+  28:eeprom.c      ****  * Local variables
+  29:eeprom.c      ****  ****************************************************************************/
+  30:eeprom.c      **** 
+  31:eeprom.c      **** // None
+  32:eeprom.c      **** 
+  33:eeprom.c      **** /*****************************************************************************
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 2
+
+
+  34:eeprom.c      ****  * Local prototypes
+  35:eeprom.c      ****  ****************************************************************************/
+  36:eeprom.c      **** 
+  37:eeprom.c      **** /******************************************************************************
+  38:eeprom.c      ****  *
+  39:eeprom.c      ****  * Description:
+  40:eeprom.c      ****  *    Waits till I2C returns ACK (after BURN cycle)
+  41:eeprom.c      ****  *
+  42:eeprom.c      ****  *    Note: After a stop condition, you may need a bus free time before you 
+  43:eeprom.c      ****  *          can generate a new start condition.
+  44:eeprom.c      ****  *
+  45:eeprom.c      ****  * Returns:
+  46:eeprom.c      ****  *    I2C_CODE_OK or I2C_CODE_ERROR
+  47:eeprom.c      ****  *
+  48:eeprom.c      ****  *****************************************************************************/
+  49:eeprom.c      **** 
+  50:eeprom.c      **** tS8 eepromPoll(void)
+  51:eeprom.c      **** {
+  25              		.loc 1 51 0
+  26              		.cfi_startproc
+  27              		@ Function supports interworking.
+  28              		@ args = 0, pretend = 0, frame = 8
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30 0000 90B5     		push	{r4, r7, lr}
+  31              	.LCFI0:
+  32              		.cfi_def_cfa_offset 12
+  33              		.cfi_offset 4, -12
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 83B0     		sub	sp, sp, #12
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 24
+  39 0004 00AF     		add	r7, sp, #0
+  40              	.LCFI2:
+  41              		.cfi_def_cfa_register 7
+  52:eeprom.c      ****   tS8 retCode  = I2C_CODE_OK;
+  42              		.loc 1 52 0
+  43 0006 FB1D     		adds	r3, r7, #7
+  44 0008 0122     		movs	r2, #1
+  45 000a 1A70     		strb	r2, [r3]
+  53:eeprom.c      ****   tU8 status   = 0;
+  46              		.loc 1 53 0
+  47 000c 7B1D     		adds	r3, r7, #5
+  48 000e 0022     		movs	r2, #0
+  49 0010 1A70     		strb	r2, [r3]
+  54:eeprom.c      ****   tBool burnEnd = FALSE;
+  50              		.loc 1 54 0
+  51 0012 BB1D     		adds	r3, r7, #6
+  52 0014 0022     		movs	r2, #0
+  53 0016 1A70     		strb	r2, [r3]
+  55:eeprom.c      **** 
+  56:eeprom.c      ****   while(burnEnd == FALSE)
+  54              		.loc 1 56 0
+  55 0018 44E0     		b	.L2
+  56              	.L9:
+  57:eeprom.c      ****   {
+  58:eeprom.c      ****     /* Generate Start condition */
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 3
+
+
+  59:eeprom.c      ****     retCode = i2cStart();
+  57              		.loc 1 59 0
+  58 001a FC1D     		adds	r4, r7, #7
+  59 001c FFF7FEFF 		bl	i2cStart
+  60 0020 0300     		movs	r3, r0
+  61 0022 2370     		strb	r3, [r4]
+  60:eeprom.c      **** 
+  61:eeprom.c      ****     /* Transmit SLA+W */
+  62:eeprom.c      ****     if(retCode == I2C_CODE_OK)
+  62              		.loc 1 62 0
+  63 0024 FB1D     		adds	r3, r7, #7
+  64 0026 1B78     		ldrb	r3, [r3]
+  65 0028 1B06     		lsls	r3, r3, #24
+  66 002a 1B16     		asrs	r3, r3, #24
+  67 002c 012B     		cmp	r3, #1
+  68 002e 12D1     		bne	.L3
+  63:eeprom.c      ****     {
+  64:eeprom.c      ****       /* Write SLA+W */
+  65:eeprom.c      ****       retCode = i2cPutChar(I2C_EEPROM_SND);
+  69              		.loc 1 65 0
+  70 0030 FC1D     		adds	r4, r7, #7
+  71 0032 A020     		movs	r0, #160
+  72 0034 FFF7FEFF 		bl	i2cPutChar
+  73 0038 0300     		movs	r3, r0
+  74 003a 2370     		strb	r3, [r4]
+  66:eeprom.c      ****       while(retCode == I2C_CODE_BUSY)
+  75              		.loc 1 66 0
+  76 003c 05E0     		b	.L4
+  77              	.L5:
+  67:eeprom.c      ****       {
+  68:eeprom.c      ****         retCode = i2cPutChar(I2C_EEPROM_SND);
+  78              		.loc 1 68 0
+  79 003e FC1D     		adds	r4, r7, #7
+  80 0040 A020     		movs	r0, #160
+  81 0042 FFF7FEFF 		bl	i2cPutChar
+  82 0046 0300     		movs	r3, r0
+  83 0048 2370     		strb	r3, [r4]
+  84              	.L4:
+  66:eeprom.c      ****       while(retCode == I2C_CODE_BUSY)
+  85              		.loc 1 66 0
+  86 004a FB1D     		adds	r3, r7, #7
+  87 004c 1B78     		ldrb	r3, [r3]
+  88 004e 1B06     		lsls	r3, r3, #24
+  89 0050 1B16     		asrs	r3, r3, #24
+  90 0052 0433     		adds	r3, r3, #4
+  91 0054 F3D0     		beq	.L5
+  92              	.L3:
+  69:eeprom.c      ****       }
+  70:eeprom.c      ****     }
+  71:eeprom.c      **** 
+  72:eeprom.c      ****     if(retCode == I2C_CODE_OK)
+  93              		.loc 1 72 0
+  94 0056 FB1D     		adds	r3, r7, #7
+  95 0058 1B78     		ldrb	r3, [r3]
+  96 005a 1B06     		lsls	r3, r3, #24
+  97 005c 1B16     		asrs	r3, r3, #24
+  98 005e 012B     		cmp	r3, #1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 4
+
+
+  99 0060 1ED1     		bne	.L6
+  73:eeprom.c      ****     {
+  74:eeprom.c      ****       /* Wait until SLA+W transmitted */
+  75:eeprom.c      ****       /* Get new status */
+  76:eeprom.c      ****       status = i2cCheckStatus();
+ 100              		.loc 1 76 0
+ 101 0062 7C1D     		adds	r4, r7, #5
+ 102 0064 FFF7FEFF 		bl	i2cCheckStatus
+ 103 0068 0300     		movs	r3, r0
+ 104 006a 2370     		strb	r3, [r4]
+  77:eeprom.c      **** 
+  78:eeprom.c      ****       if(status == 0x18)
+ 105              		.loc 1 78 0
+ 106 006c 7B1D     		adds	r3, r7, #5
+ 107 006e 1B78     		ldrb	r3, [r3]
+ 108 0070 182B     		cmp	r3, #24
+ 109 0072 03D1     		bne	.L7
+  79:eeprom.c      ****       {
+  80:eeprom.c      ****         /* data transmitted and ACK received */
+  81:eeprom.c      ****         burnEnd = TRUE;
+ 110              		.loc 1 81 0
+ 111 0074 BB1D     		adds	r3, r7, #6
+ 112 0076 0122     		movs	r2, #1
+ 113 0078 1A70     		strb	r2, [r3]
+ 114 007a 11E0     		b	.L6
+ 115              	.L7:
+  82:eeprom.c      ****       }
+  83:eeprom.c      ****       else if(status == 0x20)
+ 116              		.loc 1 83 0
+ 117 007c 7B1D     		adds	r3, r7, #5
+ 118 007e 1B78     		ldrb	r3, [r3]
+ 119 0080 202B     		cmp	r3, #32
+ 120 0082 03D1     		bne	.L8
+  84:eeprom.c      ****       {
+  85:eeprom.c      ****         /* data transmitted and ACK not received */
+  86:eeprom.c      ****         // send start bit, start again
+  87:eeprom.c      ****         burnEnd = FALSE;
+ 121              		.loc 1 87 0
+ 122 0084 BB1D     		adds	r3, r7, #6
+ 123 0086 0022     		movs	r2, #0
+ 124 0088 1A70     		strb	r2, [r3]
+ 125 008a 09E0     		b	.L6
+ 126              	.L8:
+  88:eeprom.c      ****       }
+  89:eeprom.c      ****       else if( status != 0xf8 )
+ 127              		.loc 1 89 0
+ 128 008c 7B1D     		adds	r3, r7, #5
+ 129 008e 1B78     		ldrb	r3, [r3]
+ 130 0090 F82B     		cmp	r3, #248
+ 131 0092 05D0     		beq	.L6
+  90:eeprom.c      ****       {
+  91:eeprom.c      ****         /* error ---*/
+  92:eeprom.c      ****         retCode = I2C_CODE_ERROR;
+ 132              		.loc 1 92 0
+ 133 0094 FB1D     		adds	r3, r7, #7
+ 134 0096 FF22     		movs	r2, #255
+ 135 0098 1A70     		strb	r2, [r3]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 5
+
+
+  93:eeprom.c      ****         burnEnd = TRUE;
+ 136              		.loc 1 93 0
+ 137 009a BB1D     		adds	r3, r7, #6
+ 138 009c 0122     		movs	r2, #1
+ 139 009e 1A70     		strb	r2, [r3]
+ 140              	.L6:
+  94:eeprom.c      ****       }
+  95:eeprom.c      ****     }
+  96:eeprom.c      **** 
+  97:eeprom.c      ****     /* Generate Stop condition */
+  98:eeprom.c      ****     i2cStop();
+ 141              		.loc 1 98 0
+ 142 00a0 FFF7FEFF 		bl	i2cStop
+ 143              	.L2:
+  56:eeprom.c      ****   {
+ 144              		.loc 1 56 0
+ 145 00a4 BB1D     		adds	r3, r7, #6
+ 146 00a6 1B78     		ldrb	r3, [r3]
+ 147 00a8 002B     		cmp	r3, #0
+ 148 00aa B6D0     		beq	.L9
+  99:eeprom.c      **** 
+ 100:eeprom.c      ****   } // end of while 
+ 101:eeprom.c      **** 
+ 102:eeprom.c      **** 
+ 103:eeprom.c      ****   return retCode;
+ 149              		.loc 1 103 0
+ 150 00ac FB1D     		adds	r3, r7, #7
+ 151 00ae 1B78     		ldrb	r3, [r3]
+ 152 00b0 1B06     		lsls	r3, r3, #24
+ 153 00b2 1B16     		asrs	r3, r3, #24
+ 104:eeprom.c      **** 
+ 105:eeprom.c      **** }
+ 154              		.loc 1 105 0
+ 155 00b4 1800     		movs	r0, r3
+ 156 00b6 BD46     		mov	sp, r7
+ 157 00b8 03B0     		add	sp, sp, #12
+ 158              		@ sp needed
+ 159 00ba 90BC     		pop	{r4, r7}
+ 160 00bc 02BC     		pop	{r1}
+ 161 00be 0847     		bx	r1
+ 162              		.cfi_endproc
+ 163              	.LFE0:
+ 164              		.size	eepromPoll, .-eepromPoll
+ 165              		.align	1
+ 166              		.global	eepromStartRead
+ 167              		.syntax unified
+ 168              		.code	16
+ 169              		.thumb_func
+ 170              		.fpu softvfp
+ 171              		.type	eepromStartRead, %function
+ 172              	eepromStartRead:
+ 173              	.LFB1:
+ 106:eeprom.c      **** 
+ 107:eeprom.c      **** /******************************************************************************
+ 108:eeprom.c      ****  *
+ 109:eeprom.c      ****  * Description:
+ 110:eeprom.c      ****  *    Start a read
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 6
+
+
+ 111:eeprom.c      ****  *
+ 112:eeprom.c      ****  * Params:
+ 113:eeprom.c      ****  *    [in] devAddr - device address
+ 114:eeprom.c      ****  *    [in] address - eeprom address
+ 115:eeprom.c      ****  *
+ 116:eeprom.c      ****  * Returns:
+ 117:eeprom.c      ****  *    I2C_CODE_OK or I2C_CODE_ERROR
+ 118:eeprom.c      ****  *
+ 119:eeprom.c      ****  *****************************************************************************/
+ 120:eeprom.c      **** 
+ 121:eeprom.c      **** tS8 eepromStartRead(tU8  devAddr, tU16 address)
+ 122:eeprom.c      **** {
+ 174              		.loc 1 122 0
+ 175              		.cfi_startproc
+ 176              		@ Function supports interworking.
+ 177              		@ args = 0, pretend = 0, frame = 16
+ 178              		@ frame_needed = 1, uses_anonymous_args = 0
+ 179 00c0 B0B5     		push	{r4, r5, r7, lr}
+ 180              	.LCFI3:
+ 181              		.cfi_def_cfa_offset 16
+ 182              		.cfi_offset 4, -16
+ 183              		.cfi_offset 5, -12
+ 184              		.cfi_offset 7, -8
+ 185              		.cfi_offset 14, -4
+ 186 00c2 84B0     		sub	sp, sp, #16
+ 187              	.LCFI4:
+ 188              		.cfi_def_cfa_offset 32
+ 189 00c4 00AF     		add	r7, sp, #0
+ 190              	.LCFI5:
+ 191              		.cfi_def_cfa_register 7
+ 192 00c6 0200     		movs	r2, r0
+ 193 00c8 FB1D     		adds	r3, r7, #7
+ 194 00ca 1A70     		strb	r2, [r3]
+ 195 00cc 3B1D     		adds	r3, r7, #4
+ 196 00ce 0A1C     		adds	r2, r1, #0
+ 197 00d0 1A80     		strh	r2, [r3]
+ 123:eeprom.c      ****   tS8 retCode = 0;
+ 198              		.loc 1 123 0
+ 199 00d2 0F21     		movs	r1, #15
+ 200 00d4 7B18     		adds	r3, r7, r1
+ 201 00d6 0022     		movs	r2, #0
+ 202 00d8 1A70     		strb	r2, [r3]
+ 124:eeprom.c      ****   tU8 status  = 0;
+ 203              		.loc 1 124 0
+ 204 00da 0E23     		movs	r3, #14
+ 205 00dc FB18     		adds	r3, r7, r3
+ 206 00de 0022     		movs	r2, #0
+ 207 00e0 1A70     		strb	r2, [r3]
+ 125:eeprom.c      **** 
+ 126:eeprom.c      ****   /* Generate Start condition */
+ 127:eeprom.c      ****   retCode = i2cStart();
+ 208              		.loc 1 127 0
+ 209 00e2 0D00     		movs	r5, r1
+ 210 00e4 7C18     		adds	r4, r7, r1
+ 211 00e6 FFF7FEFF 		bl	i2cStart
+ 212 00ea 0300     		movs	r3, r0
+ 213 00ec 2370     		strb	r3, [r4]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 7
+
+
+ 128:eeprom.c      **** 
+ 129:eeprom.c      ****   /* Transmit address */
+ 130:eeprom.c      ****   if(retCode == I2C_CODE_OK )
+ 214              		.loc 1 130 0
+ 215 00ee 2900     		movs	r1, r5
+ 216 00f0 7B18     		adds	r3, r7, r1
+ 217 00f2 1B78     		ldrb	r3, [r3]
+ 218 00f4 1B06     		lsls	r3, r3, #24
+ 219 00f6 1B16     		asrs	r3, r3, #24
+ 220 00f8 012B     		cmp	r3, #1
+ 221 00fa 19D1     		bne	.L12
+ 131:eeprom.c      ****   {
+ 132:eeprom.c      ****     /* Write SLA+W */
+ 133:eeprom.c      ****     retCode = i2cPutChar(devAddr);
+ 222              		.loc 1 133 0
+ 223 00fc 0F23     		movs	r3, #15
+ 224 00fe FC18     		adds	r4, r7, r3
+ 225 0100 FB1D     		adds	r3, r7, #7
+ 226 0102 1B78     		ldrb	r3, [r3]
+ 227 0104 1800     		movs	r0, r3
+ 228 0106 FFF7FEFF 		bl	i2cPutChar
+ 229 010a 0300     		movs	r3, r0
+ 230 010c 2370     		strb	r3, [r4]
+ 134:eeprom.c      ****     while( retCode == I2C_CODE_BUSY )
+ 231              		.loc 1 134 0
+ 232 010e 08E0     		b	.L13
+ 233              	.L14:
+ 135:eeprom.c      ****     {
+ 136:eeprom.c      ****       retCode = i2cPutChar( devAddr );
+ 234              		.loc 1 136 0
+ 235 0110 0F23     		movs	r3, #15
+ 236 0112 FC18     		adds	r4, r7, r3
+ 237 0114 FB1D     		adds	r3, r7, #7
+ 238 0116 1B78     		ldrb	r3, [r3]
+ 239 0118 1800     		movs	r0, r3
+ 240 011a FFF7FEFF 		bl	i2cPutChar
+ 241 011e 0300     		movs	r3, r0
+ 242 0120 2370     		strb	r3, [r4]
+ 243              	.L13:
+ 134:eeprom.c      ****     while( retCode == I2C_CODE_BUSY )
+ 244              		.loc 1 134 0
+ 245 0122 0F23     		movs	r3, #15
+ 246 0124 FB18     		adds	r3, r7, r3
+ 247 0126 1B78     		ldrb	r3, [r3]
+ 248 0128 1B06     		lsls	r3, r3, #24
+ 249 012a 1B16     		asrs	r3, r3, #24
+ 250 012c 0433     		adds	r3, r3, #4
+ 251 012e EFD0     		beq	.L14
+ 252              	.L12:
+ 137:eeprom.c      ****     }
+ 138:eeprom.c      ****   }
+ 139:eeprom.c      **** 
+ 140:eeprom.c      ****   if( retCode == I2C_CODE_OK )
+ 253              		.loc 1 140 0
+ 254 0130 0F23     		movs	r3, #15
+ 255 0132 FB18     		adds	r3, r7, r3
+ 256 0134 1B78     		ldrb	r3, [r3]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 8
+
+
+ 257 0136 1B06     		lsls	r3, r3, #24
+ 258 0138 1B16     		asrs	r3, r3, #24
+ 259 013a 012B     		cmp	r3, #1
+ 260 013c 3DD1     		bne	.L25
+ 141:eeprom.c      ****   {
+ 142:eeprom.c      **** #if 0
+ 143:eeprom.c      ****     /* Wait until data transmitted */
+ 144:eeprom.c      ****     while(1)
+ 145:eeprom.c      ****     {
+ 146:eeprom.c      ****       /* Get new status */
+ 147:eeprom.c      ****       status = i2cCheckStatus();
+ 148:eeprom.c      **** 
+ 149:eeprom.c      ****       if( (status == 0x18) || (status == 0x28) )
+ 150:eeprom.c      ****       {
+ 151:eeprom.c      ****         /* Data transmitted and ACK received */
+ 152:eeprom.c      **** 
+ 153:eeprom.c      **** 
+ 154:eeprom.c      ****         /* Write data */
+ 155:eeprom.c      ****         retCode = i2cPutChar( (tU8)(address >> 8) );
+ 156:eeprom.c      ****         while(retCode == I2C_CODE_BUSY)
+ 157:eeprom.c      ****         {
+ 158:eeprom.c      ****           retCode = i2cPutChar( (tU8)(address >> 8) );
+ 159:eeprom.c      ****         }
+ 160:eeprom.c      ****         break;
+ 161:eeprom.c      ****       }
+ 162:eeprom.c      ****       else if(status != 0xf8)
+ 163:eeprom.c      ****       {
+ 164:eeprom.c      ****         /* error */
+ 165:eeprom.c      ****         retCode = I2C_CODE_ERROR;
+ 166:eeprom.c      ****         break;
+ 167:eeprom.c      ****       }
+ 168:eeprom.c      ****     }
+ 169:eeprom.c      **** #endif
+ 170:eeprom.c      **** 
+ 171:eeprom.c      ****     if(retCode == I2C_CODE_OK)
+ 261              		.loc 1 171 0
+ 262 013e 0F23     		movs	r3, #15
+ 263 0140 FB18     		adds	r3, r7, r3
+ 264 0142 1B78     		ldrb	r3, [r3]
+ 265 0144 1B06     		lsls	r3, r3, #24
+ 266 0146 1B16     		asrs	r3, r3, #24
+ 267 0148 012B     		cmp	r3, #1
+ 268 014a 36D1     		bne	.L25
+ 269              	.L21:
+ 172:eeprom.c      ****     {
+ 173:eeprom.c      ****       /* Wait until data transmitted */
+ 174:eeprom.c      ****       while(1)
+ 175:eeprom.c      ****       {
+ 176:eeprom.c      ****         /* Get new status */
+ 177:eeprom.c      ****         status = i2cCheckStatus();
+ 270              		.loc 1 177 0
+ 271 014c 0E25     		movs	r5, #14
+ 272 014e 7C19     		adds	r4, r7, r5
+ 273 0150 FFF7FEFF 		bl	i2cCheckStatus
+ 274 0154 0300     		movs	r3, r0
+ 275 0156 2370     		strb	r3, [r4]
+ 178:eeprom.c      **** 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 9
+
+
+ 179:eeprom.c      ****         if( (status == 0x18) || (status == 0x28) )
+ 276              		.loc 1 179 0
+ 277 0158 7B19     		adds	r3, r7, r5
+ 278 015a 1B78     		ldrb	r3, [r3]
+ 279 015c 182B     		cmp	r3, #24
+ 280 015e 04D0     		beq	.L16
+ 281              		.loc 1 179 0 is_stmt 0 discriminator 1
+ 282 0160 0E23     		movs	r3, #14
+ 283 0162 FB18     		adds	r3, r7, r3
+ 284 0164 1B78     		ldrb	r3, [r3]
+ 285 0166 282B     		cmp	r3, #40
+ 286 0168 1ED1     		bne	.L17
+ 287              	.L16:
+ 180:eeprom.c      ****         {
+ 181:eeprom.c      ****           /* Data transmitted and ACK received */
+ 182:eeprom.c      **** 
+ 183:eeprom.c      **** 
+ 184:eeprom.c      ****           /* Write data */
+ 185:eeprom.c      ****           retCode = i2cPutChar( (tU8)(address & 0xff) );
+ 288              		.loc 1 185 0 is_stmt 1
+ 289 016a 3B1D     		adds	r3, r7, #4
+ 290 016c 1B88     		ldrh	r3, [r3]
+ 291 016e 1B06     		lsls	r3, r3, #24
+ 292 0170 1B0E     		lsrs	r3, r3, #24
+ 293 0172 0F22     		movs	r2, #15
+ 294 0174 BC18     		adds	r4, r7, r2
+ 295 0176 1800     		movs	r0, r3
+ 296 0178 FFF7FEFF 		bl	i2cPutChar
+ 297 017c 0300     		movs	r3, r0
+ 298 017e 2370     		strb	r3, [r4]
+ 186:eeprom.c      ****           while( retCode == I2C_CODE_BUSY )
+ 299              		.loc 1 186 0
+ 300 0180 0AE0     		b	.L18
+ 301              	.L19:
+ 187:eeprom.c      ****           {
+ 188:eeprom.c      ****             retCode = i2cPutChar( (tU8)(address & 0xff) );
+ 302              		.loc 1 188 0
+ 303 0182 3B1D     		adds	r3, r7, #4
+ 304 0184 1B88     		ldrh	r3, [r3]
+ 305 0186 1B06     		lsls	r3, r3, #24
+ 306 0188 1B0E     		lsrs	r3, r3, #24
+ 307 018a 0F22     		movs	r2, #15
+ 308 018c BC18     		adds	r4, r7, r2
+ 309 018e 1800     		movs	r0, r3
+ 310 0190 FFF7FEFF 		bl	i2cPutChar
+ 311 0194 0300     		movs	r3, r0
+ 312 0196 2370     		strb	r3, [r4]
+ 313              	.L18:
+ 186:eeprom.c      ****           while( retCode == I2C_CODE_BUSY )
+ 314              		.loc 1 186 0
+ 315 0198 0F23     		movs	r3, #15
+ 316 019a FB18     		adds	r3, r7, r3
+ 317 019c 1B78     		ldrb	r3, [r3]
+ 318 019e 1B06     		lsls	r3, r3, #24
+ 319 01a0 1B16     		asrs	r3, r3, #24
+ 320 01a2 0433     		adds	r3, r3, #4
+ 321 01a4 EDD0     		beq	.L19
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 10
+
+
+ 189:eeprom.c      ****           }
+ 190:eeprom.c      **** 
+ 191:eeprom.c      ****           break;
+ 322              		.loc 1 191 0
+ 323 01a6 08E0     		b	.L25
+ 324              	.L17:
+ 192:eeprom.c      ****         }
+ 193:eeprom.c      ****         else if( status != 0xf8 )
+ 325              		.loc 1 193 0
+ 326 01a8 0E23     		movs	r3, #14
+ 327 01aa FB18     		adds	r3, r7, r3
+ 328 01ac 1B78     		ldrb	r3, [r3]
+ 329 01ae F82B     		cmp	r3, #248
+ 330 01b0 CCD0     		beq	.L21
+ 194:eeprom.c      ****         {
+ 195:eeprom.c      ****           /*  error */
+ 196:eeprom.c      ****           retCode = I2C_CODE_ERROR;
+ 331              		.loc 1 196 0
+ 332 01b2 0F23     		movs	r3, #15
+ 333 01b4 FB18     		adds	r3, r7, r3
+ 334 01b6 FF22     		movs	r2, #255
+ 335 01b8 1A70     		strb	r2, [r3]
+ 336              	.L25:
+ 197:eeprom.c      ****           break;
+ 198:eeprom.c      ****         }
+ 199:eeprom.c      ****       }
+ 200:eeprom.c      ****     }
+ 201:eeprom.c      ****   }
+ 202:eeprom.c      **** 
+ 203:eeprom.c      ****   /* Wait until data transmitted */
+ 204:eeprom.c      ****   while(1)
+ 205:eeprom.c      ****   {
+ 206:eeprom.c      ****     /* Get new status */
+ 207:eeprom.c      ****     status = i2cCheckStatus();
+ 337              		.loc 1 207 0
+ 338 01ba 0E25     		movs	r5, #14
+ 339 01bc 7C19     		adds	r4, r7, r5
+ 340 01be FFF7FEFF 		bl	i2cCheckStatus
+ 341 01c2 0300     		movs	r3, r0
+ 342 01c4 2370     		strb	r3, [r4]
+ 208:eeprom.c      **** 
+ 209:eeprom.c      ****     if(status == 0x28)
+ 343              		.loc 1 209 0
+ 344 01c6 7B19     		adds	r3, r7, r5
+ 345 01c8 1B78     		ldrb	r3, [r3]
+ 346 01ca 282B     		cmp	r3, #40
+ 347 01cc 09D0     		beq	.L34
+ 210:eeprom.c      ****     {
+ 211:eeprom.c      ****       /* Data transmitted and ACK received */
+ 212:eeprom.c      ****       break;
+ 213:eeprom.c      ****     }
+ 214:eeprom.c      ****     else if( status != 0xf8 )
+ 348              		.loc 1 214 0
+ 349 01ce 0E23     		movs	r3, #14
+ 350 01d0 FB18     		adds	r3, r7, r3
+ 351 01d2 1B78     		ldrb	r3, [r3]
+ 352 01d4 F82B     		cmp	r3, #248
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 11
+
+
+ 353 01d6 F0D0     		beq	.L25
+ 215:eeprom.c      ****     {
+ 216:eeprom.c      ****       /* error */
+ 217:eeprom.c      ****       retCode = I2C_CODE_ERROR;
+ 354              		.loc 1 217 0
+ 355 01d8 0F23     		movs	r3, #15
+ 356 01da FB18     		adds	r3, r7, r3
+ 357 01dc FF22     		movs	r2, #255
+ 358 01de 1A70     		strb	r2, [r3]
+ 218:eeprom.c      ****       break;
+ 359              		.loc 1 218 0
+ 360 01e0 00E0     		b	.L23
+ 361              	.L34:
+ 212:eeprom.c      ****     }
+ 362              		.loc 1 212 0
+ 363 01e2 C046     		nop
+ 364              	.L23:
+ 219:eeprom.c      ****     }
+ 220:eeprom.c      ****   }
+ 221:eeprom.c      **** 
+ 222:eeprom.c      ****   /* Generate Start condition */
+ 223:eeprom.c      ****   retCode = i2cRepeatStart();
+ 365              		.loc 1 223 0
+ 366 01e4 0F25     		movs	r5, #15
+ 367 01e6 7C19     		adds	r4, r7, r5
+ 368 01e8 FFF7FEFF 		bl	i2cRepeatStart
+ 369 01ec 0300     		movs	r3, r0
+ 370 01ee 2370     		strb	r3, [r4]
+ 224:eeprom.c      **** 
+ 225:eeprom.c      ****   /* Transmit device address */
+ 226:eeprom.c      ****   if( retCode == I2C_CODE_OK)
+ 371              		.loc 1 226 0
+ 372 01f0 7B19     		adds	r3, r7, r5
+ 373 01f2 1B78     		ldrb	r3, [r3]
+ 374 01f4 1B06     		lsls	r3, r3, #24
+ 375 01f6 1B16     		asrs	r3, r3, #24
+ 376 01f8 012B     		cmp	r3, #1
+ 377 01fa 1FD1     		bne	.L32
+ 227:eeprom.c      ****   {
+ 228:eeprom.c      ****     /* Write SLA+R */
+ 229:eeprom.c      ****     retCode = i2cPutChar( devAddr + 0x01 );
+ 378              		.loc 1 229 0
+ 379 01fc FB1D     		adds	r3, r7, #7
+ 380 01fe 1B78     		ldrb	r3, [r3]
+ 381 0200 0133     		adds	r3, r3, #1
+ 382 0202 1B06     		lsls	r3, r3, #24
+ 383 0204 1B0E     		lsrs	r3, r3, #24
+ 384 0206 0F22     		movs	r2, #15
+ 385 0208 BC18     		adds	r4, r7, r2
+ 386 020a 1800     		movs	r0, r3
+ 387 020c FFF7FEFF 		bl	i2cPutChar
+ 388 0210 0300     		movs	r3, r0
+ 389 0212 2370     		strb	r3, [r4]
+ 230:eeprom.c      ****     while( retCode == I2C_CODE_BUSY )
+ 390              		.loc 1 230 0
+ 391 0214 0BE0     		b	.L27
+ 392              	.L28:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 12
+
+
+ 231:eeprom.c      ****     {
+ 232:eeprom.c      ****       retCode = i2cPutChar( devAddr + 0x01 );
+ 393              		.loc 1 232 0
+ 394 0216 FB1D     		adds	r3, r7, #7
+ 395 0218 1B78     		ldrb	r3, [r3]
+ 396 021a 0133     		adds	r3, r3, #1
+ 397 021c 1B06     		lsls	r3, r3, #24
+ 398 021e 1B0E     		lsrs	r3, r3, #24
+ 399 0220 0F22     		movs	r2, #15
+ 400 0222 BC18     		adds	r4, r7, r2
+ 401 0224 1800     		movs	r0, r3
+ 402 0226 FFF7FEFF 		bl	i2cPutChar
+ 403 022a 0300     		movs	r3, r0
+ 404 022c 2370     		strb	r3, [r4]
+ 405              	.L27:
+ 230:eeprom.c      ****     while( retCode == I2C_CODE_BUSY )
+ 406              		.loc 1 230 0
+ 407 022e 0F23     		movs	r3, #15
+ 408 0230 FB18     		adds	r3, r7, r3
+ 409 0232 1B78     		ldrb	r3, [r3]
+ 410 0234 1B06     		lsls	r3, r3, #24
+ 411 0236 1B16     		asrs	r3, r3, #24
+ 412 0238 0433     		adds	r3, r3, #4
+ 413 023a ECD0     		beq	.L28
+ 414              	.L32:
+ 233:eeprom.c      ****     }
+ 234:eeprom.c      ****   }
+ 235:eeprom.c      **** 
+ 236:eeprom.c      ****   /* Wait until SLA+R transmitted */
+ 237:eeprom.c      ****   while(1)
+ 238:eeprom.c      ****   {
+ 239:eeprom.c      ****     /* Get new status */
+ 240:eeprom.c      ****     status = i2cCheckStatus();
+ 415              		.loc 1 240 0
+ 416 023c 0E25     		movs	r5, #14
+ 417 023e 7C19     		adds	r4, r7, r5
+ 418 0240 FFF7FEFF 		bl	i2cCheckStatus
+ 419 0244 0300     		movs	r3, r0
+ 420 0246 2370     		strb	r3, [r4]
+ 241:eeprom.c      **** 
+ 242:eeprom.c      ****     if(status == 0x40)
+ 421              		.loc 1 242 0
+ 422 0248 7B19     		adds	r3, r7, r5
+ 423 024a 1B78     		ldrb	r3, [r3]
+ 424 024c 402B     		cmp	r3, #64
+ 425 024e 0FD0     		beq	.L35
+ 243:eeprom.c      ****     {
+ 244:eeprom.c      ****       /* Data transmitted and ACK received */
+ 245:eeprom.c      ****       break;
+ 246:eeprom.c      ****     }
+ 247:eeprom.c      ****     else if(status != 0xf8)
+ 426              		.loc 1 247 0
+ 427 0250 0E23     		movs	r3, #14
+ 428 0252 FB18     		adds	r3, r7, r3
+ 429 0254 1B78     		ldrb	r3, [r3]
+ 430 0256 F82B     		cmp	r3, #248
+ 431 0258 04D0     		beq	.L31
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 13
+
+
+ 248:eeprom.c      ****     {
+ 249:eeprom.c      ****       /* error */
+ 250:eeprom.c      ****       retCode = I2C_CODE_ERROR;
+ 432              		.loc 1 250 0
+ 433 025a 0F23     		movs	r3, #15
+ 434 025c FB18     		adds	r3, r7, r3
+ 435 025e FF22     		movs	r2, #255
+ 436 0260 1A70     		strb	r2, [r3]
+ 251:eeprom.c      ****       break;
+ 437              		.loc 1 251 0
+ 438 0262 06E0     		b	.L30
+ 439              	.L31:
+ 440 0264 0F22     		movs	r2, #15
+ 441 0266 BB18     		adds	r3, r7, r2
+ 442 0268 BA18     		adds	r2, r7, r2
+ 443 026a 1278     		ldrb	r2, [r2]
+ 444 026c 1A70     		strb	r2, [r3]
+ 240:eeprom.c      **** 
+ 445              		.loc 1 240 0
+ 446 026e E5E7     		b	.L32
+ 447              	.L35:
+ 245:eeprom.c      ****     }
+ 448              		.loc 1 245 0
+ 449 0270 C046     		nop
+ 450              	.L30:
+ 252:eeprom.c      ****     }
+ 253:eeprom.c      ****   }
+ 254:eeprom.c      **** 
+ 255:eeprom.c      ****   // Do not generate a stop bit
+ 256:eeprom.c      **** 
+ 257:eeprom.c      ****   return retCode;
+ 451              		.loc 1 257 0
+ 452 0272 0F23     		movs	r3, #15
+ 453 0274 FB18     		adds	r3, r7, r3
+ 454 0276 1B78     		ldrb	r3, [r3]
+ 455 0278 1B06     		lsls	r3, r3, #24
+ 456 027a 1B16     		asrs	r3, r3, #24
+ 258:eeprom.c      **** }
+ 457              		.loc 1 258 0
+ 458 027c 1800     		movs	r0, r3
+ 459 027e BD46     		mov	sp, r7
+ 460 0280 04B0     		add	sp, sp, #16
+ 461              		@ sp needed
+ 462 0282 B0BC     		pop	{r4, r5, r7}
+ 463 0284 02BC     		pop	{r1}
+ 464 0286 0847     		bx	r1
+ 465              		.cfi_endproc
+ 466              	.LFE1:
+ 467              		.size	eepromStartRead, .-eepromStartRead
+ 468              		.align	1
+ 469              		.global	eepromPageRead
+ 470              		.syntax unified
+ 471              		.code	16
+ 472              		.thumb_func
+ 473              		.fpu softvfp
+ 474              		.type	eepromPageRead, %function
+ 475              	eepromPageRead:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 14
+
+
+ 476              	.LFB2:
+ 259:eeprom.c      **** 
+ 260:eeprom.c      **** //-------------------------------------------------------------
+ 261:eeprom.c      **** // Random Read followed by sequential read
+ 262:eeprom.c      **** //-------------------------------------------------------------
+ 263:eeprom.c      **** // Receive buffer:
+ 264:eeprom.c      **** // Byte 00: DeviceAddress R/Wn=0 (WRITE)
+ 265:eeprom.c      **** ////////// Byte 01: EEPROM Address MSB   (A14..A08)
+ 266:eeprom.c      **** // Byte 02: EEPROM Address LSB   (A07..A00)
+ 267:eeprom.c      **** // Byte 03: DeviceAddress R/Wn=1 (READ)
+ 268:eeprom.c      **** // Byte 04 to 67: Buffer for data read from EEPROM
+ 269:eeprom.c      **** //-------------------------------------------------------------
+ 270:eeprom.c      **** //  Parameters:
+ 271:eeprom.c      **** //      pRxData     A pointer to the receive buffer
+ 272:eeprom.c      **** //      Length      The number of data bytes to receive
+ 273:eeprom.c      **** //
+ 274:eeprom.c      **** //  Returns:
+ 275:eeprom.c      **** //      MA_OK or I2C status code
+ 276:eeprom.c      **** //
+ 277:eeprom.c      **** //-------------------------------------------------------------
+ 278:eeprom.c      **** 
+ 279:eeprom.c      **** tS8 eepromPageRead(tU16 address, tU8* pBuf, tU16 len) 
+ 280:eeprom.c      **** {
+ 477              		.loc 1 280 0
+ 478              		.cfi_startproc
+ 479              		@ Function supports interworking.
+ 480              		@ args = 0, pretend = 0, frame = 16
+ 481              		@ frame_needed = 1, uses_anonymous_args = 0
+ 482 0288 B0B5     		push	{r4, r5, r7, lr}
+ 483              	.LCFI6:
+ 484              		.cfi_def_cfa_offset 16
+ 485              		.cfi_offset 4, -16
+ 486              		.cfi_offset 5, -12
+ 487              		.cfi_offset 7, -8
+ 488              		.cfi_offset 14, -4
+ 489 028a 84B0     		sub	sp, sp, #16
+ 490              	.LCFI7:
+ 491              		.cfi_def_cfa_offset 32
+ 492 028c 00AF     		add	r7, sp, #0
+ 493              	.LCFI8:
+ 494              		.cfi_def_cfa_register 7
+ 495 028e 3960     		str	r1, [r7]
+ 496 0290 1100     		movs	r1, r2
+ 497 0292 BB1D     		adds	r3, r7, #6
+ 498 0294 021C     		adds	r2, r0, #0
+ 499 0296 1A80     		strh	r2, [r3]
+ 500 0298 3B1D     		adds	r3, r7, #4
+ 501 029a 0A1C     		adds	r2, r1, #0
+ 502 029c 1A80     		strh	r2, [r3]
+ 281:eeprom.c      ****   tS8  retCode = 0;
+ 503              		.loc 1 281 0
+ 504 029e 0F21     		movs	r1, #15
+ 505 02a0 7B18     		adds	r3, r7, r1
+ 506 02a2 0022     		movs	r2, #0
+ 507 02a4 1A70     		strb	r2, [r3]
+ 282:eeprom.c      ****   tU8  status  = 0;
+ 508              		.loc 1 282 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 15
+
+
+ 509 02a6 0B23     		movs	r3, #11
+ 510 02a8 FB18     		adds	r3, r7, r3
+ 511 02aa 0022     		movs	r2, #0
+ 512 02ac 1A70     		strb	r2, [r3]
+ 283:eeprom.c      ****   tU16 i       = 0;
+ 513              		.loc 1 283 0
+ 514 02ae 0C23     		movs	r3, #12
+ 515 02b0 FB18     		adds	r3, r7, r3
+ 516 02b2 0022     		movs	r2, #0
+ 517 02b4 1A80     		strh	r2, [r3]
+ 284:eeprom.c      **** 
+ 285:eeprom.c      ****   /* Write 4 bytes, see 24C256 Random Read */
+ 286:eeprom.c      ****   retCode = eepromStartRead(I2C_EEPROM_ADDR, address);
+ 518              		.loc 1 286 0
+ 519 02b6 0D00     		movs	r5, r1
+ 520 02b8 7C18     		adds	r4, r7, r1
+ 521 02ba BB1D     		adds	r3, r7, #6
+ 522 02bc 1B88     		ldrh	r3, [r3]
+ 523 02be 1900     		movs	r1, r3
+ 524 02c0 A020     		movs	r0, #160
+ 525 02c2 FFF7FEFF 		bl	eepromStartRead
+ 526 02c6 0300     		movs	r3, r0
+ 527 02c8 2370     		strb	r3, [r4]
+ 287:eeprom.c      **** 
+ 288:eeprom.c      **** 
+ 289:eeprom.c      ****   if( retCode == I2C_CODE_OK )
+ 528              		.loc 1 289 0
+ 529 02ca 2900     		movs	r1, r5
+ 530 02cc 7B18     		adds	r3, r7, r1
+ 531 02ce 1B78     		ldrb	r3, [r3]
+ 532 02d0 1B06     		lsls	r3, r3, #24
+ 533 02d2 1B16     		asrs	r3, r3, #24
+ 534 02d4 012B     		cmp	r3, #1
+ 535 02d6 00D0     		beq	.LCB465
+ 536 02d8 6BE0     		b	.L37	@long jump
+ 537              	.LCB465:
+ 290:eeprom.c      ****   {
+ 291:eeprom.c      ****     /* wait until address transmitted and receive data */
+ 292:eeprom.c      ****     for(i = 1; i <= len; i++ )
+ 538              		.loc 1 292 0
+ 539 02da 0C23     		movs	r3, #12
+ 540 02dc FB18     		adds	r3, r7, r3
+ 541 02de 0122     		movs	r2, #1
+ 542 02e0 1A80     		strh	r2, [r3]
+ 543 02e2 5FE0     		b	.L38
+ 544              	.L47:
+ 293:eeprom.c      ****     {
+ 294:eeprom.c      ****       /* wait until data transmitted */
+ 295:eeprom.c      ****       while(1)
+ 296:eeprom.c      ****       {
+ 297:eeprom.c      ****         /* Get new status */
+ 298:eeprom.c      ****         status = i2cCheckStatus();
+ 545              		.loc 1 298 0
+ 546 02e4 0B25     		movs	r5, #11
+ 547 02e6 7C19     		adds	r4, r7, r5
+ 548 02e8 FFF7FEFF 		bl	i2cCheckStatus
+ 549 02ec 0300     		movs	r3, r0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 16
+
+
+ 550 02ee 2370     		strb	r3, [r4]
+ 299:eeprom.c      **** 
+ 300:eeprom.c      ****         if(( status == 0x40 ) || ( status == 0x48 ) || ( status == 0x50 ))
+ 551              		.loc 1 300 0
+ 552 02f0 7B19     		adds	r3, r7, r5
+ 553 02f2 1B78     		ldrb	r3, [r3]
+ 554 02f4 402B     		cmp	r3, #64
+ 555 02f6 09D0     		beq	.L39
+ 556              		.loc 1 300 0 is_stmt 0 discriminator 1
+ 557 02f8 0B23     		movs	r3, #11
+ 558 02fa FB18     		adds	r3, r7, r3
+ 559 02fc 1B78     		ldrb	r3, [r3]
+ 560 02fe 482B     		cmp	r3, #72
+ 561 0300 04D0     		beq	.L39
+ 562              		.loc 1 300 0 discriminator 2
+ 563 0302 0B23     		movs	r3, #11
+ 564 0304 FB18     		adds	r3, r7, r3
+ 565 0306 1B78     		ldrb	r3, [r3]
+ 566 0308 502B     		cmp	r3, #80
+ 567 030a 37D1     		bne	.L40
+ 568              	.L39:
+ 301:eeprom.c      ****         {
+ 302:eeprom.c      ****           /* Data received */
+ 303:eeprom.c      **** 
+ 304:eeprom.c      ****           if(i == len )
+ 569              		.loc 1 304 0 is_stmt 1
+ 570 030c 0C23     		movs	r3, #12
+ 571 030e FA18     		adds	r2, r7, r3
+ 572 0310 3B1D     		adds	r3, r7, #4
+ 573 0312 1288     		ldrh	r2, [r2]
+ 574 0314 1B88     		ldrh	r3, [r3]
+ 575 0316 9A42     		cmp	r2, r3
+ 576 0318 09D1     		bne	.L41
+ 305:eeprom.c      ****           {
+ 306:eeprom.c      ****             /* Set generate NACK */
+ 307:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_ACK1, pBuf );
+ 577              		.loc 1 307 0
+ 578 031a 0F23     		movs	r3, #15
+ 579 031c FC18     		adds	r4, r7, r3
+ 580 031e 3B68     		ldr	r3, [r7]
+ 581 0320 1900     		movs	r1, r3
+ 582 0322 0120     		movs	r0, #1
+ 583 0324 FFF7FEFF 		bl	i2cGetChar
+ 584 0328 0300     		movs	r3, r0
+ 585 032a 2370     		strb	r3, [r4]
+ 586 032c 08E0     		b	.L42
+ 587              	.L41:
+ 308:eeprom.c      ****           }
+ 309:eeprom.c      ****           else
+ 310:eeprom.c      ****           {
+ 311:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_ACK0, pBuf );
+ 588              		.loc 1 311 0
+ 589 032e 0F23     		movs	r3, #15
+ 590 0330 FC18     		adds	r4, r7, r3
+ 591 0332 3B68     		ldr	r3, [r7]
+ 592 0334 1900     		movs	r1, r3
+ 593 0336 0020     		movs	r0, #0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 17
+
+
+ 594 0338 FFF7FEFF 		bl	i2cGetChar
+ 595 033c 0300     		movs	r3, r0
+ 596 033e 2370     		strb	r3, [r4]
+ 597              	.L42:
+ 312:eeprom.c      ****           }
+ 313:eeprom.c      **** 
+ 314:eeprom.c      ****           /* Read data */
+ 315:eeprom.c      ****           retCode = i2cGetChar( I2C_MODE_READ, pBuf );
+ 598              		.loc 1 315 0
+ 599 0340 0F23     		movs	r3, #15
+ 600 0342 FC18     		adds	r4, r7, r3
+ 601 0344 3B68     		ldr	r3, [r7]
+ 602 0346 1900     		movs	r1, r3
+ 603 0348 0220     		movs	r0, #2
+ 604 034a FFF7FEFF 		bl	i2cGetChar
+ 605 034e 0300     		movs	r3, r0
+ 606 0350 2370     		strb	r3, [r4]
+ 316:eeprom.c      ****           while( retCode == I2C_CODE_EMPTY )
+ 607              		.loc 1 316 0
+ 608 0352 08E0     		b	.L43
+ 609              	.L44:
+ 317:eeprom.c      ****           {
+ 318:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_READ, pBuf );
+ 610              		.loc 1 318 0
+ 611 0354 0F23     		movs	r3, #15
+ 612 0356 FC18     		adds	r4, r7, r3
+ 613 0358 3B68     		ldr	r3, [r7]
+ 614 035a 1900     		movs	r1, r3
+ 615 035c 0220     		movs	r0, #2
+ 616 035e FFF7FEFF 		bl	i2cGetChar
+ 617 0362 0300     		movs	r3, r0
+ 618 0364 2370     		strb	r3, [r4]
+ 619              	.L43:
+ 316:eeprom.c      ****           while( retCode == I2C_CODE_EMPTY )
+ 620              		.loc 1 316 0
+ 621 0366 0F23     		movs	r3, #15
+ 622 0368 FB18     		adds	r3, r7, r3
+ 623 036a 1B78     		ldrb	r3, [r3]
+ 624 036c 1B06     		lsls	r3, r3, #24
+ 625 036e 1B16     		asrs	r3, r3, #24
+ 626 0370 0333     		adds	r3, r3, #3
+ 627 0372 EFD0     		beq	.L44
+ 319:eeprom.c      ****           }
+ 320:eeprom.c      ****           pBuf++;
+ 628              		.loc 1 320 0
+ 629 0374 3B68     		ldr	r3, [r7]
+ 630 0376 0133     		adds	r3, r3, #1
+ 631 0378 3B60     		str	r3, [r7]
+ 321:eeprom.c      **** 
+ 322:eeprom.c      ****           break;
+ 632              		.loc 1 322 0
+ 633 037a 0DE0     		b	.L45
+ 634              	.L40:
+ 323:eeprom.c      ****         }
+ 324:eeprom.c      ****         else if( status != 0xf8 )
+ 635              		.loc 1 324 0
+ 636 037c 0B23     		movs	r3, #11
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 18
+
+
+ 637 037e FB18     		adds	r3, r7, r3
+ 638 0380 1B78     		ldrb	r3, [r3]
+ 639 0382 F82B     		cmp	r3, #248
+ 640 0384 AED0     		beq	.L47
+ 325:eeprom.c      ****         {
+ 326:eeprom.c      ****           /* ERROR */
+ 327:eeprom.c      ****           i = len;
+ 641              		.loc 1 327 0
+ 642 0386 0C23     		movs	r3, #12
+ 643 0388 FB18     		adds	r3, r7, r3
+ 644 038a 3A1D     		adds	r2, r7, #4
+ 645 038c 1288     		ldrh	r2, [r2]
+ 646 038e 1A80     		strh	r2, [r3]
+ 328:eeprom.c      ****           retCode = I2C_CODE_ERROR;
+ 647              		.loc 1 328 0
+ 648 0390 0F23     		movs	r3, #15
+ 649 0392 FB18     		adds	r3, r7, r3
+ 650 0394 FF22     		movs	r2, #255
+ 651 0396 1A70     		strb	r2, [r3]
+ 652              	.L45:
+ 292:eeprom.c      ****     {
+ 653              		.loc 1 292 0 discriminator 2
+ 654 0398 0C21     		movs	r1, #12
+ 655 039a 7B18     		adds	r3, r7, r1
+ 656 039c 1A88     		ldrh	r2, [r3]
+ 657 039e 7B18     		adds	r3, r7, r1
+ 658 03a0 0132     		adds	r2, r2, #1
+ 659 03a2 1A80     		strh	r2, [r3]
+ 660              	.L38:
+ 292:eeprom.c      ****     {
+ 661              		.loc 1 292 0 is_stmt 0 discriminator 1
+ 662 03a4 0C23     		movs	r3, #12
+ 663 03a6 FA18     		adds	r2, r7, r3
+ 664 03a8 3B1D     		adds	r3, r7, #4
+ 665 03aa 1288     		ldrh	r2, [r2]
+ 666 03ac 1B88     		ldrh	r3, [r3]
+ 667 03ae 9A42     		cmp	r2, r3
+ 668 03b0 98D9     		bls	.L47
+ 669              	.L37:
+ 329:eeprom.c      ****           break;
+ 330:eeprom.c      ****         }
+ 331:eeprom.c      ****       }
+ 332:eeprom.c      ****     }
+ 333:eeprom.c      ****   }
+ 334:eeprom.c      **** 
+ 335:eeprom.c      ****   /* Generate Stop condition */
+ 336:eeprom.c      ****   i2cStop();
+ 670              		.loc 1 336 0 is_stmt 1
+ 671 03b2 FFF7FEFF 		bl	i2cStop
+ 337:eeprom.c      **** 
+ 338:eeprom.c      ****   return retCode;
+ 672              		.loc 1 338 0
+ 673 03b6 0F23     		movs	r3, #15
+ 674 03b8 FB18     		adds	r3, r7, r3
+ 675 03ba 1B78     		ldrb	r3, [r3]
+ 676 03bc 1B06     		lsls	r3, r3, #24
+ 677 03be 1B16     		asrs	r3, r3, #24
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 19
+
+
+ 339:eeprom.c      **** 
+ 340:eeprom.c      **** }
+ 678              		.loc 1 340 0
+ 679 03c0 1800     		movs	r0, r3
+ 680 03c2 BD46     		mov	sp, r7
+ 681 03c4 04B0     		add	sp, sp, #16
+ 682              		@ sp needed
+ 683 03c6 B0BC     		pop	{r4, r5, r7}
+ 684 03c8 02BC     		pop	{r1}
+ 685 03ca 0847     		bx	r1
+ 686              		.cfi_endproc
+ 687              	.LFE2:
+ 688              		.size	eepromPageRead, .-eepromPageRead
+ 689              		.align	1
+ 690              		.global	eepromWrite
+ 691              		.syntax unified
+ 692              		.code	16
+ 693              		.thumb_func
+ 694              		.fpu softvfp
+ 695              		.type	eepromWrite, %function
+ 696              	eepromWrite:
+ 697              	.LFB3:
+ 341:eeprom.c      **** 
+ 342:eeprom.c      **** 
+ 343:eeprom.c      **** tS8 eepromWrite(tU16 addr, tU8* pData, tU16 len)
+ 344:eeprom.c      **** {
+ 698              		.loc 1 344 0
+ 699              		.cfi_startproc
+ 700              		@ Function supports interworking.
+ 701              		@ args = 0, pretend = 0, frame = 16
+ 702              		@ frame_needed = 1, uses_anonymous_args = 0
+ 703 03cc B0B5     		push	{r4, r5, r7, lr}
+ 704              	.LCFI9:
+ 705              		.cfi_def_cfa_offset 16
+ 706              		.cfi_offset 4, -16
+ 707              		.cfi_offset 5, -12
+ 708              		.cfi_offset 7, -8
+ 709              		.cfi_offset 14, -4
+ 710 03ce 84B0     		sub	sp, sp, #16
+ 711              	.LCFI10:
+ 712              		.cfi_def_cfa_offset 32
+ 713 03d0 00AF     		add	r7, sp, #0
+ 714              	.LCFI11:
+ 715              		.cfi_def_cfa_register 7
+ 716 03d2 3960     		str	r1, [r7]
+ 717 03d4 1100     		movs	r1, r2
+ 718 03d6 BB1D     		adds	r3, r7, #6
+ 719 03d8 021C     		adds	r2, r0, #0
+ 720 03da 1A80     		strh	r2, [r3]
+ 721 03dc 3B1D     		adds	r3, r7, #4
+ 722 03de 0A1C     		adds	r2, r1, #0
+ 723 03e0 1A80     		strh	r2, [r3]
+ 345:eeprom.c      ****   tS8 retCode = 0;
+ 724              		.loc 1 345 0
+ 725 03e2 0F21     		movs	r1, #15
+ 726 03e4 7B18     		adds	r3, r7, r1
+ 727 03e6 0022     		movs	r2, #0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 20
+
+
+ 728 03e8 1A70     		strb	r2, [r3]
+ 346:eeprom.c      ****   tU8 status  = 0;
+ 729              		.loc 1 346 0
+ 730 03ea 0D23     		movs	r3, #13
+ 731 03ec FB18     		adds	r3, r7, r3
+ 732 03ee 0022     		movs	r2, #0
+ 733 03f0 1A70     		strb	r2, [r3]
+ 347:eeprom.c      ****   tU8 i       = 0;
+ 734              		.loc 1 347 0
+ 735 03f2 0E23     		movs	r3, #14
+ 736 03f4 FB18     		adds	r3, r7, r3
+ 737 03f6 0022     		movs	r2, #0
+ 738 03f8 1A70     		strb	r2, [r3]
+ 739              	.LBB2:
+ 348:eeprom.c      **** 
+ 349:eeprom.c      ****   do
+ 350:eeprom.c      ****   {
+ 351:eeprom.c      **** 
+ 352:eeprom.c      ****     /* generate Start condition */
+ 353:eeprom.c      ****     retCode = i2cStart();
+ 740              		.loc 1 353 0
+ 741 03fa 0D00     		movs	r5, r1
+ 742 03fc 7C18     		adds	r4, r7, r1
+ 743 03fe FFF7FEFF 		bl	i2cStart
+ 744 0402 0300     		movs	r3, r0
+ 745 0404 2370     		strb	r3, [r4]
+ 354:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 746              		.loc 1 354 0
+ 747 0406 2900     		movs	r1, r5
+ 748 0408 7B18     		adds	r3, r7, r1
+ 749 040a 1B78     		ldrb	r3, [r3]
+ 750 040c 1B06     		lsls	r3, r3, #24
+ 751 040e 1B16     		asrs	r3, r3, #24
+ 752 0410 012B     		cmp	r3, #1
+ 753 0412 44D1     		bne	.L58
+ 355:eeprom.c      ****       break;
+ 356:eeprom.c      **** 
+ 357:eeprom.c      **** 
+ 358:eeprom.c      ****     /* write EEPROM I2C address */
+ 359:eeprom.c      ****     retCode = i2cWriteWithWait(I2C_EEPROM_ADDR);
+ 754              		.loc 1 359 0
+ 755 0414 A020     		movs	r0, #160
+ 756 0416 FFF7FEFF 		bl	i2cWriteWithWait
+ 757 041a 0200     		movs	r2, r0
+ 758 041c 0F21     		movs	r1, #15
+ 759 041e 7B18     		adds	r3, r7, r1
+ 760 0420 1A70     		strb	r2, [r3]
+ 360:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 761              		.loc 1 360 0
+ 762 0422 7B18     		adds	r3, r7, r1
+ 763 0424 1B78     		ldrb	r3, [r3]
+ 764 0426 1B06     		lsls	r3, r3, #24
+ 765 0428 1B16     		asrs	r3, r3, #24
+ 766 042a 012B     		cmp	r3, #1
+ 767 042c 39D1     		bne	.L59
+ 361:eeprom.c      ****       break;
+ 362:eeprom.c      **** 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 21
+
+
+ 363:eeprom.c      **** #if 0
+ 364:eeprom.c      ****     /* write offset high in EEPROM space  */
+ 365:eeprom.c      ****     retCode = i2cWriteWithWait( (tU8)(addr >> 8));
+ 366:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 367:eeprom.c      ****       break;
+ 368:eeprom.c      **** #endif
+ 369:eeprom.c      **** 
+ 370:eeprom.c      ****     /* write offset low in EEPROM space  */
+ 371:eeprom.c      ****     retCode = i2cWriteWithWait( (tU8)(addr & 0xFF));
+ 768              		.loc 1 371 0
+ 769 042e BB1D     		adds	r3, r7, #6
+ 770 0430 1B88     		ldrh	r3, [r3]
+ 771 0432 1B06     		lsls	r3, r3, #24
+ 772 0434 1B0E     		lsrs	r3, r3, #24
+ 773 0436 1800     		movs	r0, r3
+ 774 0438 FFF7FEFF 		bl	i2cWriteWithWait
+ 775 043c 0200     		movs	r2, r0
+ 776 043e 0F21     		movs	r1, #15
+ 777 0440 7B18     		adds	r3, r7, r1
+ 778 0442 1A70     		strb	r2, [r3]
+ 372:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 779              		.loc 1 372 0
+ 780 0444 7B18     		adds	r3, r7, r1
+ 781 0446 1B78     		ldrb	r3, [r3]
+ 782 0448 1B06     		lsls	r3, r3, #24
+ 783 044a 1B16     		asrs	r3, r3, #24
+ 784 044c 012B     		cmp	r3, #1
+ 785 044e 2AD1     		bne	.L60
+ 373:eeprom.c      ****       break;
+ 374:eeprom.c      **** 
+ 375:eeprom.c      **** 
+ 376:eeprom.c      ****     /* write data */
+ 377:eeprom.c      ****     for(i = 0; i <len; i++)
+ 786              		.loc 1 377 0
+ 787 0450 0E23     		movs	r3, #14
+ 788 0452 FB18     		adds	r3, r7, r3
+ 789 0454 0022     		movs	r2, #0
+ 790 0456 1A70     		strb	r2, [r3]
+ 791 0458 17E0     		b	.L54
+ 792              	.L56:
+ 378:eeprom.c      ****     {
+ 379:eeprom.c      ****       retCode = i2cWriteWithWait(*pData);
+ 793              		.loc 1 379 0
+ 794 045a 3B68     		ldr	r3, [r7]
+ 795 045c 1B78     		ldrb	r3, [r3]
+ 796 045e 1800     		movs	r0, r3
+ 797 0460 FFF7FEFF 		bl	i2cWriteWithWait
+ 798 0464 0200     		movs	r2, r0
+ 799 0466 0F21     		movs	r1, #15
+ 800 0468 7B18     		adds	r3, r7, r1
+ 801 046a 1A70     		strb	r2, [r3]
+ 380:eeprom.c      ****       if(retCode != I2C_CODE_OK)
+ 802              		.loc 1 380 0
+ 803 046c 7B18     		adds	r3, r7, r1
+ 804 046e 1B78     		ldrb	r3, [r3]
+ 805 0470 1B06     		lsls	r3, r3, #24
+ 806 0472 1B16     		asrs	r3, r3, #24
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 22
+
+
+ 807 0474 012B     		cmp	r3, #1
+ 808 0476 18D1     		bne	.L61
+ 381:eeprom.c      ****         break;
+ 382:eeprom.c      **** 
+ 383:eeprom.c      ****       pData++;
+ 809              		.loc 1 383 0 discriminator 2
+ 810 0478 3B68     		ldr	r3, [r7]
+ 811 047a 0133     		adds	r3, r3, #1
+ 812 047c 3B60     		str	r3, [r7]
+ 377:eeprom.c      ****     {
+ 813              		.loc 1 377 0 discriminator 2
+ 814 047e 0E21     		movs	r1, #14
+ 815 0480 7B18     		adds	r3, r7, r1
+ 816 0482 1A78     		ldrb	r2, [r3]
+ 817 0484 7B18     		adds	r3, r7, r1
+ 818 0486 0132     		adds	r2, r2, #1
+ 819 0488 1A70     		strb	r2, [r3]
+ 820              	.L54:
+ 377:eeprom.c      ****     {
+ 821              		.loc 1 377 0 is_stmt 0 discriminator 1
+ 822 048a 0E23     		movs	r3, #14
+ 823 048c FB18     		adds	r3, r7, r3
+ 824 048e 1B78     		ldrb	r3, [r3]
+ 825 0490 1B04     		lsls	r3, r3, #16
+ 826 0492 1B0C     		lsrs	r3, r3, #16
+ 827 0494 3A1D     		adds	r2, r7, #4
+ 828 0496 1288     		ldrh	r2, [r2]
+ 829 0498 9A42     		cmp	r2, r3
+ 830 049a DED8     		bhi	.L56
+ 831 049c 06E0     		b	.L51
+ 832              	.L58:
+ 355:eeprom.c      **** 
+ 833              		.loc 1 355 0 is_stmt 1
+ 834 049e C046     		nop
+ 835 04a0 04E0     		b	.L51
+ 836              	.L59:
+ 361:eeprom.c      **** 
+ 837              		.loc 1 361 0
+ 838 04a2 C046     		nop
+ 839 04a4 02E0     		b	.L51
+ 840              	.L60:
+ 373:eeprom.c      **** 
+ 841              		.loc 1 373 0
+ 842 04a6 C046     		nop
+ 843 04a8 00E0     		b	.L51
+ 844              	.L61:
+ 381:eeprom.c      **** 
+ 845              		.loc 1 381 0
+ 846 04aa C046     		nop
+ 847              	.L51:
+ 848              	.LBE2:
+ 384:eeprom.c      ****     }
+ 385:eeprom.c      **** 
+ 386:eeprom.c      ****   } while(0);
+ 387:eeprom.c      **** 
+ 388:eeprom.c      ****   /* generate Stop condition */
+ 389:eeprom.c      ****   i2cStop();
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 23
+
+
+ 849              		.loc 1 389 0
+ 850 04ac FFF7FEFF 		bl	i2cStop
+ 390:eeprom.c      **** 
+ 391:eeprom.c      **** 
+ 392:eeprom.c      ****   return retCode;
+ 851              		.loc 1 392 0
+ 852 04b0 0F23     		movs	r3, #15
+ 853 04b2 FB18     		adds	r3, r7, r3
+ 854 04b4 1B78     		ldrb	r3, [r3]
+ 855 04b6 1B06     		lsls	r3, r3, #24
+ 856 04b8 1B16     		asrs	r3, r3, #24
+ 393:eeprom.c      **** }
+ 857              		.loc 1 393 0
+ 858 04ba 1800     		movs	r0, r3
+ 859 04bc BD46     		mov	sp, r7
+ 860 04be 04B0     		add	sp, sp, #16
+ 861              		@ sp needed
+ 862 04c0 B0BC     		pop	{r4, r5, r7}
+ 863 04c2 02BC     		pop	{r1}
+ 864 04c4 0847     		bx	r1
+ 865              		.cfi_endproc
+ 866              	.LFE3:
+ 867              		.size	eepromWrite, .-eepromWrite
+ 868              		.align	1
+ 869              		.global	pca9532
+ 870              		.syntax unified
+ 871              		.code	16
+ 872              		.thumb_func
+ 873              		.fpu softvfp
+ 874              		.type	pca9532, %function
+ 875              	pca9532:
+ 876              	.LFB4:
+ 394:eeprom.c      **** 
+ 395:eeprom.c      **** /******************************************************************************
+ 396:eeprom.c      ****  *
+ 397:eeprom.c      ****  * Description:
+ 398:eeprom.c      ****  *    Communicate with the PCA9532
+ 399:eeprom.c      ****  *    First pBuf/len = bytes to write
+ 400:eeprom.c      ****  *    Second pBuf2/len2 = bytes to read
+ 401:eeprom.c      ****  *
+ 402:eeprom.c      ****  *****************************************************************************/
+ 403:eeprom.c      **** 
+ 404:eeprom.c      **** tS8 pca9532(tU8* pBuf, tU16 len, tU8* pBuf2, tU16 len2) 
+ 405:eeprom.c      **** {
+ 877              		.loc 1 405 0
+ 878              		.cfi_startproc
+ 879              		@ Function supports interworking.
+ 880              		@ args = 0, pretend = 0, frame = 24
+ 881              		@ frame_needed = 1, uses_anonymous_args = 0
+ 882 04c6 B0B5     		push	{r4, r5, r7, lr}
+ 883              	.LCFI12:
+ 884              		.cfi_def_cfa_offset 16
+ 885              		.cfi_offset 4, -16
+ 886              		.cfi_offset 5, -12
+ 887              		.cfi_offset 7, -8
+ 888              		.cfi_offset 14, -4
+ 889 04c8 86B0     		sub	sp, sp, #24
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 24
+
+
+ 890              	.LCFI13:
+ 891              		.cfi_def_cfa_offset 40
+ 892 04ca 00AF     		add	r7, sp, #0
+ 893              	.LCFI14:
+ 894              		.cfi_def_cfa_register 7
+ 895 04cc F860     		str	r0, [r7, #12]
+ 896 04ce 0800     		movs	r0, r1
+ 897 04d0 7A60     		str	r2, [r7, #4]
+ 898 04d2 1900     		movs	r1, r3
+ 899 04d4 0A23     		movs	r3, #10
+ 900 04d6 FB18     		adds	r3, r7, r3
+ 901 04d8 021C     		adds	r2, r0, #0
+ 902 04da 1A80     		strh	r2, [r3]
+ 903 04dc 0823     		movs	r3, #8
+ 904 04de FB18     		adds	r3, r7, r3
+ 905 04e0 0A1C     		adds	r2, r1, #0
+ 906 04e2 1A80     		strh	r2, [r3]
+ 406:eeprom.c      ****   tS8  retCode = 0;
+ 907              		.loc 1 406 0
+ 908 04e4 1721     		movs	r1, #23
+ 909 04e6 7B18     		adds	r3, r7, r1
+ 910 04e8 0022     		movs	r2, #0
+ 911 04ea 1A70     		strb	r2, [r3]
+ 407:eeprom.c      ****   tU8  status  = 0;
+ 912              		.loc 1 407 0
+ 913 04ec 1323     		movs	r3, #19
+ 914 04ee FB18     		adds	r3, r7, r3
+ 915 04f0 0022     		movs	r2, #0
+ 916 04f2 1A70     		strb	r2, [r3]
+ 408:eeprom.c      ****   tU16 i       = 0;
+ 917              		.loc 1 408 0
+ 918 04f4 1423     		movs	r3, #20
+ 919 04f6 FB18     		adds	r3, r7, r3
+ 920 04f8 0022     		movs	r2, #0
+ 921 04fa 1A80     		strh	r2, [r3]
+ 922              	.LBB3:
+ 409:eeprom.c      **** 
+ 410:eeprom.c      ****   do
+ 411:eeprom.c      ****   {
+ 412:eeprom.c      ****     /* generate Start condition */
+ 413:eeprom.c      ****     retCode = i2cStart();
+ 923              		.loc 1 413 0
+ 924 04fc 0D00     		movs	r5, r1
+ 925 04fe 7C18     		adds	r4, r7, r1
+ 926 0500 FFF7FEFF 		bl	i2cStart
+ 927 0504 0300     		movs	r3, r0
+ 928 0506 2370     		strb	r3, [r4]
+ 414:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 929              		.loc 1 414 0
+ 930 0508 2900     		movs	r1, r5
+ 931 050a 7B18     		adds	r3, r7, r1
+ 932 050c 1B78     		ldrb	r3, [r3]
+ 933 050e 1B06     		lsls	r3, r3, #24
+ 934 0510 1B16     		asrs	r3, r3, #24
+ 935 0512 012B     		cmp	r3, #1
+ 936 0514 32D1     		bne	.L88
+ 415:eeprom.c      ****       break;
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 25
+
+
+ 416:eeprom.c      **** 
+ 417:eeprom.c      **** 
+ 418:eeprom.c      ****     /* write pca9532 address */
+ 419:eeprom.c      ****     retCode = i2cWriteWithWait(0xc0);
+ 937              		.loc 1 419 0
+ 938 0516 C020     		movs	r0, #192
+ 939 0518 FFF7FEFF 		bl	i2cWriteWithWait
+ 940 051c 0200     		movs	r2, r0
+ 941 051e 1721     		movs	r1, #23
+ 942 0520 7B18     		adds	r3, r7, r1
+ 943 0522 1A70     		strb	r2, [r3]
+ 420:eeprom.c      ****     if(retCode != I2C_CODE_OK)
+ 944              		.loc 1 420 0
+ 945 0524 7B18     		adds	r3, r7, r1
+ 946 0526 1B78     		ldrb	r3, [r3]
+ 947 0528 1B06     		lsls	r3, r3, #24
+ 948 052a 1B16     		asrs	r3, r3, #24
+ 949 052c 012B     		cmp	r3, #1
+ 950 052e 27D1     		bne	.L89
+ 421:eeprom.c      ****       break;
+ 422:eeprom.c      **** 
+ 423:eeprom.c      ****     /* write data */
+ 424:eeprom.c      ****     for(i = 0; i <len; i++)
+ 951              		.loc 1 424 0
+ 952 0530 1423     		movs	r3, #20
+ 953 0532 FB18     		adds	r3, r7, r3
+ 954 0534 0022     		movs	r2, #0
+ 955 0536 1A80     		strh	r2, [r3]
+ 956 0538 17E0     		b	.L66
+ 957              	.L68:
+ 425:eeprom.c      ****     {
+ 426:eeprom.c      ****       retCode = i2cWriteWithWait(*pBuf);
+ 958              		.loc 1 426 0
+ 959 053a FB68     		ldr	r3, [r7, #12]
+ 960 053c 1B78     		ldrb	r3, [r3]
+ 961 053e 1800     		movs	r0, r3
+ 962 0540 FFF7FEFF 		bl	i2cWriteWithWait
+ 963 0544 0200     		movs	r2, r0
+ 964 0546 1721     		movs	r1, #23
+ 965 0548 7B18     		adds	r3, r7, r1
+ 966 054a 1A70     		strb	r2, [r3]
+ 427:eeprom.c      ****       if(retCode != I2C_CODE_OK)
+ 967              		.loc 1 427 0
+ 968 054c 7B18     		adds	r3, r7, r1
+ 969 054e 1B78     		ldrb	r3, [r3]
+ 970 0550 1B06     		lsls	r3, r3, #24
+ 971 0552 1B16     		asrs	r3, r3, #24
+ 972 0554 012B     		cmp	r3, #1
+ 973 0556 15D1     		bne	.L90
+ 428:eeprom.c      ****         break;
+ 429:eeprom.c      **** 
+ 430:eeprom.c      ****       pBuf++;
+ 974              		.loc 1 430 0 discriminator 2
+ 975 0558 FB68     		ldr	r3, [r7, #12]
+ 976 055a 0133     		adds	r3, r3, #1
+ 977 055c FB60     		str	r3, [r7, #12]
+ 424:eeprom.c      ****     {
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 26
+
+
+ 978              		.loc 1 424 0 discriminator 2
+ 979 055e 1421     		movs	r1, #20
+ 980 0560 7B18     		adds	r3, r7, r1
+ 981 0562 1A88     		ldrh	r2, [r3]
+ 982 0564 7B18     		adds	r3, r7, r1
+ 983 0566 0132     		adds	r2, r2, #1
+ 984 0568 1A80     		strh	r2, [r3]
+ 985              	.L66:
+ 424:eeprom.c      ****     {
+ 986              		.loc 1 424 0 is_stmt 0 discriminator 1
+ 987 056a 1423     		movs	r3, #20
+ 988 056c FA18     		adds	r2, r7, r3
+ 989 056e 0A23     		movs	r3, #10
+ 990 0570 FB18     		adds	r3, r7, r3
+ 991 0572 1288     		ldrh	r2, [r2]
+ 992 0574 1B88     		ldrh	r3, [r3]
+ 993 0576 9A42     		cmp	r2, r3
+ 994 0578 DFD3     		bcc	.L68
+ 995 057a 04E0     		b	.L64
+ 996              	.L88:
+ 415:eeprom.c      **** 
+ 997              		.loc 1 415 0 is_stmt 1
+ 998 057c C046     		nop
+ 999 057e 02E0     		b	.L64
+ 1000              	.L89:
+ 421:eeprom.c      **** 
+ 1001              		.loc 1 421 0
+ 1002 0580 C046     		nop
+ 1003 0582 00E0     		b	.L64
+ 1004              	.L90:
+ 428:eeprom.c      **** 
+ 1005              		.loc 1 428 0
+ 1006 0584 C046     		nop
+ 1007              	.L64:
+ 1008              	.LBE3:
+ 431:eeprom.c      ****     }
+ 432:eeprom.c      **** 
+ 433:eeprom.c      ****   } while(0);
+ 434:eeprom.c      **** 
+ 435:eeprom.c      ****   if (len2 > 0)
+ 1009              		.loc 1 435 0
+ 1010 0586 0823     		movs	r3, #8
+ 1011 0588 FB18     		adds	r3, r7, r3
+ 1012 058a 1B88     		ldrh	r3, [r3]
+ 1013 058c 002B     		cmp	r3, #0
+ 1014 058e 00D1     		bne	.LCB914
+ 1015 0590 B3E0     		b	.L69	@long jump
+ 1016              	.LCB914:
+ 436:eeprom.c      ****   {
+ 437:eeprom.c      ****     /* Generate Start condition */
+ 438:eeprom.c      ****     retCode = i2cRepeatStart();
+ 1017              		.loc 1 438 0
+ 1018 0592 1725     		movs	r5, #23
+ 1019 0594 7C19     		adds	r4, r7, r5
+ 1020 0596 FFF7FEFF 		bl	i2cRepeatStart
+ 1021 059a 0300     		movs	r3, r0
+ 1022 059c 2370     		strb	r3, [r4]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 27
+
+
+ 439:eeprom.c      **** 
+ 440:eeprom.c      ****     /* Transmit device address */
+ 441:eeprom.c      ****     if( retCode == I2C_CODE_OK)
+ 1023              		.loc 1 441 0
+ 1024 059e 7B19     		adds	r3, r7, r5
+ 1025 05a0 1B78     		ldrb	r3, [r3]
+ 1026 05a2 1B06     		lsls	r3, r3, #24
+ 1027 05a4 1B16     		asrs	r3, r3, #24
+ 1028 05a6 012B     		cmp	r3, #1
+ 1029 05a8 15D1     		bne	.L76
+ 442:eeprom.c      ****     {
+ 443:eeprom.c      ****       /* Write SLA+R */
+ 444:eeprom.c      ****       retCode = i2cPutChar( 0xc0 + 0x01 );
+ 1030              		.loc 1 444 0
+ 1031 05aa 1723     		movs	r3, #23
+ 1032 05ac FC18     		adds	r4, r7, r3
+ 1033 05ae C120     		movs	r0, #193
+ 1034 05b0 FFF7FEFF 		bl	i2cPutChar
+ 1035 05b4 0300     		movs	r3, r0
+ 1036 05b6 2370     		strb	r3, [r4]
+ 445:eeprom.c      ****       while( retCode == I2C_CODE_BUSY )
+ 1037              		.loc 1 445 0
+ 1038 05b8 06E0     		b	.L71
+ 1039              	.L72:
+ 446:eeprom.c      ****       {
+ 447:eeprom.c      ****         retCode = i2cPutChar( 0xc0 + 0x01 );
+ 1040              		.loc 1 447 0
+ 1041 05ba 1723     		movs	r3, #23
+ 1042 05bc FC18     		adds	r4, r7, r3
+ 1043 05be C120     		movs	r0, #193
+ 1044 05c0 FFF7FEFF 		bl	i2cPutChar
+ 1045 05c4 0300     		movs	r3, r0
+ 1046 05c6 2370     		strb	r3, [r4]
+ 1047              	.L71:
+ 445:eeprom.c      ****       while( retCode == I2C_CODE_BUSY )
+ 1048              		.loc 1 445 0
+ 1049 05c8 1723     		movs	r3, #23
+ 1050 05ca FB18     		adds	r3, r7, r3
+ 1051 05cc 1B78     		ldrb	r3, [r3]
+ 1052 05ce 1B06     		lsls	r3, r3, #24
+ 1053 05d0 1B16     		asrs	r3, r3, #24
+ 1054 05d2 0433     		adds	r3, r3, #4
+ 1055 05d4 F1D0     		beq	.L72
+ 1056              	.L76:
+ 448:eeprom.c      ****       }
+ 449:eeprom.c      ****     }
+ 450:eeprom.c      **** 
+ 451:eeprom.c      ****     /* Wait until SLA+R transmitted */
+ 452:eeprom.c      ****     while(1)
+ 453:eeprom.c      ****     {
+ 454:eeprom.c      ****       /* Get new status */
+ 455:eeprom.c      ****       status = i2cCheckStatus();
+ 1057              		.loc 1 455 0
+ 1058 05d6 1325     		movs	r5, #19
+ 1059 05d8 7C19     		adds	r4, r7, r5
+ 1060 05da FFF7FEFF 		bl	i2cCheckStatus
+ 1061 05de 0300     		movs	r3, r0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 28
+
+
+ 1062 05e0 2370     		strb	r3, [r4]
+ 456:eeprom.c      **** 
+ 457:eeprom.c      ****       if(status == 0x40)
+ 1063              		.loc 1 457 0
+ 1064 05e2 7B19     		adds	r3, r7, r5
+ 1065 05e4 1B78     		ldrb	r3, [r3]
+ 1066 05e6 402B     		cmp	r3, #64
+ 1067 05e8 0FD0     		beq	.L91
+ 458:eeprom.c      ****       {
+ 459:eeprom.c      ****         /* Data transmitted and ACK received */
+ 460:eeprom.c      ****         break;
+ 461:eeprom.c      ****       }
+ 462:eeprom.c      ****       else if(status != 0xf8)
+ 1068              		.loc 1 462 0
+ 1069 05ea 1323     		movs	r3, #19
+ 1070 05ec FB18     		adds	r3, r7, r3
+ 1071 05ee 1B78     		ldrb	r3, [r3]
+ 1072 05f0 F82B     		cmp	r3, #248
+ 1073 05f2 04D0     		beq	.L75
+ 463:eeprom.c      ****       {
+ 464:eeprom.c      ****         /* error */
+ 465:eeprom.c      ****         retCode = I2C_CODE_ERROR;
+ 1074              		.loc 1 465 0
+ 1075 05f4 1723     		movs	r3, #23
+ 1076 05f6 FB18     		adds	r3, r7, r3
+ 1077 05f8 FF22     		movs	r2, #255
+ 1078 05fa 1A70     		strb	r2, [r3]
+ 466:eeprom.c      ****         break;
+ 1079              		.loc 1 466 0
+ 1080 05fc 06E0     		b	.L74
+ 1081              	.L75:
+ 1082 05fe 1722     		movs	r2, #23
+ 1083 0600 BB18     		adds	r3, r7, r2
+ 1084 0602 BA18     		adds	r2, r7, r2
+ 1085 0604 1278     		ldrb	r2, [r2]
+ 1086 0606 1A70     		strb	r2, [r3]
+ 455:eeprom.c      **** 
+ 1087              		.loc 1 455 0
+ 1088 0608 E5E7     		b	.L76
+ 1089              	.L91:
+ 460:eeprom.c      ****       }
+ 1090              		.loc 1 460 0
+ 1091 060a C046     		nop
+ 1092              	.L74:
+ 467:eeprom.c      ****       }
+ 468:eeprom.c      ****     }
+ 469:eeprom.c      **** 
+ 470:eeprom.c      ****     if( retCode == I2C_CODE_OK )
+ 1093              		.loc 1 470 0
+ 1094 060c 1723     		movs	r3, #23
+ 1095 060e FB18     		adds	r3, r7, r3
+ 1096 0610 1B78     		ldrb	r3, [r3]
+ 1097 0612 1B06     		lsls	r3, r3, #24
+ 1098 0614 1B16     		asrs	r3, r3, #24
+ 1099 0616 012B     		cmp	r3, #1
+ 1100 0618 00D0     		beq	.LCB995
+ 1101 061a 6EE0     		b	.L69	@long jump
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 29
+
+
+ 1102              	.LCB995:
+ 471:eeprom.c      ****     {
+ 472:eeprom.c      ****       /* wait until address transmitted and receive data */
+ 473:eeprom.c      ****       for(i = 1; i <= len2; i++ )
+ 1103              		.loc 1 473 0
+ 1104 061c 1423     		movs	r3, #20
+ 1105 061e FB18     		adds	r3, r7, r3
+ 1106 0620 0122     		movs	r2, #1
+ 1107 0622 1A80     		strh	r2, [r3]
+ 1108 0624 61E0     		b	.L77
+ 1109              	.L86:
+ 474:eeprom.c      ****       {
+ 475:eeprom.c      ****         /* wait until data transmitted */
+ 476:eeprom.c      ****         while(1)
+ 477:eeprom.c      ****         {
+ 478:eeprom.c      ****           /* Get new status */
+ 479:eeprom.c      ****           status = i2cCheckStatus();
+ 1110              		.loc 1 479 0
+ 1111 0626 1325     		movs	r5, #19
+ 1112 0628 7C19     		adds	r4, r7, r5
+ 1113 062a FFF7FEFF 		bl	i2cCheckStatus
+ 1114 062e 0300     		movs	r3, r0
+ 1115 0630 2370     		strb	r3, [r4]
+ 480:eeprom.c      **** 
+ 481:eeprom.c      ****           if(( status == 0x40 ) || ( status == 0x48 ) || ( status == 0x50 ))
+ 1116              		.loc 1 481 0
+ 1117 0632 7B19     		adds	r3, r7, r5
+ 1118 0634 1B78     		ldrb	r3, [r3]
+ 1119 0636 402B     		cmp	r3, #64
+ 1120 0638 09D0     		beq	.L78
+ 1121              		.loc 1 481 0 is_stmt 0 discriminator 1
+ 1122 063a 1323     		movs	r3, #19
+ 1123 063c FB18     		adds	r3, r7, r3
+ 1124 063e 1B78     		ldrb	r3, [r3]
+ 1125 0640 482B     		cmp	r3, #72
+ 1126 0642 04D0     		beq	.L78
+ 1127              		.loc 1 481 0 discriminator 2
+ 1128 0644 1323     		movs	r3, #19
+ 1129 0646 FB18     		adds	r3, r7, r3
+ 1130 0648 1B78     		ldrb	r3, [r3]
+ 1131 064a 502B     		cmp	r3, #80
+ 1132 064c 38D1     		bne	.L79
+ 1133              	.L78:
+ 482:eeprom.c      ****           {
+ 483:eeprom.c      ****             /* Data received */
+ 484:eeprom.c      **** 
+ 485:eeprom.c      ****             if(i == len2 )
+ 1134              		.loc 1 485 0 is_stmt 1
+ 1135 064e 1423     		movs	r3, #20
+ 1136 0650 FA18     		adds	r2, r7, r3
+ 1137 0652 0823     		movs	r3, #8
+ 1138 0654 FB18     		adds	r3, r7, r3
+ 1139 0656 1288     		ldrh	r2, [r2]
+ 1140 0658 1B88     		ldrh	r3, [r3]
+ 1141 065a 9A42     		cmp	r2, r3
+ 1142 065c 09D1     		bne	.L80
+ 486:eeprom.c      ****             {
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 30
+
+
+ 487:eeprom.c      ****               /* Set generate NACK */
+ 488:eeprom.c      ****               retCode = i2cGetChar( I2C_MODE_ACK1, pBuf2 );
+ 1143              		.loc 1 488 0
+ 1144 065e 1723     		movs	r3, #23
+ 1145 0660 FC18     		adds	r4, r7, r3
+ 1146 0662 7B68     		ldr	r3, [r7, #4]
+ 1147 0664 1900     		movs	r1, r3
+ 1148 0666 0120     		movs	r0, #1
+ 1149 0668 FFF7FEFF 		bl	i2cGetChar
+ 1150 066c 0300     		movs	r3, r0
+ 1151 066e 2370     		strb	r3, [r4]
+ 1152 0670 08E0     		b	.L81
+ 1153              	.L80:
+ 489:eeprom.c      ****             }
+ 490:eeprom.c      ****             else
+ 491:eeprom.c      ****             {
+ 492:eeprom.c      ****               retCode = i2cGetChar( I2C_MODE_ACK0, pBuf2 );
+ 1154              		.loc 1 492 0
+ 1155 0672 1723     		movs	r3, #23
+ 1156 0674 FC18     		adds	r4, r7, r3
+ 1157 0676 7B68     		ldr	r3, [r7, #4]
+ 1158 0678 1900     		movs	r1, r3
+ 1159 067a 0020     		movs	r0, #0
+ 1160 067c FFF7FEFF 		bl	i2cGetChar
+ 1161 0680 0300     		movs	r3, r0
+ 1162 0682 2370     		strb	r3, [r4]
+ 1163              	.L81:
+ 493:eeprom.c      ****             }
+ 494:eeprom.c      **** 
+ 495:eeprom.c      ****             /* Read data */
+ 496:eeprom.c      ****             retCode = i2cGetChar( I2C_MODE_READ, pBuf2 );
+ 1164              		.loc 1 496 0
+ 1165 0684 1723     		movs	r3, #23
+ 1166 0686 FC18     		adds	r4, r7, r3
+ 1167 0688 7B68     		ldr	r3, [r7, #4]
+ 1168 068a 1900     		movs	r1, r3
+ 1169 068c 0220     		movs	r0, #2
+ 1170 068e FFF7FEFF 		bl	i2cGetChar
+ 1171 0692 0300     		movs	r3, r0
+ 1172 0694 2370     		strb	r3, [r4]
+ 497:eeprom.c      ****             while( retCode == I2C_CODE_EMPTY )
+ 1173              		.loc 1 497 0
+ 1174 0696 08E0     		b	.L82
+ 1175              	.L83:
+ 498:eeprom.c      ****             {
+ 499:eeprom.c      ****               retCode = i2cGetChar( I2C_MODE_READ, pBuf2 );
+ 1176              		.loc 1 499 0
+ 1177 0698 1723     		movs	r3, #23
+ 1178 069a FC18     		adds	r4, r7, r3
+ 1179 069c 7B68     		ldr	r3, [r7, #4]
+ 1180 069e 1900     		movs	r1, r3
+ 1181 06a0 0220     		movs	r0, #2
+ 1182 06a2 FFF7FEFF 		bl	i2cGetChar
+ 1183 06a6 0300     		movs	r3, r0
+ 1184 06a8 2370     		strb	r3, [r4]
+ 1185              	.L82:
+ 497:eeprom.c      ****             while( retCode == I2C_CODE_EMPTY )
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 31
+
+
+ 1186              		.loc 1 497 0
+ 1187 06aa 1723     		movs	r3, #23
+ 1188 06ac FB18     		adds	r3, r7, r3
+ 1189 06ae 1B78     		ldrb	r3, [r3]
+ 1190 06b0 1B06     		lsls	r3, r3, #24
+ 1191 06b2 1B16     		asrs	r3, r3, #24
+ 1192 06b4 0333     		adds	r3, r3, #3
+ 1193 06b6 EFD0     		beq	.L83
+ 500:eeprom.c      ****             }
+ 501:eeprom.c      ****             pBuf2++;
+ 1194              		.loc 1 501 0
+ 1195 06b8 7B68     		ldr	r3, [r7, #4]
+ 1196 06ba 0133     		adds	r3, r3, #1
+ 1197 06bc 7B60     		str	r3, [r7, #4]
+ 502:eeprom.c      **** 
+ 503:eeprom.c      ****             break;
+ 1198              		.loc 1 503 0
+ 1199 06be 0EE0     		b	.L84
+ 1200              	.L79:
+ 504:eeprom.c      ****           }
+ 505:eeprom.c      ****           else if( status != 0xf8 )
+ 1201              		.loc 1 505 0
+ 1202 06c0 1323     		movs	r3, #19
+ 1203 06c2 FB18     		adds	r3, r7, r3
+ 1204 06c4 1B78     		ldrb	r3, [r3]
+ 1205 06c6 F82B     		cmp	r3, #248
+ 1206 06c8 ADD0     		beq	.L86
+ 506:eeprom.c      ****           {
+ 507:eeprom.c      ****             /* ERROR */
+ 508:eeprom.c      ****             i = len2;
+ 1207              		.loc 1 508 0
+ 1208 06ca 1423     		movs	r3, #20
+ 1209 06cc FB18     		adds	r3, r7, r3
+ 1210 06ce 0822     		movs	r2, #8
+ 1211 06d0 BA18     		adds	r2, r7, r2
+ 1212 06d2 1288     		ldrh	r2, [r2]
+ 1213 06d4 1A80     		strh	r2, [r3]
+ 509:eeprom.c      ****             retCode = I2C_CODE_ERROR;
+ 1214              		.loc 1 509 0
+ 1215 06d6 1723     		movs	r3, #23
+ 1216 06d8 FB18     		adds	r3, r7, r3
+ 1217 06da FF22     		movs	r2, #255
+ 1218 06dc 1A70     		strb	r2, [r3]
+ 1219              	.L84:
+ 473:eeprom.c      ****       {
+ 1220              		.loc 1 473 0 discriminator 2
+ 1221 06de 1421     		movs	r1, #20
+ 1222 06e0 7B18     		adds	r3, r7, r1
+ 1223 06e2 1A88     		ldrh	r2, [r3]
+ 1224 06e4 7B18     		adds	r3, r7, r1
+ 1225 06e6 0132     		adds	r2, r2, #1
+ 1226 06e8 1A80     		strh	r2, [r3]
+ 1227              	.L77:
+ 473:eeprom.c      ****       {
+ 1228              		.loc 1 473 0 is_stmt 0 discriminator 1
+ 1229 06ea 1423     		movs	r3, #20
+ 1230 06ec FA18     		adds	r2, r7, r3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 32
+
+
+ 1231 06ee 0823     		movs	r3, #8
+ 1232 06f0 FB18     		adds	r3, r7, r3
+ 1233 06f2 1288     		ldrh	r2, [r2]
+ 1234 06f4 1B88     		ldrh	r3, [r3]
+ 1235 06f6 9A42     		cmp	r2, r3
+ 1236 06f8 95D9     		bls	.L86
+ 1237              	.L69:
+ 510:eeprom.c      ****             break;
+ 511:eeprom.c      ****           }
+ 512:eeprom.c      ****         }
+ 513:eeprom.c      ****       }
+ 514:eeprom.c      ****     }
+ 515:eeprom.c      ****   }
+ 516:eeprom.c      **** 
+ 517:eeprom.c      ****   /* Generate Stop condition */
+ 518:eeprom.c      ****   i2cStop();
+ 1238              		.loc 1 518 0 is_stmt 1
+ 1239 06fa FFF7FEFF 		bl	i2cStop
+ 519:eeprom.c      **** 
+ 520:eeprom.c      ****   return retCode;
+ 1240              		.loc 1 520 0
+ 1241 06fe 1723     		movs	r3, #23
+ 1242 0700 FB18     		adds	r3, r7, r3
+ 1243 0702 1B78     		ldrb	r3, [r3]
+ 1244 0704 1B06     		lsls	r3, r3, #24
+ 1245 0706 1B16     		asrs	r3, r3, #24
+ 521:eeprom.c      **** }
+ 1246              		.loc 1 521 0
+ 1247 0708 1800     		movs	r0, r3
+ 1248 070a BD46     		mov	sp, r7
+ 1249 070c 06B0     		add	sp, sp, #24
+ 1250              		@ sp needed
+ 1251 070e B0BC     		pop	{r4, r5, r7}
+ 1252 0710 02BC     		pop	{r1}
+ 1253 0712 0847     		bx	r1
+ 1254              		.cfi_endproc
+ 1255              	.LFE4:
+ 1256              		.size	pca9532, .-pca9532
+ 1257              	.Letext0:
+ 1258              		.file 2 "general.h"
+ 1259              		.section	.debug_info,"",%progbits
+ 1260              	.Ldebug_info0:
+ 1261 0000 ED020000 		.4byte	0x2ed
+ 1262 0004 0200     		.2byte	0x2
+ 1263 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 1264 000a 04       		.byte	0x4
+ 1265 000b 01       		.uleb128 0x1
+ 1266 000c AA000000 		.4byte	.LASF26
+ 1267 0010 0C       		.byte	0xc
+ 1268 0011 A0010000 		.4byte	.LASF27
+ 1269 0015 49010000 		.4byte	.LASF28
+ 1270 0019 00000000 		.4byte	.Ltext0
+ 1271 001d 14070000 		.4byte	.Letext0
+ 1272 0021 00000000 		.4byte	.Ldebug_line0
+ 1273 0025 02       		.uleb128 0x2
+ 1274 0026 74553800 		.ascii	"tU8\000"
+ 1275 002a 02       		.byte	0x2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 33
+
+
+ 1276 002b 20       		.byte	0x20
+ 1277 002c 30000000 		.4byte	0x30
+ 1278 0030 03       		.uleb128 0x3
+ 1279 0031 01       		.byte	0x1
+ 1280 0032 08       		.byte	0x8
+ 1281 0033 80000000 		.4byte	.LASF1
+ 1282 0037 04       		.uleb128 0x4
+ 1283 0038 8B010000 		.4byte	.LASF0
+ 1284 003c 02       		.byte	0x2
+ 1285 003d 21       		.byte	0x21
+ 1286 003e 42000000 		.4byte	0x42
+ 1287 0042 03       		.uleb128 0x3
+ 1288 0043 02       		.byte	0x2
+ 1289 0044 07       		.byte	0x7
+ 1290 0045 67010000 		.4byte	.LASF2
+ 1291 0049 03       		.uleb128 0x3
+ 1292 004a 04       		.byte	0x4
+ 1293 004b 07       		.byte	0x7
+ 1294 004c 16000000 		.4byte	.LASF3
+ 1295 0050 03       		.uleb128 0x3
+ 1296 0051 08       		.byte	0x8
+ 1297 0052 07       		.byte	0x7
+ 1298 0053 57000000 		.4byte	.LASF4
+ 1299 0057 02       		.uleb128 0x2
+ 1300 0058 74533800 		.ascii	"tS8\000"
+ 1301 005c 02       		.byte	0x2
+ 1302 005d 24       		.byte	0x24
+ 1303 005e 62000000 		.4byte	0x62
+ 1304 0062 03       		.uleb128 0x3
+ 1305 0063 01       		.byte	0x1
+ 1306 0064 06       		.byte	0x6
+ 1307 0065 7A010000 		.4byte	.LASF5
+ 1308 0069 03       		.uleb128 0x3
+ 1309 006a 02       		.byte	0x2
+ 1310 006b 05       		.byte	0x5
+ 1311 006c 96010000 		.4byte	.LASF6
+ 1312 0070 05       		.uleb128 0x5
+ 1313 0071 04       		.byte	0x4
+ 1314 0072 05       		.byte	0x5
+ 1315 0073 696E7400 		.ascii	"int\000"
+ 1316 0077 03       		.uleb128 0x3
+ 1317 0078 08       		.byte	0x8
+ 1318 0079 05       		.byte	0x5
+ 1319 007a 00000000 		.4byte	.LASF7
+ 1320 007e 06       		.uleb128 0x6
+ 1321 007f 07       		.byte	0x7
+ 1322 0080 01       		.byte	0x1
+ 1323 0081 30000000 		.4byte	0x30
+ 1324 0085 02       		.byte	0x2
+ 1325 0086 28       		.byte	0x28
+ 1326 0087 98000000 		.4byte	0x98
+ 1327 008b 07       		.uleb128 0x7
+ 1328 008c 42000000 		.4byte	.LASF8
+ 1329 0090 00       		.byte	0
+ 1330 0091 07       		.uleb128 0x7
+ 1331 0092 8E000000 		.4byte	.LASF9
+ 1332 0096 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 34
+
+
+ 1333 0097 00       		.byte	0
+ 1334 0098 04       		.uleb128 0x4
+ 1335 0099 90010000 		.4byte	.LASF10
+ 1336 009d 02       		.byte	0x2
+ 1337 009e 29       		.byte	0x29
+ 1338 009f 7E000000 		.4byte	0x7e
+ 1339 00a3 08       		.uleb128 0x8
+ 1340 00a4 01       		.byte	0x1
+ 1341 00a5 0E000000 		.4byte	.LASF16
+ 1342 00a9 01       		.byte	0x1
+ 1343 00aa 9401     		.2byte	0x194
+ 1344 00ac 01       		.byte	0x1
+ 1345 00ad 57000000 		.4byte	0x57
+ 1346 00b1 C6040000 		.4byte	.LFB4
+ 1347 00b5 14070000 		.4byte	.LFE4
+ 1348 00b9 00000000 		.4byte	.LLST4
+ 1349 00bd 01       		.byte	0x1
+ 1350 00be 44010000 		.4byte	0x144
+ 1351 00c2 09       		.uleb128 0x9
+ 1352 00c3 7B000000 		.4byte	.LASF11
+ 1353 00c7 01       		.byte	0x1
+ 1354 00c8 9401     		.2byte	0x194
+ 1355 00ca 44010000 		.4byte	0x144
+ 1356 00ce 02       		.byte	0x2
+ 1357 00cf 91       		.byte	0x91
+ 1358 00d0 64       		.sleb128 -28
+ 1359 00d1 0A       		.uleb128 0xa
+ 1360 00d2 6C656E00 		.ascii	"len\000"
+ 1361 00d6 01       		.byte	0x1
+ 1362 00d7 9401     		.2byte	0x194
+ 1363 00d9 37000000 		.4byte	0x37
+ 1364 00dd 02       		.byte	0x2
+ 1365 00de 91       		.byte	0x91
+ 1366 00df 62       		.sleb128 -30
+ 1367 00e0 09       		.uleb128 0x9
+ 1368 00e1 A4000000 		.4byte	.LASF12
+ 1369 00e5 01       		.byte	0x1
+ 1370 00e6 9401     		.2byte	0x194
+ 1371 00e8 44010000 		.4byte	0x144
+ 1372 00ec 02       		.byte	0x2
+ 1373 00ed 91       		.byte	0x91
+ 1374 00ee 5C       		.sleb128 -36
+ 1375 00ef 09       		.uleb128 0x9
+ 1376 00f0 86010000 		.4byte	.LASF13
+ 1377 00f4 01       		.byte	0x1
+ 1378 00f5 9401     		.2byte	0x194
+ 1379 00f7 37000000 		.4byte	0x37
+ 1380 00fb 02       		.byte	0x2
+ 1381 00fc 91       		.byte	0x91
+ 1382 00fd 60       		.sleb128 -32
+ 1383 00fe 0B       		.uleb128 0xb
+ 1384 00ff 3A000000 		.4byte	.LASF14
+ 1385 0103 01       		.byte	0x1
+ 1386 0104 9601     		.2byte	0x196
+ 1387 0106 57000000 		.4byte	0x57
+ 1388 010a 02       		.byte	0x2
+ 1389 010b 91       		.byte	0x91
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 35
+
+
+ 1390 010c 6F       		.sleb128 -17
+ 1391 010d 0B       		.uleb128 0xb
+ 1392 010e 48000000 		.4byte	.LASF15
+ 1393 0112 01       		.byte	0x1
+ 1394 0113 9701     		.2byte	0x197
+ 1395 0115 25000000 		.4byte	0x25
+ 1396 0119 02       		.byte	0x2
+ 1397 011a 91       		.byte	0x91
+ 1398 011b 6B       		.sleb128 -21
+ 1399 011c 0C       		.uleb128 0xc
+ 1400 011d 6900     		.ascii	"i\000"
+ 1401 011f 01       		.byte	0x1
+ 1402 0120 9801     		.2byte	0x198
+ 1403 0122 37000000 		.4byte	0x37
+ 1404 0126 02       		.byte	0x2
+ 1405 0127 91       		.byte	0x91
+ 1406 0128 6C       		.sleb128 -20
+ 1407 0129 0D       		.uleb128 0xd
+ 1408 012a FC040000 		.4byte	.LBB3
+ 1409 012e 86050000 		.4byte	.LBE3
+ 1410 0132 0E       		.uleb128 0xe
+ 1411 0133 01       		.byte	0x1
+ 1412 0134 93000000 		.4byte	.LASF20
+ 1413 0138 01       		.byte	0x1
+ 1414 0139 6701     		.2byte	0x167
+ 1415 013b 70000000 		.4byte	0x70
+ 1416 013f 01       		.byte	0x1
+ 1417 0140 0F       		.uleb128 0xf
+ 1418 0141 00       		.byte	0
+ 1419 0142 00       		.byte	0
+ 1420 0143 00       		.byte	0
+ 1421 0144 10       		.uleb128 0x10
+ 1422 0145 04       		.byte	0x4
+ 1423 0146 25000000 		.4byte	0x25
+ 1424 014a 08       		.uleb128 0x8
+ 1425 014b 01       		.byte	0x1
+ 1426 014c 23000000 		.4byte	.LASF17
+ 1427 0150 01       		.byte	0x1
+ 1428 0151 5701     		.2byte	0x157
+ 1429 0153 01       		.byte	0x1
+ 1430 0154 57000000 		.4byte	0x57
+ 1431 0158 CC030000 		.4byte	.LFB3
+ 1432 015c C6040000 		.4byte	.LFE3
+ 1433 0160 38000000 		.4byte	.LLST3
+ 1434 0164 01       		.byte	0x1
+ 1435 0165 DC010000 		.4byte	0x1dc
+ 1436 0169 09       		.uleb128 0x9
+ 1437 016a 76000000 		.4byte	.LASF18
+ 1438 016e 01       		.byte	0x1
+ 1439 016f 5701     		.2byte	0x157
+ 1440 0171 37000000 		.4byte	0x37
+ 1441 0175 02       		.byte	0x2
+ 1442 0176 91       		.byte	0x91
+ 1443 0177 66       		.sleb128 -26
+ 1444 0178 09       		.uleb128 0x9
+ 1445 0179 A9010000 		.4byte	.LASF19
+ 1446 017d 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 36
+
+
+ 1447 017e 5701     		.2byte	0x157
+ 1448 0180 44010000 		.4byte	0x144
+ 1449 0184 02       		.byte	0x2
+ 1450 0185 91       		.byte	0x91
+ 1451 0186 60       		.sleb128 -32
+ 1452 0187 0A       		.uleb128 0xa
+ 1453 0188 6C656E00 		.ascii	"len\000"
+ 1454 018c 01       		.byte	0x1
+ 1455 018d 5701     		.2byte	0x157
+ 1456 018f 37000000 		.4byte	0x37
+ 1457 0193 02       		.byte	0x2
+ 1458 0194 91       		.byte	0x91
+ 1459 0195 64       		.sleb128 -28
+ 1460 0196 0B       		.uleb128 0xb
+ 1461 0197 3A000000 		.4byte	.LASF14
+ 1462 019b 01       		.byte	0x1
+ 1463 019c 5901     		.2byte	0x159
+ 1464 019e 57000000 		.4byte	0x57
+ 1465 01a2 02       		.byte	0x2
+ 1466 01a3 91       		.byte	0x91
+ 1467 01a4 6F       		.sleb128 -17
+ 1468 01a5 0B       		.uleb128 0xb
+ 1469 01a6 48000000 		.4byte	.LASF15
+ 1470 01aa 01       		.byte	0x1
+ 1471 01ab 5A01     		.2byte	0x15a
+ 1472 01ad 25000000 		.4byte	0x25
+ 1473 01b1 02       		.byte	0x2
+ 1474 01b2 91       		.byte	0x91
+ 1475 01b3 6D       		.sleb128 -19
+ 1476 01b4 0C       		.uleb128 0xc
+ 1477 01b5 6900     		.ascii	"i\000"
+ 1478 01b7 01       		.byte	0x1
+ 1479 01b8 5B01     		.2byte	0x15b
+ 1480 01ba 25000000 		.4byte	0x25
+ 1481 01be 02       		.byte	0x2
+ 1482 01bf 91       		.byte	0x91
+ 1483 01c0 6E       		.sleb128 -18
+ 1484 01c1 0D       		.uleb128 0xd
+ 1485 01c2 FA030000 		.4byte	.LBB2
+ 1486 01c6 AC040000 		.4byte	.LBE2
+ 1487 01ca 0E       		.uleb128 0xe
+ 1488 01cb 01       		.byte	0x1
+ 1489 01cc 93000000 		.4byte	.LASF20
+ 1490 01d0 01       		.byte	0x1
+ 1491 01d1 6701     		.2byte	0x167
+ 1492 01d3 70000000 		.4byte	0x70
+ 1493 01d7 01       		.byte	0x1
+ 1494 01d8 0F       		.uleb128 0xf
+ 1495 01d9 00       		.byte	0
+ 1496 01da 00       		.byte	0
+ 1497 01db 00       		.byte	0
+ 1498 01dc 08       		.uleb128 0x8
+ 1499 01dd 01       		.byte	0x1
+ 1500 01de 3A010000 		.4byte	.LASF21
+ 1501 01e2 01       		.byte	0x1
+ 1502 01e3 1701     		.2byte	0x117
+ 1503 01e5 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 37
+
+
+ 1504 01e6 57000000 		.4byte	0x57
+ 1505 01ea 88020000 		.4byte	.LFB2
+ 1506 01ee CC030000 		.4byte	.LFE2
+ 1507 01f2 70000000 		.4byte	.LLST2
+ 1508 01f6 01       		.byte	0x1
+ 1509 01f7 54020000 		.4byte	0x254
+ 1510 01fb 09       		.uleb128 0x9
+ 1511 01fc 4F000000 		.4byte	.LASF22
+ 1512 0200 01       		.byte	0x1
+ 1513 0201 1701     		.2byte	0x117
+ 1514 0203 37000000 		.4byte	0x37
+ 1515 0207 02       		.byte	0x2
+ 1516 0208 91       		.byte	0x91
+ 1517 0209 66       		.sleb128 -26
+ 1518 020a 09       		.uleb128 0x9
+ 1519 020b 7B000000 		.4byte	.LASF11
+ 1520 020f 01       		.byte	0x1
+ 1521 0210 1701     		.2byte	0x117
+ 1522 0212 44010000 		.4byte	0x144
+ 1523 0216 02       		.byte	0x2
+ 1524 0217 91       		.byte	0x91
+ 1525 0218 60       		.sleb128 -32
+ 1526 0219 0A       		.uleb128 0xa
+ 1527 021a 6C656E00 		.ascii	"len\000"
+ 1528 021e 01       		.byte	0x1
+ 1529 021f 1701     		.2byte	0x117
+ 1530 0221 37000000 		.4byte	0x37
+ 1531 0225 02       		.byte	0x2
+ 1532 0226 91       		.byte	0x91
+ 1533 0227 64       		.sleb128 -28
+ 1534 0228 0B       		.uleb128 0xb
+ 1535 0229 3A000000 		.4byte	.LASF14
+ 1536 022d 01       		.byte	0x1
+ 1537 022e 1901     		.2byte	0x119
+ 1538 0230 57000000 		.4byte	0x57
+ 1539 0234 02       		.byte	0x2
+ 1540 0235 91       		.byte	0x91
+ 1541 0236 6F       		.sleb128 -17
+ 1542 0237 0B       		.uleb128 0xb
+ 1543 0238 48000000 		.4byte	.LASF15
+ 1544 023c 01       		.byte	0x1
+ 1545 023d 1A01     		.2byte	0x11a
+ 1546 023f 25000000 		.4byte	0x25
+ 1547 0243 02       		.byte	0x2
+ 1548 0244 91       		.byte	0x91
+ 1549 0245 6B       		.sleb128 -21
+ 1550 0246 0C       		.uleb128 0xc
+ 1551 0247 6900     		.ascii	"i\000"
+ 1552 0249 01       		.byte	0x1
+ 1553 024a 1B01     		.2byte	0x11b
+ 1554 024c 37000000 		.4byte	0x37
+ 1555 0250 02       		.byte	0x2
+ 1556 0251 91       		.byte	0x91
+ 1557 0252 6C       		.sleb128 -20
+ 1558 0253 00       		.byte	0
+ 1559 0254 11       		.uleb128 0x11
+ 1560 0255 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 38
+
+
+ 1561 0256 2A010000 		.4byte	.LASF23
+ 1562 025a 01       		.byte	0x1
+ 1563 025b 79       		.byte	0x79
+ 1564 025c 01       		.byte	0x1
+ 1565 025d 57000000 		.4byte	0x57
+ 1566 0261 C0000000 		.4byte	.LFB1
+ 1567 0265 88020000 		.4byte	.LFE1
+ 1568 0269 A8000000 		.4byte	.LLST1
+ 1569 026d 01       		.byte	0x1
+ 1570 026e AB020000 		.4byte	0x2ab
+ 1571 0272 12       		.uleb128 0x12
+ 1572 0273 6E000000 		.4byte	.LASF24
+ 1573 0277 01       		.byte	0x1
+ 1574 0278 79       		.byte	0x79
+ 1575 0279 25000000 		.4byte	0x25
+ 1576 027d 02       		.byte	0x2
+ 1577 027e 91       		.byte	0x91
+ 1578 027f 67       		.sleb128 -25
+ 1579 0280 12       		.uleb128 0x12
+ 1580 0281 4F000000 		.4byte	.LASF22
+ 1581 0285 01       		.byte	0x1
+ 1582 0286 79       		.byte	0x79
+ 1583 0287 37000000 		.4byte	0x37
+ 1584 028b 02       		.byte	0x2
+ 1585 028c 91       		.byte	0x91
+ 1586 028d 64       		.sleb128 -28
+ 1587 028e 13       		.uleb128 0x13
+ 1588 028f 3A000000 		.4byte	.LASF14
+ 1589 0293 01       		.byte	0x1
+ 1590 0294 7B       		.byte	0x7b
+ 1591 0295 57000000 		.4byte	0x57
+ 1592 0299 02       		.byte	0x2
+ 1593 029a 91       		.byte	0x91
+ 1594 029b 6F       		.sleb128 -17
+ 1595 029c 13       		.uleb128 0x13
+ 1596 029d 48000000 		.4byte	.LASF15
+ 1597 02a1 01       		.byte	0x1
+ 1598 02a2 7C       		.byte	0x7c
+ 1599 02a3 25000000 		.4byte	0x25
+ 1600 02a7 02       		.byte	0x2
+ 1601 02a8 91       		.byte	0x91
+ 1602 02a9 6E       		.sleb128 -18
+ 1603 02aa 00       		.byte	0
+ 1604 02ab 14       		.uleb128 0x14
+ 1605 02ac 01       		.byte	0x1
+ 1606 02ad 2F000000 		.4byte	.LASF29
+ 1607 02b1 01       		.byte	0x1
+ 1608 02b2 32       		.byte	0x32
+ 1609 02b3 01       		.byte	0x1
+ 1610 02b4 57000000 		.4byte	0x57
+ 1611 02b8 00000000 		.4byte	.LFB0
+ 1612 02bc C0000000 		.4byte	.LFE0
+ 1613 02c0 E0000000 		.4byte	.LLST0
+ 1614 02c4 01       		.byte	0x1
+ 1615 02c5 13       		.uleb128 0x13
+ 1616 02c6 3A000000 		.4byte	.LASF14
+ 1617 02ca 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 39
+
+
+ 1618 02cb 34       		.byte	0x34
+ 1619 02cc 57000000 		.4byte	0x57
+ 1620 02d0 02       		.byte	0x2
+ 1621 02d1 91       		.byte	0x91
+ 1622 02d2 6F       		.sleb128 -17
+ 1623 02d3 13       		.uleb128 0x13
+ 1624 02d4 48000000 		.4byte	.LASF15
+ 1625 02d8 01       		.byte	0x1
+ 1626 02d9 35       		.byte	0x35
+ 1627 02da 25000000 		.4byte	0x25
+ 1628 02de 02       		.byte	0x2
+ 1629 02df 91       		.byte	0x91
+ 1630 02e0 6D       		.sleb128 -19
+ 1631 02e1 13       		.uleb128 0x13
+ 1632 02e2 AF010000 		.4byte	.LASF25
+ 1633 02e6 01       		.byte	0x1
+ 1634 02e7 36       		.byte	0x36
+ 1635 02e8 98000000 		.4byte	0x98
+ 1636 02ec 02       		.byte	0x2
+ 1637 02ed 91       		.byte	0x91
+ 1638 02ee 6E       		.sleb128 -18
+ 1639 02ef 00       		.byte	0
+ 1640 02f0 00       		.byte	0
+ 1641              		.section	.debug_abbrev,"",%progbits
+ 1642              	.Ldebug_abbrev0:
+ 1643 0000 01       		.uleb128 0x1
+ 1644 0001 11       		.uleb128 0x11
+ 1645 0002 01       		.byte	0x1
+ 1646 0003 25       		.uleb128 0x25
+ 1647 0004 0E       		.uleb128 0xe
+ 1648 0005 13       		.uleb128 0x13
+ 1649 0006 0B       		.uleb128 0xb
+ 1650 0007 03       		.uleb128 0x3
+ 1651 0008 0E       		.uleb128 0xe
+ 1652 0009 1B       		.uleb128 0x1b
+ 1653 000a 0E       		.uleb128 0xe
+ 1654 000b 11       		.uleb128 0x11
+ 1655 000c 01       		.uleb128 0x1
+ 1656 000d 12       		.uleb128 0x12
+ 1657 000e 01       		.uleb128 0x1
+ 1658 000f 10       		.uleb128 0x10
+ 1659 0010 06       		.uleb128 0x6
+ 1660 0011 00       		.byte	0
+ 1661 0012 00       		.byte	0
+ 1662 0013 02       		.uleb128 0x2
+ 1663 0014 16       		.uleb128 0x16
+ 1664 0015 00       		.byte	0
+ 1665 0016 03       		.uleb128 0x3
+ 1666 0017 08       		.uleb128 0x8
+ 1667 0018 3A       		.uleb128 0x3a
+ 1668 0019 0B       		.uleb128 0xb
+ 1669 001a 3B       		.uleb128 0x3b
+ 1670 001b 0B       		.uleb128 0xb
+ 1671 001c 49       		.uleb128 0x49
+ 1672 001d 13       		.uleb128 0x13
+ 1673 001e 00       		.byte	0
+ 1674 001f 00       		.byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 40
+
+
+ 1675 0020 03       		.uleb128 0x3
+ 1676 0021 24       		.uleb128 0x24
+ 1677 0022 00       		.byte	0
+ 1678 0023 0B       		.uleb128 0xb
+ 1679 0024 0B       		.uleb128 0xb
+ 1680 0025 3E       		.uleb128 0x3e
+ 1681 0026 0B       		.uleb128 0xb
+ 1682 0027 03       		.uleb128 0x3
+ 1683 0028 0E       		.uleb128 0xe
+ 1684 0029 00       		.byte	0
+ 1685 002a 00       		.byte	0
+ 1686 002b 04       		.uleb128 0x4
+ 1687 002c 16       		.uleb128 0x16
+ 1688 002d 00       		.byte	0
+ 1689 002e 03       		.uleb128 0x3
+ 1690 002f 0E       		.uleb128 0xe
+ 1691 0030 3A       		.uleb128 0x3a
+ 1692 0031 0B       		.uleb128 0xb
+ 1693 0032 3B       		.uleb128 0x3b
+ 1694 0033 0B       		.uleb128 0xb
+ 1695 0034 49       		.uleb128 0x49
+ 1696 0035 13       		.uleb128 0x13
+ 1697 0036 00       		.byte	0
+ 1698 0037 00       		.byte	0
+ 1699 0038 05       		.uleb128 0x5
+ 1700 0039 24       		.uleb128 0x24
+ 1701 003a 00       		.byte	0
+ 1702 003b 0B       		.uleb128 0xb
+ 1703 003c 0B       		.uleb128 0xb
+ 1704 003d 3E       		.uleb128 0x3e
+ 1705 003e 0B       		.uleb128 0xb
+ 1706 003f 03       		.uleb128 0x3
+ 1707 0040 08       		.uleb128 0x8
+ 1708 0041 00       		.byte	0
+ 1709 0042 00       		.byte	0
+ 1710 0043 06       		.uleb128 0x6
+ 1711 0044 04       		.uleb128 0x4
+ 1712 0045 01       		.byte	0x1
+ 1713 0046 3E       		.uleb128 0x3e
+ 1714 0047 0B       		.uleb128 0xb
+ 1715 0048 0B       		.uleb128 0xb
+ 1716 0049 0B       		.uleb128 0xb
+ 1717 004a 49       		.uleb128 0x49
+ 1718 004b 13       		.uleb128 0x13
+ 1719 004c 3A       		.uleb128 0x3a
+ 1720 004d 0B       		.uleb128 0xb
+ 1721 004e 3B       		.uleb128 0x3b
+ 1722 004f 0B       		.uleb128 0xb
+ 1723 0050 01       		.uleb128 0x1
+ 1724 0051 13       		.uleb128 0x13
+ 1725 0052 00       		.byte	0
+ 1726 0053 00       		.byte	0
+ 1727 0054 07       		.uleb128 0x7
+ 1728 0055 28       		.uleb128 0x28
+ 1729 0056 00       		.byte	0
+ 1730 0057 03       		.uleb128 0x3
+ 1731 0058 0E       		.uleb128 0xe
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 41
+
+
+ 1732 0059 1C       		.uleb128 0x1c
+ 1733 005a 0B       		.uleb128 0xb
+ 1734 005b 00       		.byte	0
+ 1735 005c 00       		.byte	0
+ 1736 005d 08       		.uleb128 0x8
+ 1737 005e 2E       		.uleb128 0x2e
+ 1738 005f 01       		.byte	0x1
+ 1739 0060 3F       		.uleb128 0x3f
+ 1740 0061 0C       		.uleb128 0xc
+ 1741 0062 03       		.uleb128 0x3
+ 1742 0063 0E       		.uleb128 0xe
+ 1743 0064 3A       		.uleb128 0x3a
+ 1744 0065 0B       		.uleb128 0xb
+ 1745 0066 3B       		.uleb128 0x3b
+ 1746 0067 05       		.uleb128 0x5
+ 1747 0068 27       		.uleb128 0x27
+ 1748 0069 0C       		.uleb128 0xc
+ 1749 006a 49       		.uleb128 0x49
+ 1750 006b 13       		.uleb128 0x13
+ 1751 006c 11       		.uleb128 0x11
+ 1752 006d 01       		.uleb128 0x1
+ 1753 006e 12       		.uleb128 0x12
+ 1754 006f 01       		.uleb128 0x1
+ 1755 0070 40       		.uleb128 0x40
+ 1756 0071 06       		.uleb128 0x6
+ 1757 0072 9642     		.uleb128 0x2116
+ 1758 0074 0C       		.uleb128 0xc
+ 1759 0075 01       		.uleb128 0x1
+ 1760 0076 13       		.uleb128 0x13
+ 1761 0077 00       		.byte	0
+ 1762 0078 00       		.byte	0
+ 1763 0079 09       		.uleb128 0x9
+ 1764 007a 05       		.uleb128 0x5
+ 1765 007b 00       		.byte	0
+ 1766 007c 03       		.uleb128 0x3
+ 1767 007d 0E       		.uleb128 0xe
+ 1768 007e 3A       		.uleb128 0x3a
+ 1769 007f 0B       		.uleb128 0xb
+ 1770 0080 3B       		.uleb128 0x3b
+ 1771 0081 05       		.uleb128 0x5
+ 1772 0082 49       		.uleb128 0x49
+ 1773 0083 13       		.uleb128 0x13
+ 1774 0084 02       		.uleb128 0x2
+ 1775 0085 0A       		.uleb128 0xa
+ 1776 0086 00       		.byte	0
+ 1777 0087 00       		.byte	0
+ 1778 0088 0A       		.uleb128 0xa
+ 1779 0089 05       		.uleb128 0x5
+ 1780 008a 00       		.byte	0
+ 1781 008b 03       		.uleb128 0x3
+ 1782 008c 08       		.uleb128 0x8
+ 1783 008d 3A       		.uleb128 0x3a
+ 1784 008e 0B       		.uleb128 0xb
+ 1785 008f 3B       		.uleb128 0x3b
+ 1786 0090 05       		.uleb128 0x5
+ 1787 0091 49       		.uleb128 0x49
+ 1788 0092 13       		.uleb128 0x13
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 42
+
+
+ 1789 0093 02       		.uleb128 0x2
+ 1790 0094 0A       		.uleb128 0xa
+ 1791 0095 00       		.byte	0
+ 1792 0096 00       		.byte	0
+ 1793 0097 0B       		.uleb128 0xb
+ 1794 0098 34       		.uleb128 0x34
+ 1795 0099 00       		.byte	0
+ 1796 009a 03       		.uleb128 0x3
+ 1797 009b 0E       		.uleb128 0xe
+ 1798 009c 3A       		.uleb128 0x3a
+ 1799 009d 0B       		.uleb128 0xb
+ 1800 009e 3B       		.uleb128 0x3b
+ 1801 009f 05       		.uleb128 0x5
+ 1802 00a0 49       		.uleb128 0x49
+ 1803 00a1 13       		.uleb128 0x13
+ 1804 00a2 02       		.uleb128 0x2
+ 1805 00a3 0A       		.uleb128 0xa
+ 1806 00a4 00       		.byte	0
+ 1807 00a5 00       		.byte	0
+ 1808 00a6 0C       		.uleb128 0xc
+ 1809 00a7 34       		.uleb128 0x34
+ 1810 00a8 00       		.byte	0
+ 1811 00a9 03       		.uleb128 0x3
+ 1812 00aa 08       		.uleb128 0x8
+ 1813 00ab 3A       		.uleb128 0x3a
+ 1814 00ac 0B       		.uleb128 0xb
+ 1815 00ad 3B       		.uleb128 0x3b
+ 1816 00ae 05       		.uleb128 0x5
+ 1817 00af 49       		.uleb128 0x49
+ 1818 00b0 13       		.uleb128 0x13
+ 1819 00b1 02       		.uleb128 0x2
+ 1820 00b2 0A       		.uleb128 0xa
+ 1821 00b3 00       		.byte	0
+ 1822 00b4 00       		.byte	0
+ 1823 00b5 0D       		.uleb128 0xd
+ 1824 00b6 0B       		.uleb128 0xb
+ 1825 00b7 01       		.byte	0x1
+ 1826 00b8 11       		.uleb128 0x11
+ 1827 00b9 01       		.uleb128 0x1
+ 1828 00ba 12       		.uleb128 0x12
+ 1829 00bb 01       		.uleb128 0x1
+ 1830 00bc 00       		.byte	0
+ 1831 00bd 00       		.byte	0
+ 1832 00be 0E       		.uleb128 0xe
+ 1833 00bf 2E       		.uleb128 0x2e
+ 1834 00c0 01       		.byte	0x1
+ 1835 00c1 3F       		.uleb128 0x3f
+ 1836 00c2 0C       		.uleb128 0xc
+ 1837 00c3 03       		.uleb128 0x3
+ 1838 00c4 0E       		.uleb128 0xe
+ 1839 00c5 3A       		.uleb128 0x3a
+ 1840 00c6 0B       		.uleb128 0xb
+ 1841 00c7 3B       		.uleb128 0x3b
+ 1842 00c8 05       		.uleb128 0x5
+ 1843 00c9 49       		.uleb128 0x49
+ 1844 00ca 13       		.uleb128 0x13
+ 1845 00cb 3C       		.uleb128 0x3c
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 43
+
+
+ 1846 00cc 0C       		.uleb128 0xc
+ 1847 00cd 00       		.byte	0
+ 1848 00ce 00       		.byte	0
+ 1849 00cf 0F       		.uleb128 0xf
+ 1850 00d0 18       		.uleb128 0x18
+ 1851 00d1 00       		.byte	0
+ 1852 00d2 00       		.byte	0
+ 1853 00d3 00       		.byte	0
+ 1854 00d4 10       		.uleb128 0x10
+ 1855 00d5 0F       		.uleb128 0xf
+ 1856 00d6 00       		.byte	0
+ 1857 00d7 0B       		.uleb128 0xb
+ 1858 00d8 0B       		.uleb128 0xb
+ 1859 00d9 49       		.uleb128 0x49
+ 1860 00da 13       		.uleb128 0x13
+ 1861 00db 00       		.byte	0
+ 1862 00dc 00       		.byte	0
+ 1863 00dd 11       		.uleb128 0x11
+ 1864 00de 2E       		.uleb128 0x2e
+ 1865 00df 01       		.byte	0x1
+ 1866 00e0 3F       		.uleb128 0x3f
+ 1867 00e1 0C       		.uleb128 0xc
+ 1868 00e2 03       		.uleb128 0x3
+ 1869 00e3 0E       		.uleb128 0xe
+ 1870 00e4 3A       		.uleb128 0x3a
+ 1871 00e5 0B       		.uleb128 0xb
+ 1872 00e6 3B       		.uleb128 0x3b
+ 1873 00e7 0B       		.uleb128 0xb
+ 1874 00e8 27       		.uleb128 0x27
+ 1875 00e9 0C       		.uleb128 0xc
+ 1876 00ea 49       		.uleb128 0x49
+ 1877 00eb 13       		.uleb128 0x13
+ 1878 00ec 11       		.uleb128 0x11
+ 1879 00ed 01       		.uleb128 0x1
+ 1880 00ee 12       		.uleb128 0x12
+ 1881 00ef 01       		.uleb128 0x1
+ 1882 00f0 40       		.uleb128 0x40
+ 1883 00f1 06       		.uleb128 0x6
+ 1884 00f2 9642     		.uleb128 0x2116
+ 1885 00f4 0C       		.uleb128 0xc
+ 1886 00f5 01       		.uleb128 0x1
+ 1887 00f6 13       		.uleb128 0x13
+ 1888 00f7 00       		.byte	0
+ 1889 00f8 00       		.byte	0
+ 1890 00f9 12       		.uleb128 0x12
+ 1891 00fa 05       		.uleb128 0x5
+ 1892 00fb 00       		.byte	0
+ 1893 00fc 03       		.uleb128 0x3
+ 1894 00fd 0E       		.uleb128 0xe
+ 1895 00fe 3A       		.uleb128 0x3a
+ 1896 00ff 0B       		.uleb128 0xb
+ 1897 0100 3B       		.uleb128 0x3b
+ 1898 0101 0B       		.uleb128 0xb
+ 1899 0102 49       		.uleb128 0x49
+ 1900 0103 13       		.uleb128 0x13
+ 1901 0104 02       		.uleb128 0x2
+ 1902 0105 0A       		.uleb128 0xa
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 44
+
+
+ 1903 0106 00       		.byte	0
+ 1904 0107 00       		.byte	0
+ 1905 0108 13       		.uleb128 0x13
+ 1906 0109 34       		.uleb128 0x34
+ 1907 010a 00       		.byte	0
+ 1908 010b 03       		.uleb128 0x3
+ 1909 010c 0E       		.uleb128 0xe
+ 1910 010d 3A       		.uleb128 0x3a
+ 1911 010e 0B       		.uleb128 0xb
+ 1912 010f 3B       		.uleb128 0x3b
+ 1913 0110 0B       		.uleb128 0xb
+ 1914 0111 49       		.uleb128 0x49
+ 1915 0112 13       		.uleb128 0x13
+ 1916 0113 02       		.uleb128 0x2
+ 1917 0114 0A       		.uleb128 0xa
+ 1918 0115 00       		.byte	0
+ 1919 0116 00       		.byte	0
+ 1920 0117 14       		.uleb128 0x14
+ 1921 0118 2E       		.uleb128 0x2e
+ 1922 0119 01       		.byte	0x1
+ 1923 011a 3F       		.uleb128 0x3f
+ 1924 011b 0C       		.uleb128 0xc
+ 1925 011c 03       		.uleb128 0x3
+ 1926 011d 0E       		.uleb128 0xe
+ 1927 011e 3A       		.uleb128 0x3a
+ 1928 011f 0B       		.uleb128 0xb
+ 1929 0120 3B       		.uleb128 0x3b
+ 1930 0121 0B       		.uleb128 0xb
+ 1931 0122 27       		.uleb128 0x27
+ 1932 0123 0C       		.uleb128 0xc
+ 1933 0124 49       		.uleb128 0x49
+ 1934 0125 13       		.uleb128 0x13
+ 1935 0126 11       		.uleb128 0x11
+ 1936 0127 01       		.uleb128 0x1
+ 1937 0128 12       		.uleb128 0x12
+ 1938 0129 01       		.uleb128 0x1
+ 1939 012a 40       		.uleb128 0x40
+ 1940 012b 06       		.uleb128 0x6
+ 1941 012c 9642     		.uleb128 0x2116
+ 1942 012e 0C       		.uleb128 0xc
+ 1943 012f 00       		.byte	0
+ 1944 0130 00       		.byte	0
+ 1945 0131 00       		.byte	0
+ 1946              		.section	.debug_loc,"",%progbits
+ 1947              	.Ldebug_loc0:
+ 1948              	.LLST4:
+ 1949 0000 C6040000 		.4byte	.LFB4-.Ltext0
+ 1950 0004 C8040000 		.4byte	.LCFI12-.Ltext0
+ 1951 0008 0200     		.2byte	0x2
+ 1952 000a 7D       		.byte	0x7d
+ 1953 000b 00       		.sleb128 0
+ 1954 000c C8040000 		.4byte	.LCFI12-.Ltext0
+ 1955 0010 CA040000 		.4byte	.LCFI13-.Ltext0
+ 1956 0014 0200     		.2byte	0x2
+ 1957 0016 7D       		.byte	0x7d
+ 1958 0017 10       		.sleb128 16
+ 1959 0018 CA040000 		.4byte	.LCFI13-.Ltext0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 45
+
+
+ 1960 001c CC040000 		.4byte	.LCFI14-.Ltext0
+ 1961 0020 0200     		.2byte	0x2
+ 1962 0022 7D       		.byte	0x7d
+ 1963 0023 28       		.sleb128 40
+ 1964 0024 CC040000 		.4byte	.LCFI14-.Ltext0
+ 1965 0028 14070000 		.4byte	.LFE4-.Ltext0
+ 1966 002c 0200     		.2byte	0x2
+ 1967 002e 77       		.byte	0x77
+ 1968 002f 28       		.sleb128 40
+ 1969 0030 00000000 		.4byte	0
+ 1970 0034 00000000 		.4byte	0
+ 1971              	.LLST3:
+ 1972 0038 CC030000 		.4byte	.LFB3-.Ltext0
+ 1973 003c CE030000 		.4byte	.LCFI9-.Ltext0
+ 1974 0040 0200     		.2byte	0x2
+ 1975 0042 7D       		.byte	0x7d
+ 1976 0043 00       		.sleb128 0
+ 1977 0044 CE030000 		.4byte	.LCFI9-.Ltext0
+ 1978 0048 D0030000 		.4byte	.LCFI10-.Ltext0
+ 1979 004c 0200     		.2byte	0x2
+ 1980 004e 7D       		.byte	0x7d
+ 1981 004f 10       		.sleb128 16
+ 1982 0050 D0030000 		.4byte	.LCFI10-.Ltext0
+ 1983 0054 D2030000 		.4byte	.LCFI11-.Ltext0
+ 1984 0058 0200     		.2byte	0x2
+ 1985 005a 7D       		.byte	0x7d
+ 1986 005b 20       		.sleb128 32
+ 1987 005c D2030000 		.4byte	.LCFI11-.Ltext0
+ 1988 0060 C6040000 		.4byte	.LFE3-.Ltext0
+ 1989 0064 0200     		.2byte	0x2
+ 1990 0066 77       		.byte	0x77
+ 1991 0067 20       		.sleb128 32
+ 1992 0068 00000000 		.4byte	0
+ 1993 006c 00000000 		.4byte	0
+ 1994              	.LLST2:
+ 1995 0070 88020000 		.4byte	.LFB2-.Ltext0
+ 1996 0074 8A020000 		.4byte	.LCFI6-.Ltext0
+ 1997 0078 0200     		.2byte	0x2
+ 1998 007a 7D       		.byte	0x7d
+ 1999 007b 00       		.sleb128 0
+ 2000 007c 8A020000 		.4byte	.LCFI6-.Ltext0
+ 2001 0080 8C020000 		.4byte	.LCFI7-.Ltext0
+ 2002 0084 0200     		.2byte	0x2
+ 2003 0086 7D       		.byte	0x7d
+ 2004 0087 10       		.sleb128 16
+ 2005 0088 8C020000 		.4byte	.LCFI7-.Ltext0
+ 2006 008c 8E020000 		.4byte	.LCFI8-.Ltext0
+ 2007 0090 0200     		.2byte	0x2
+ 2008 0092 7D       		.byte	0x7d
+ 2009 0093 20       		.sleb128 32
+ 2010 0094 8E020000 		.4byte	.LCFI8-.Ltext0
+ 2011 0098 CC030000 		.4byte	.LFE2-.Ltext0
+ 2012 009c 0200     		.2byte	0x2
+ 2013 009e 77       		.byte	0x77
+ 2014 009f 20       		.sleb128 32
+ 2015 00a0 00000000 		.4byte	0
+ 2016 00a4 00000000 		.4byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 46
+
+
+ 2017              	.LLST1:
+ 2018 00a8 C0000000 		.4byte	.LFB1-.Ltext0
+ 2019 00ac C2000000 		.4byte	.LCFI3-.Ltext0
+ 2020 00b0 0200     		.2byte	0x2
+ 2021 00b2 7D       		.byte	0x7d
+ 2022 00b3 00       		.sleb128 0
+ 2023 00b4 C2000000 		.4byte	.LCFI3-.Ltext0
+ 2024 00b8 C4000000 		.4byte	.LCFI4-.Ltext0
+ 2025 00bc 0200     		.2byte	0x2
+ 2026 00be 7D       		.byte	0x7d
+ 2027 00bf 10       		.sleb128 16
+ 2028 00c0 C4000000 		.4byte	.LCFI4-.Ltext0
+ 2029 00c4 C6000000 		.4byte	.LCFI5-.Ltext0
+ 2030 00c8 0200     		.2byte	0x2
+ 2031 00ca 7D       		.byte	0x7d
+ 2032 00cb 20       		.sleb128 32
+ 2033 00cc C6000000 		.4byte	.LCFI5-.Ltext0
+ 2034 00d0 88020000 		.4byte	.LFE1-.Ltext0
+ 2035 00d4 0200     		.2byte	0x2
+ 2036 00d6 77       		.byte	0x77
+ 2037 00d7 20       		.sleb128 32
+ 2038 00d8 00000000 		.4byte	0
+ 2039 00dc 00000000 		.4byte	0
+ 2040              	.LLST0:
+ 2041 00e0 00000000 		.4byte	.LFB0-.Ltext0
+ 2042 00e4 02000000 		.4byte	.LCFI0-.Ltext0
+ 2043 00e8 0200     		.2byte	0x2
+ 2044 00ea 7D       		.byte	0x7d
+ 2045 00eb 00       		.sleb128 0
+ 2046 00ec 02000000 		.4byte	.LCFI0-.Ltext0
+ 2047 00f0 04000000 		.4byte	.LCFI1-.Ltext0
+ 2048 00f4 0200     		.2byte	0x2
+ 2049 00f6 7D       		.byte	0x7d
+ 2050 00f7 0C       		.sleb128 12
+ 2051 00f8 04000000 		.4byte	.LCFI1-.Ltext0
+ 2052 00fc 06000000 		.4byte	.LCFI2-.Ltext0
+ 2053 0100 0200     		.2byte	0x2
+ 2054 0102 7D       		.byte	0x7d
+ 2055 0103 18       		.sleb128 24
+ 2056 0104 06000000 		.4byte	.LCFI2-.Ltext0
+ 2057 0108 C0000000 		.4byte	.LFE0-.Ltext0
+ 2058 010c 0200     		.2byte	0x2
+ 2059 010e 77       		.byte	0x77
+ 2060 010f 18       		.sleb128 24
+ 2061 0110 00000000 		.4byte	0
+ 2062 0114 00000000 		.4byte	0
+ 2063              		.section	.debug_aranges,"",%progbits
+ 2064 0000 1C000000 		.4byte	0x1c
+ 2065 0004 0200     		.2byte	0x2
+ 2066 0006 00000000 		.4byte	.Ldebug_info0
+ 2067 000a 04       		.byte	0x4
+ 2068 000b 00       		.byte	0
+ 2069 000c 0000     		.2byte	0
+ 2070 000e 0000     		.2byte	0
+ 2071 0010 00000000 		.4byte	.Ltext0
+ 2072 0014 14070000 		.4byte	.Letext0-.Ltext0
+ 2073 0018 00000000 		.4byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 47
+
+
+ 2074 001c 00000000 		.4byte	0
+ 2075              		.section	.debug_line,"",%progbits
+ 2076              	.Ldebug_line0:
+ 2077 0000 67010000 		.section	.debug_str,"MS",%progbits,1
+ 2077      02002C00 
+ 2077      00000201 
+ 2077      FB0E0D00 
+ 2077      01010101 
+ 2078              	.LASF7:
+ 2079 0000 6C6F6E67 		.ascii	"long long int\000"
+ 2079      206C6F6E 
+ 2079      6720696E 
+ 2079      7400
+ 2080              	.LASF16:
+ 2081 000e 70636139 		.ascii	"pca9532\000"
+ 2081      35333200 
+ 2082              	.LASF3:
+ 2083 0016 756E7369 		.ascii	"unsigned int\000"
+ 2083      676E6564 
+ 2083      20696E74 
+ 2083      00
+ 2084              	.LASF17:
+ 2085 0023 65657072 		.ascii	"eepromWrite\000"
+ 2085      6F6D5772 
+ 2085      69746500 
+ 2086              	.LASF29:
+ 2087 002f 65657072 		.ascii	"eepromPoll\000"
+ 2087      6F6D506F 
+ 2087      6C6C00
+ 2088              	.LASF14:
+ 2089 003a 72657443 		.ascii	"retCode\000"
+ 2089      6F646500 
+ 2090              	.LASF8:
+ 2091 0042 46414C53 		.ascii	"FALSE\000"
+ 2091      4500
+ 2092              	.LASF15:
+ 2093 0048 73746174 		.ascii	"status\000"
+ 2093      757300
+ 2094              	.LASF22:
+ 2095 004f 61646472 		.ascii	"address\000"
+ 2095      65737300 
+ 2096              	.LASF4:
+ 2097 0057 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2097      206C6F6E 
+ 2097      6720756E 
+ 2097      7369676E 
+ 2097      65642069 
+ 2098              	.LASF24:
+ 2099 006e 64657641 		.ascii	"devAddr\000"
+ 2099      64647200 
+ 2100              	.LASF18:
+ 2101 0076 61646472 		.ascii	"addr\000"
+ 2101      00
+ 2102              	.LASF11:
+ 2103 007b 70427566 		.ascii	"pBuf\000"
+ 2103      00
+ 2104              	.LASF1:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 48
+
+
+ 2105 0080 756E7369 		.ascii	"unsigned char\000"
+ 2105      676E6564 
+ 2105      20636861 
+ 2105      7200
+ 2106              	.LASF9:
+ 2107 008e 54525545 		.ascii	"TRUE\000"
+ 2107      00
+ 2108              	.LASF20:
+ 2109 0093 69326357 		.ascii	"i2cWriteWithWait\000"
+ 2109      72697465 
+ 2109      57697468 
+ 2109      57616974 
+ 2109      00
+ 2110              	.LASF12:
+ 2111 00a4 70427566 		.ascii	"pBuf2\000"
+ 2111      3200
+ 2112              	.LASF26:
+ 2113 00aa 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
+ 2113      43313120 
+ 2113      372E332E 
+ 2113      31203230 
+ 2113      31383036 
+ 2114 00dd 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb -mthum"
+ 2114      20726576 
+ 2114      6973696F 
+ 2114      6E203236 
+ 2114      31393037 
+ 2115 0110 622D696E 		.ascii	"b-interwork -gdwarf-2 -O0\000"
+ 2115      74657277 
+ 2115      6F726B20 
+ 2115      2D676477 
+ 2115      6172662D 
+ 2116              	.LASF23:
+ 2117 012a 65657072 		.ascii	"eepromStartRead\000"
+ 2117      6F6D5374 
+ 2117      61727452 
+ 2117      65616400 
+ 2118              	.LASF21:
+ 2119 013a 65657072 		.ascii	"eepromPageRead\000"
+ 2119      6F6D5061 
+ 2119      67655265 
+ 2119      616400
+ 2120              	.LASF28:
+ 2121 0149 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
+ 2121      6D626564 
+ 2121      6465645C 
+ 2121      32313338 
+ 2121      4D696E69 
+ 2122              	.LASF2:
+ 2123 0167 73686F72 		.ascii	"short unsigned int\000"
+ 2123      7420756E 
+ 2123      7369676E 
+ 2123      65642069 
+ 2123      6E7400
+ 2124              	.LASF5:
+ 2125 017a 7369676E 		.ascii	"signed char\000"
+ 2125      65642063 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 49
+
+
+ 2125      68617200 
+ 2126              	.LASF13:
+ 2127 0186 6C656E32 		.ascii	"len2\000"
+ 2127      00
+ 2128              	.LASF0:
+ 2129 018b 74553136 		.ascii	"tU16\000"
+ 2129      00
+ 2130              	.LASF10:
+ 2131 0190 74426F6F 		.ascii	"tBool\000"
+ 2131      6C00
+ 2132              	.LASF6:
+ 2133 0196 73686F72 		.ascii	"short int\000"
+ 2133      7420696E 
+ 2133      7400
+ 2134              	.LASF27:
+ 2135 01a0 65657072 		.ascii	"eeprom.c\000"
+ 2135      6F6D2E63 
+ 2135      00
+ 2136              	.LASF19:
+ 2137 01a9 70446174 		.ascii	"pData\000"
+ 2137      6100
+ 2138              	.LASF25:
+ 2139 01af 6275726E 		.ascii	"burnEnd\000"
+ 2139      456E6400 
+ 2140              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s 			page 50
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 eeprom.c
+C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s:22     .text:00000000 eepromPoll
+C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s:30     .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s:172    .text:000000c0 eepromStartRead
+C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s:475    .text:00000288 eepromPageRead
+C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s:696    .text:000003cc eepromWrite
+C:\Users\embedded\AppData\Local\Temp\ccZOzH8A.s:875    .text:000004c6 pca9532
+
+UNDEFINED SYMBOLS
+i2cStart
+i2cPutChar
+i2cCheckStatus
+i2cStop
+i2cRepeatStart
+i2cGetChar
+i2cWriteWithWait
