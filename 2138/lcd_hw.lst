@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 1
 
 
    1              		.cpu arm7tdmi
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
   31:lcd_hw.c      ****  * Local variables
   32:lcd_hw.c      ****  ****************************************************************************/
   33:lcd_hw.c      **** 
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 2
 
 
   34:lcd_hw.c      **** /*****************************************************************************
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
   61 0028 012B     		cmp	r3, #1
   62 002a 03D1     		bne	.L2
   52:lcd_hw.c      ****     IOSET = LCD_MOSI;   //set MOSI
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 3
 
 
   63              		.loc 1 52 0
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
   72:lcd_hw.c      ****   //send byte
   73:lcd_hw.c      ****   SPI_SPDR = data;
   98              		.loc 1 73 0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 4
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 4
 
 
   99 0060 0D4B     		ldr	r3, .L5+24
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
   84:lcd_hw.c      **** 
   85:lcd_hw.c      **** void initSpiForLcd(void)
   86:lcd_hw.c      **** {
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 5
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 5
 
 
  143              		.loc 1 86 0
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  184 00d2 BD46     		mov	sp, r7
  185              		@ sp needed
  186 00d4 80BC     		pop	{r7}
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 6
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 6
 
 
  187 00d6 01BC     		pop	{r0}
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  230 00fc 012B     		cmp	r3, #1
  231 00fe 03D1     		bne	.L11
  111:lcd_hw.c      ****     IOCLR = LCD_CS;
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 7
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 7
 
 
  232              		.loc 1 111 0
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  282 0031 01       		.byte	0x1
  283 0032 08       		.byte	0x8
  284 0033 55000000 		.4byte	.LASF0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 8
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 8
 
 
  285 0037 03       		.uleb128 0x3
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  339 009a 24010000 		.4byte	.LFE2
  340 009e 00000000 		.4byte	.LLST2
  341 00a2 01       		.byte	0x1
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 9
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 9
 
 
  342 00a3 B6000000 		.4byte	0xb6
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  396 0004 0E       		.uleb128 0xe
  397 0005 13       		.uleb128 0x13
  398 0006 0B       		.uleb128 0xb
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 10
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 10
 
 
  399 0007 03       		.uleb128 0x3
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  453 003d 49       		.uleb128 0x49
  454 003e 13       		.uleb128 0x13
  455 003f 3A       		.uleb128 0x3a
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 11
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 11
 
 
  456 0040 0B       		.uleb128 0xb
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  510 0077 09       		.uleb128 0x9
  511 0078 05       		.uleb128 0x5
  512 0079 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 12
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 12
 
 
  513 007a 03       		.uleb128 0x3
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  567 00b1 9742     		.uleb128 0x2117
  568 00b3 0C       		.uleb128 0xc
  569 00b4 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 13
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 13
 
 
  570 00b5 00       		.byte	0
@@ -778,7 +778,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  624 007a 7D       		.byte	0x7d
  625 007b 08       		.sleb128 8
  626 007c 04000000 		.4byte	.LCFI1-.Ltext0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 14
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 14
 
 
  627 0080 06000000 		.4byte	.LCFI2-.Ltext0
@@ -838,7 +838,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  663              	.LASF10:
  664 0045 73656C65 		.ascii	"select\000"
  664      637400
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 15
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 15
 
 
  665              	.LASF14:
@@ -898,7 +898,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  687              	.LASF5:
  688 013a 73686F72 		.ascii	"short int\000"
  688      7420696E 
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 16
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 16
 
 
  688      7400
@@ -911,19 +911,19 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 1
  692      6F724C63 
  692      6400
  693              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s 			page 17
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cckosJXh.s 			page 17
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 lcd_hw.c
-C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s:22     .text:00000000 sendToLCD
-C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s:30     .text:00000000 $t
-C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s:123    .text:00000080 $d
-C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s:134    .text:000000a0 $t
-C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s:141    .text:000000a0 initSpiForLcd
-C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s:206    .text:000000ec selectLCD
-C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s:192    .text:000000dc $d
-C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s:199    .text:000000ec $t
-C:\Users\embedded\AppData\Local\Temp\ccxQMWrl.s:255    .text:0000011c $d
+C:\Users\embedded\AppData\Local\Temp\cckosJXh.s:22     .text:00000000 sendToLCD
+C:\Users\embedded\AppData\Local\Temp\cckosJXh.s:30     .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\cckosJXh.s:123    .text:00000080 $d
+C:\Users\embedded\AppData\Local\Temp\cckosJXh.s:134    .text:000000a0 $t
+C:\Users\embedded\AppData\Local\Temp\cckosJXh.s:141    .text:000000a0 initSpiForLcd
+C:\Users\embedded\AppData\Local\Temp\cckosJXh.s:206    .text:000000ec selectLCD
+C:\Users\embedded\AppData\Local\Temp\cckosJXh.s:192    .text:000000dc $d
+C:\Users\embedded\AppData\Local\Temp\cckosJXh.s:199    .text:000000ec $t
+C:\Users\embedded\AppData\Local\Temp\cckosJXh.s:255    .text:0000011c $d
 
 NO UNDEFINED SYMBOLS

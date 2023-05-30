@@ -103,5 +103,8 @@ void measureTemperature(void)
         charArray[i + (tU8)1] = '0';
     }
 
+    charArray[i + 2] = ' ';
+    charArray[i + 3] = 'C';
+
     lcdPuts(charArray);
 }

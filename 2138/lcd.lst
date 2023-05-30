@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 1
 
 
    1              		.cpu arm7tdmi
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
   55 0022 00       		.byte	0
   56 0023 00       		.byte	0
   57 0024 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 2
 
 
   58 0025 00       		.byte	0
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  112 005b 7C       		.byte	124
  113 005c 06       		.byte	6
  114 005d 86       		.byte	-122
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 3
 
 
  115 005e C6       		.byte	-58
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  169 0094 30       		.byte	48
  170 0095 30       		.byte	48
  171 0096 18       		.byte	24
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 4
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 4
 
 
  172 0097 0C       		.byte	12
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  226 00cd 18       		.byte	24
  227 00ce 18       		.byte	24
  228 00cf 18       		.byte	24
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 5
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 5
 
 
  229 00d0 30       		.byte	48
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  283 0106 6C       		.byte	108
  284 0107 38       		.byte	56
  285 0108 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 6
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 6
 
 
  286 0109 00       		.byte	0
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  340 013f 1E       		.byte	30
  341 0140 00       		.byte	0
  342 0141 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 7
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 7
 
 
  343 0142 00       		.byte	0
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  397 0178 00       		.byte	0
  398 0179 00       		.byte	0
  399 017a 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 8
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 8
 
 
  400 017b 00       		.byte	0
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  454 01b1 00       		.byte	0
  455 01b2 00       		.byte	0
  456 01b3 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 9
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 9
 
 
  457 01b4 00       		.byte	0
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  511 01ea 00       		.byte	0
  512 01eb 00       		.byte	0
  513 01ec 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 10
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 10
 
 
  514 01ed 10       		.byte	16
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  568 0223 00       		.byte	0
  569 0224 00       		.byte	0
  570 0225 FE       		.byte	-2
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 11
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 11
 
 
  571 0226 66       		.byte	102
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  625 025c 00       		.byte	0
  626 025d 3C       		.byte	60
  627 025e 18       		.byte	24
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 12
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 12
 
 
  628 025f 18       		.byte	24
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  682 0295 C6       		.byte	-58
  683 0296 EE       		.byte	-18
  684 0297 FE       		.byte	-2
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 13
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 13
 
 
  685 0298 D6       		.byte	-42
@@ -778,7 +778,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  739 02ce C6       		.byte	-58
  740 02cf C6       		.byte	-58
  741 02d0 C6       		.byte	-58
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 14
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 14
 
 
  742 02d1 C6       		.byte	-58
@@ -838,7 +838,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  796 0307 C6       		.byte	-58
  797 0308 C6       		.byte	-58
  798 0309 C6       		.byte	-58
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 15
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 15
 
 
  799 030a C6       		.byte	-58
@@ -898,7 +898,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  853 0340 66       		.byte	102
  854 0341 3C       		.byte	60
  855 0342 18       		.byte	24
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 16
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 16
 
 
  856 0343 18       		.byte	24
@@ -958,7 +958,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  910 0379 0C       		.byte	12
  911 037a 0C       		.byte	12
  912 037b 0C       		.byte	12
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 17
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 17
 
 
  913 037c 0C       		.byte	12
@@ -1018,7 +1018,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  967 03b2 7C       		.byte	124
  968 03b3 CC       		.byte	-52
  969 03b4 CC       		.byte	-52
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 18
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 18
 
 
  970 03b5 76       		.byte	118
@@ -1078,7 +1078,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1024 03eb C0       		.byte	-64
  1025 03ec C6       		.byte	-58
  1026 03ed 7C       		.byte	124
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 19
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 19
 
 
  1027 03ee 00       		.byte	0
@@ -1138,7 +1138,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1081 0424 18       		.byte	24
  1082 0425 3C       		.byte	60
  1083 0426 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 20
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 20
 
 
  1084 0427 00       		.byte	0
@@ -1198,7 +1198,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1138 045d D6       		.byte	-42
  1139 045e 00       		.byte	0
  1140 045f 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 21
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 21
 
 
  1141 0460 00       		.byte	0
@@ -1258,7 +1258,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1195 0496 0C       		.byte	12
  1196 0497 1E       		.byte	30
  1197 0498 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 22
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 22
 
 
  1198 0499 00       		.byte	0
@@ -1318,7 +1318,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1252 04cf 00       		.byte	0
  1253 04d0 00       		.byte	0
  1254 04d1 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 23
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 23
 
 
  1255 04d2 00       		.byte	0
@@ -1378,7 +1378,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1309 0508 00       		.byte	0
  1310 0509 00       		.byte	0
  1311 050a 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 24
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 24
 
 
  1312 050b 00       		.byte	0
@@ -1438,7 +1438,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1366 0541 76       		.byte	118
  1367 0542 DC       		.byte	-36
  1368 0543 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 25
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 25
 
 
  1369 0544 00       		.byte	0
@@ -1498,7 +1498,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
    4:lcd.c         ****  *    (C) 2006 Embedded Artists AB
    5:lcd.c         ****  *
    6:lcd.c         ****  * File:
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 26
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 26
 
 
    7:lcd.c         ****  *    lcd.c
@@ -1558,7 +1558,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
   61:lcd.c         ****  ****************************************************************************/
   62:lcd.c         **** 
   63:lcd.c         **** static void lcdWindow1(tU8 xp, tU8 yp, tU8 xe, tU8 ye);
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 27
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 27
 
 
   64:lcd.c         **** 
@@ -1618,7 +1618,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1450 0020 0120     		movs	r0, #1
  1451 0022 FFF7FEFF 		bl	sdelay
   88:lcd.c         **** 	lcdWrcmd(LCD_CMD_SLEEPOUT);
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 28
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 28
 
 
  1452              		.loc 1 88 0
@@ -1678,7 +1678,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1491              		.loc 1 103 0
  1492 0074 0620     		movs	r0, #6
  1493 0076 FFF7FEFF 		bl	lcdWrdata
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 29
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 29
 
 
  104:lcd.c         ****   lcdWrdata(9);
@@ -1738,7 +1738,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1534 00c8 0620     		movs	r0, #6
  1535 00ca FFF7FEFF 		bl	lcdWrdata
  118:lcd.c         **** 	lcdWrdata(10);
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 30
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 30
 
 
  1536              		.loc 1 118 0
@@ -1798,7 +1798,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  135:lcd.c         **** 
  136:lcd.c         **** void lcdClrscr(void)
  137:lcd.c         **** {
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 31
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 31
 
 
  1574              		.loc 1 137 0
@@ -1858,7 +1858,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  151:lcd.c         ****     lcdWrdata(bkgColor);
  1615              		.loc 1 151 0 discriminator 3
  1616 012c 0C4B     		ldr	r3, .L7+8
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 32
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 32
 
 
  1617 012e 1B78     		ldrb	r3, [r3]
@@ -1918,7 +1918,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  161:lcd.c         ****  *
  162:lcd.c         ****  ****************************************************************************/
  163:lcd.c         **** 
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 33
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 33
 
 
  164:lcd.c         **** void lcdOff(void)
@@ -1978,7 +1978,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1702              	.LFB3:
  176:lcd.c         **** 
  177:lcd.c         **** /*****************************************************************************
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 34
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 34
 
 
  178:lcd.c         ****  *
@@ -2038,7 +2038,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1746 01bc 02000000 		.word	bkgColor
  1747 01c0 03000000 		.word	textColor
  1748              		.cfi_endproc
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 35
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 35
 
 
  1749              	.LFE3:
@@ -2098,7 +2098,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1787 01de 1B78     		ldrb	r3, [r3]
  1788 01e0 1800     		movs	r0, r3
  1789 01e2 FFF7FEFF 		bl	lcdWrdata
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 36
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 36
 
 
  205:lcd.c         **** 
@@ -2158,7 +2158,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1830              		.cfi_def_cfa_register 7
  1831 01fe 0500     		movs	r5, r0
  1832 0200 0C00     		movs	r4, r1
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 37
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 37
 
 
  1833 0202 1000     		movs	r0, r2
@@ -2218,7 +2218,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1878              		.loc 1 227 0
  1879 025c 2C20     		movs	r0, #44
  1880 025e FFF7FEFF 		bl	lcdWrcmd
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 38
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 38
 
 
  228:lcd.c         ****   
@@ -2278,7 +2278,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1925              		.global	lcdRectBrd
  1926              		.syntax unified
  1927              		.code	16
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 39
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 39
 
 
  1928              		.thumb_func
@@ -2338,7 +2338,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  1967              		.loc 1 250 0
  1968 02c8 0120     		movs	r0, #1
  1969 02ca FFF7FEFF 		bl	selectLCD
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 40
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 40
 
 
  251:lcd.c         **** 
@@ -2398,7 +2398,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2016              	.L18:
  256:lcd.c         ****     lcdWrdata(color2);
  2017              		.loc 1 256 0 is_stmt 0 discriminator 1
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 41
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 41
 
 
  2018 0324 7B1D     		adds	r3, r7, #5
@@ -2458,7 +2458,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  258:lcd.c         ****   {
  2064              		.loc 1 258 0 discriminator 2
  2065 0372 BB68     		ldr	r3, [r7, #8]
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 42
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 42
 
 
  2066 0374 0133     		adds	r3, r3, #1
@@ -2518,7 +2518,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2110              		.cfi_endproc
  2111              	.LFE6:
  2112              		.size	lcdRectBrd, .-lcdRectBrd
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 43
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 43
 
 
  2113              		.align	1
@@ -2578,7 +2578,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2149 03d2 1A70     		strb	r2, [r3]
  2150 03d4 7B1D     		adds	r3, r7, #5
  2151 03d6 021C     		adds	r2, r0, #0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 44
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 44
 
 
  2152 03d8 1A70     		strb	r2, [r3]
@@ -2638,7 +2638,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2195 042c 0B00     		movs	r3, r1
  2196 042e 5343     		muls	r3, r2
  2197 0430 3B61     		str	r3, [r7, #16]
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 45
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 45
 
 
  300:lcd.c         ****   if (compressionOn == FALSE)
@@ -2698,7 +2698,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2239 0472 3B63     		str	r3, [r7, #48]
  311:lcd.c         ****         j = *pData++;
  2240              		.loc 1 311 0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 46
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 46
 
 
  2241 0474 3B6B     		ldr	r3, [r7, #48]
@@ -2758,7 +2758,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2284              		.loc 1 320 0
  2285 04ba 3B69     		ldr	r3, [r7, #16]
  2286 04bc 013B     		subs	r3, r3, #1
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 47
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 47
 
 
  2287 04be 3B61     		str	r3, [r7, #16]
@@ -2818,7 +2818,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2324              		.cfi_def_cfa_offset 8
  2325              		.cfi_offset 7, -8
  2326              		.cfi_offset 14, -4
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 48
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 48
 
 
  2327 04da 82B0     		sub	sp, sp, #8
@@ -2878,7 +2878,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2377              		.thumb_func
  2378              		.fpu softvfp
  2379              		.type	lcdWindow, %function
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 49
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 49
 
 
  2380              	lcdWindow:
@@ -2938,7 +2938,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  356:lcd.c         **** 	lcdWindow1(xp, yp, xe, ye);
  2419              		.loc 1 356 0
  2420 054c 3B1D     		adds	r3, r7, #4
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 50
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 50
 
 
  2421 054e 1C78     		ldrb	r4, [r3]
@@ -2998,7 +2998,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2459              		.cfi_def_cfa_offset 16
  2460              		.cfi_offset 4, -16
  2461              		.cfi_offset 5, -12
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 51
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 51
 
 
  2462              		.cfi_offset 7, -8
@@ -3058,7 +3058,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2510 05c8 1B78     		ldrb	r3, [r3]
  2511 05ca 0233     		adds	r3, r3, #2
  2512 05cc 1B06     		lsls	r3, r3, #24
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 52
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 52
 
 
  2513 05ce 1B0E     		lsrs	r3, r3, #24
@@ -3118,7 +3118,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2555              		.cfi_def_cfa_register 7
  391:lcd.c         ****   lcd_x  = 0;
  2556              		.loc 1 391 0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 53
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 53
 
 
  2557 05f6 0B4B     		ldr	r3, .L44
@@ -3178,7 +3178,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  401:lcd.c         ****  *    at current xy position on display. Update x-position (+8).
  402:lcd.c         ****  *
  403:lcd.c         ****  ****************************************************************************/
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 54
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 54
 
 
  404:lcd.c         **** 
@@ -3238,7 +3238,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2643 065c 5B00     		lsls	r3, r3, #1
  2644 065e FB60     		str	r3, [r7, #12]
  417:lcd.c         **** 
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 55
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 55
 
 
  418:lcd.c         ****     lcdWrcmd(LCD_CMD_CASET);
@@ -3298,7 +3298,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2690 06b8 1A70     		strb	r2, [r3]
  2691 06ba 34E0     		b	.L48
  2692              	.L53:
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 56
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 56
 
 
  427:lcd.c         ****     {
@@ -3358,7 +3358,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2737 0704 0A21     		movs	r1, #10
  2738 0706 7B18     		adds	r3, r7, r1
  2739 0708 1A78     		ldrb	r2, [r3]
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 57
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 57
 
 
  2740 070a 7B18     		adds	r3, r7, r1
@@ -3418,7 +3418,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2782 074a 80BC     		pop	{r7}
  2783 074c 01BC     		pop	{r0}
  2784 074e 0047     		bx	r0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 58
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 58
 
 
  2785              	.L55:
@@ -3478,7 +3478,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2827 0774 0A2B     		cmp	r3, #10
  2828 0776 02D1     		bne	.L57
  457:lcd.c         ****     lcdNewline();
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 59
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 59
 
 
  2829              		.loc 1 457 0
@@ -3538,7 +3538,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2862 07a6 094B     		ldr	r3, .L62
  2863 07a8 0122     		movs	r2, #1
  2864 07aa 1A70     		strb	r2, [r3]
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 60
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 60
 
 
  2865              		.loc 1 472 0
@@ -3598,7 +3598,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  2907              		@ Function supports interworking.
  2908              		@ args = 0, pretend = 0, frame = 8
  2909              		@ frame_needed = 1, uses_anonymous_args = 0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 61
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 61
 
 
  2910 07d8 80B5     		push	{r7, lr}
@@ -3658,7 +3658,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  488:lcd.c         ****  *
  489:lcd.c         ****  * Description:
  490:lcd.c         ****  *    Send command data to LCD controller
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 62
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 62
 
 
  491:lcd.c         ****  *
@@ -3718,7 +3718,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  500:lcd.c         ****  *
  501:lcd.c         ****  * Description:
  502:lcd.c         ****  *    Send data byte to LCD controller
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 63
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 63
 
 
  503:lcd.c         ****  *
@@ -3778,7 +3778,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3050 0010 0C       		.byte	0xc
  3051 0011 50020000 		.4byte	.LASF45
  3052 0015 61010000 		.4byte	.LASF46
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 64
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 64
 
 
  3053 0019 00000000 		.4byte	.Ltext0
@@ -3838,7 +3838,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3107 0085 01       		.byte	0x1
  3108 0086 35000000 		.4byte	0x35
  3109 008a 02       		.byte	0x2
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 65
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 65
 
 
  3110 008b 28       		.byte	0x28
@@ -3898,7 +3898,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3164 00fe 38       		.byte	0x38
  3165 00ff 25000000 		.4byte	0x25
  3166 0103 05       		.byte	0x5
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 66
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 66
 
 
  3167 0104 03       		.byte	0x3
@@ -3958,7 +3958,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3221 0177 E101     		.2byte	0x1e1
  3222 0179 01       		.byte	0x1
  3223 017a D8070000 		.4byte	.LFB14
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 67
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 67
 
 
  3224 017e 04080000 		.4byte	.LFE14
@@ -4018,7 +4018,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3278 01f2 9501     		.2byte	0x195
  3279 01f4 25000000 		.4byte	0x25
  3280 01f8 02       		.byte	0x2
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 68
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 68
 
 
  3281 01f9 91       		.byte	0x91
@@ -4078,7 +4078,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3335 0261 F2050000 		.4byte	.LFE10
  3336 0265 44010000 		.4byte	.LLST10
  3337 0269 01       		.byte	0x1
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 69
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 69
 
 
  3338 026a A7020000 		.4byte	0x2a7
@@ -4138,7 +4138,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3392 02d1 797000   		.ascii	"yp\000"
  3393 02d4 01       		.byte	0x1
  3394 02d5 5F01     		.2byte	0x15f
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 70
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 70
 
 
  3395 02d7 25000000 		.4byte	0x25
@@ -4198,7 +4198,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3449 033a 01       		.byte	0x1
  3450 033b BA030000 		.4byte	.LFB7
  3451 033f D8040000 		.4byte	.LFE7
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 71
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 71
 
 
  3452 0343 EC010000 		.4byte	.LLST7
@@ -4258,7 +4258,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3506 03a8 1F01     		.2byte	0x11f
  3507 03aa DB030000 		.4byte	0x3db
  3508 03ae 02       		.byte	0x2
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 72
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 72
 
 
  3509 03af 91       		.byte	0x91
@@ -4318,7 +4318,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3563 0410 02       		.byte	0x2
  3564 0411 91       		.byte	0x91
  3565 0412 66       		.sleb128 -26
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 73
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 73
 
 
  3566 0413 18       		.uleb128 0x18
@@ -4378,7 +4378,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3620 046f 91       		.byte	0x91
  3621 0470 68       		.sleb128 -24
  3622 0471 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 74
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 74
 
 
  3623 0472 16       		.uleb128 0x16
@@ -4438,7 +4438,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3677 04d2 DB       		.byte	0xdb
  3678 04d3 43000000 		.4byte	0x43
  3679 04d7 02       		.byte	0x2
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 75
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 75
 
 
  3680 04d8 91       		.byte	0x91
@@ -4498,7 +4498,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3734 0541 25000000 		.4byte	0x25
  3735 0545 02       		.byte	0x2
  3736 0546 91       		.byte	0x91
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 76
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 76
 
 
  3737 0547 76       		.sleb128 -10
@@ -4558,7 +4558,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3791              	.Ldebug_abbrev0:
  3792 0000 01       		.uleb128 0x1
  3793 0001 11       		.uleb128 0x11
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 77
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 77
 
 
  3794 0002 01       		.byte	0x1
@@ -4618,7 +4618,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3848 0038 0B       		.uleb128 0xb
  3849 0039 3B       		.uleb128 0x3b
  3850 003a 0B       		.uleb128 0xb
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 78
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 78
 
 
  3851 003b 49       		.uleb128 0x49
@@ -4678,7 +4678,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3905 0071 13       		.uleb128 0x13
  3906 0072 2F       		.uleb128 0x2f
  3907 0073 05       		.uleb128 0x5
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 79
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 79
 
 
  3908 0074 00       		.byte	0
@@ -4738,7 +4738,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  3962 00ab 0C       		.uleb128 0xc
  3963 00ac 01       		.uleb128 0x1
  3964 00ad 13       		.uleb128 0x13
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 80
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 80
 
 
  3965 00ae 00       		.byte	0
@@ -4798,7 +4798,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4019 00e4 0E       		.uleb128 0xe
  4020 00e5 3A       		.uleb128 0x3a
  4021 00e6 0B       		.uleb128 0xb
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 81
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 81
 
 
  4022 00e7 3B       		.uleb128 0x3b
@@ -4858,7 +4858,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4076 011e 0C       		.uleb128 0xc
  4077 011f 11       		.uleb128 0x11
  4078 0120 01       		.uleb128 0x1
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 82
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 82
 
 
  4079 0121 12       		.uleb128 0x12
@@ -4918,7 +4918,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4133 0159 0E       		.uleb128 0xe
  4134 015a 3A       		.uleb128 0x3a
  4135 015b 0B       		.uleb128 0xb
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 83
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 83
 
 
  4136 015c 3B       		.uleb128 0x3b
@@ -4978,7 +4978,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4190 0193 0E       		.uleb128 0xe
  4191 0194 3A       		.uleb128 0x3a
  4192 0195 0B       		.uleb128 0xb
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 84
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 84
 
 
  4193 0196 3B       		.uleb128 0x3b
@@ -5038,7 +5038,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4247 01ce 1E       		.uleb128 0x1e
  4248 01cf 18       		.uleb128 0x18
  4249 01d0 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 85
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 85
 
 
  4250 01d1 00       		.byte	0
@@ -5098,7 +5098,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4304 0078 0200     		.2byte	0x2
  4305 007a 7D       		.byte	0x7d
  4306 007b 00       		.sleb128 0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 86
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 86
 
 
  4307 007c DA070000 		.4byte	.LCFI39-.Ltext0
@@ -5158,7 +5158,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4361 0102 7D       		.byte	0x7d
  4362 0103 18       		.sleb128 24
  4363 0104 32060000 		.4byte	.LCFI35-.Ltext0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 87
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 87
 
 
  4364 0108 64070000 		.4byte	.LFE12-.Ltext0
@@ -5218,7 +5218,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4418 018c 24050000 		.4byte	.LCFI26-.Ltext0
  4419 0190 0200     		.2byte	0x2
  4420 0192 7D       		.byte	0x7d
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 88
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 88
 
 
  4421 0193 10       		.sleb128 16
@@ -5278,7 +5278,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4475 0218 0200     		.2byte	0x2
  4476 021a 77       		.byte	0x77
  4477 021b 28       		.sleb128 40
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 89
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 89
 
 
  4478 021c 00000000 		.4byte	0
@@ -5338,7 +5338,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4532 02a0 C6010000 		.4byte	.LCFI10-.Ltext0
  4533 02a4 C8010000 		.4byte	.LCFI11-.Ltext0
  4534 02a8 0200     		.2byte	0x2
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 90
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 90
 
 
  4535 02aa 7D       		.byte	0x7d
@@ -5398,7 +5398,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4589 032c 00000000 		.4byte	0
  4590              	.LLST1:
  4591 0330 FC000000 		.4byte	.LFB1-.Ltext0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 91
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 91
 
 
  4592 0334 FE000000 		.4byte	.LCFI2-.Ltext0
@@ -5458,7 +5458,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4645      02003400 
  4645      00000201 
  4645      FB0E0D00 
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 92
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 92
 
 
  4645      01010101 
@@ -5518,7 +5518,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4671 00d4 70446174 		.ascii	"pData\000"
  4671      6100
  4672              	.LASF31:
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 93
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 93
 
 
  4673 00da 65736361 		.ascii	"escapeChar\000"
@@ -5578,7 +5578,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4703 0161 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
  4703      6D626564 
  4703      6465645C 
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 94
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 94
 
 
  4703      32313338 
@@ -5638,7 +5638,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4730              	.LASF20:
  4731 020c 63686172 		.ascii	"char\000"
  4731      00
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 95
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 95
 
 
  4732              	.LASF6:
@@ -5680,51 +5680,51 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 1
  4753 0264 6C63645F 		.ascii	"lcd_y\000"
  4753      7900
  4754              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s 			page 96
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s 			page 96
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 lcd.c
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:20     .rodata:00000000 charMap
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:17     .rodata:00000000 $d
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1394   .bss:00000000 lcd_x
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1395   .bss:00000000 $d
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1397   .bss:00000001 lcd_y
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1400   .bss:00000002 bkgColor
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1403   .bss:00000003 textColor
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1406   .bss:00000004 setcolmark
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1417   .text:00000000 lcdInit
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1425   .text:00000000 $t
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2956   .text:00000804 lcdWrcmd
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:3001   .text:00000828 lcdWrdata
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1758   .text:000001c4 lcdContrast
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1572   .text:000000fc lcdClrscr
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1560   .text:000000f4 $d
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1565   .text:000000fc $t
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2450   .text:00000574 lcdWindow1
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1644   .text:00000158 $d
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1651   .text:00000168 $t
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1658   .text:00000168 lcdOff
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1701   .text:0000018c lcdColor
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1746   .text:000001bc $d
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1751   .text:000001c4 $t
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1811   .text:000001f8 lcdRect
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:1931   .text:000002a2 lcdRectBrd
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2120   .text:000003ba lcdIcon
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2315   .text:000004d8 lcdGotoxy
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2380   .text:00000520 lcdWindow
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2368   .text:00000518 $d
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2373   .text:00000520 $t
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2541   .text:000005f2 lcdNewline
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2588   .text:00000624 $d
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2593   .text:0000062c $t
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2600   .text:0000062c lcdData
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2788   .text:00000750 $d
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2796   .text:00000764 $t
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2803   .text:00000764 lcdPutchar
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2890   .text:000007cc $d
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2896   .text:000007d8 $t
-C:\Users\embedded\AppData\Local\Temp\ccWpSICg.s:2903   .text:000007d8 lcdPuts
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:20     .rodata:00000000 charMap
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:17     .rodata:00000000 $d
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1394   .bss:00000000 lcd_x
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1395   .bss:00000000 $d
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1397   .bss:00000001 lcd_y
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1400   .bss:00000002 bkgColor
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1403   .bss:00000003 textColor
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1406   .bss:00000004 setcolmark
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1417   .text:00000000 lcdInit
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1425   .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2956   .text:00000804 lcdWrcmd
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:3001   .text:00000828 lcdWrdata
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1758   .text:000001c4 lcdContrast
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1572   .text:000000fc lcdClrscr
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1560   .text:000000f4 $d
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1565   .text:000000fc $t
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2450   .text:00000574 lcdWindow1
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1644   .text:00000158 $d
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1651   .text:00000168 $t
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1658   .text:00000168 lcdOff
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1701   .text:0000018c lcdColor
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1746   .text:000001bc $d
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1751   .text:000001c4 $t
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1811   .text:000001f8 lcdRect
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:1931   .text:000002a2 lcdRectBrd
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2120   .text:000003ba lcdIcon
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2315   .text:000004d8 lcdGotoxy
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2380   .text:00000520 lcdWindow
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2368   .text:00000518 $d
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2373   .text:00000520 $t
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2541   .text:000005f2 lcdNewline
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2588   .text:00000624 $d
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2593   .text:0000062c $t
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2600   .text:0000062c lcdData
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2788   .text:00000750 $d
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2796   .text:00000764 $t
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2803   .text:00000764 lcdPutchar
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2890   .text:000007cc $d
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2896   .text:000007d8 $t
+C:\Users\embedded\AppData\Local\Temp\ccTKJKog.s:2903   .text:000007d8 lcdPuts
 
 UNDEFINED SYMBOLS
 initSpiForLcd

@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 1
 
 
    1              		.cpu arm7tdmi
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
   31:htu21df.c     ****  ****************************************************************************/
   32:htu21df.c     **** 
   33:htu21df.c     **** /*
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 2
 
 
   34:htu21df.c     ****  * @brief   Funkcja measureHumidity() wykorzystywana jest do odczytania z czujnika wilgotności
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
   52 0012 1A70     		strb	r2, [r3]
   61:htu21df.c     ****     commandNoHoldMaster[0] = 0xF5;
   53              		.loc 1 61 0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 3
 
 
   54 0014 3B1D     		adds	r3, r7, #4
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
   96 0062 1B78     		ldrb	r3, [r3]
   97 0064 1B02     		lsls	r3, r3, #8
   98 0066 1A04     		lsls	r2, r3, #16
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 4
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 4
 
 
   99 0068 1214     		asrs	r2, r2, #16
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
  145 00b8 1B78     		ldrb	r3, [r3]
  146 00ba 1B06     		lsls	r3, r3, #24
  147 00bc 1B16     		asrs	r3, r3, #24
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 5
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 5
 
 
  148 00be 642B     		cmp	r3, #100
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
  192 002b 20       		.byte	0x20
  193 002c 30000000 		.4byte	0x30
  194 0030 03       		.uleb128 0x3
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 6
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 6
 
 
  195 0031 01       		.byte	0x1
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
  249 009a E0000000 		.4byte	.LFE0
  250 009e 00000000 		.4byte	.LLST0
  251 00a2 01       		.byte	0x1
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 7
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 7
 
 
  252 00a3 0A010000 		.4byte	0x10a
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
  306 0106 02       		.byte	0x2
  307 0107 91       		.byte	0x91
  308 0108 67       		.sleb128 -25
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 8
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 8
 
 
  309 0109 00       		.byte	0
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
  363 0025 3E       		.uleb128 0x3e
  364 0026 0B       		.uleb128 0xb
  365 0027 03       		.uleb128 0x3
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 9
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 9
 
 
  366 0028 0E       		.uleb128 0xe
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
  420 005f 07       		.uleb128 0x7
  421 0060 34       		.uleb128 0x34
  422 0061 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 10
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 10
 
 
  423 0062 03       		.uleb128 0x3
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
  477 0022 7D       		.byte	0x7d
  478 0023 30       		.sleb128 48
  479 0024 06000000 		.4byte	.LCFI2-.Ltext0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 11
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 11
 
 
  480 0028 E0000000 		.4byte	.LFE0-.Ltext0
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
  514      6720756E 
  514      7369676E 
  514      65642069 
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 12
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 12
 
 
  515              	.LASF12:
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
  535              	.LASF7:
  536 0153 73686F72 		.ascii	"short int\000"
  536      7420696E 
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 13
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 13
 
 
  536      7400
@@ -735,13 +735,13 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 1
  542 0176 74553332 		.ascii	"tU32\000"
  542      00
  543              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\cchfljt7.s 			page 14
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s 			page 14
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 htu21df.c
-C:\Users\embedded\AppData\Local\Temp\cchfljt7.s:22     .text:00000000 measureHumidity
-C:\Users\embedded\AppData\Local\Temp\cchfljt7.s:30     .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s:22     .text:00000000 measureHumidity
+C:\Users\embedded\AppData\Local\Temp\ccgSr6NH.s:30     .text:00000000 $t
 
 UNDEFINED SYMBOLS
 i2cWrite

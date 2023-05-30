@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 1
 
 
    1              		.cpu arm7tdmi
@@ -18,72 +18,79 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 1
   15              		.section	.rodata
   16              		.align	2
   17              	.LC6:
-  18 0000 256400   		.ascii	"%d\000"
+  18 0000 202500   		.ascii	" %\000"
   19 0003 00       		.align	2
-  20              	.LC0:
-  21 0004 416B7475 		.ascii	"Aktualny czas: \000"
-  21      616C6E79 
-  21      20637A61 
-  21      733A2000 
-  22              		.align	2
-  23              	.LC2:
-  24 0014 506F6D69 		.ascii	"Pomiar\012temperatury: \000"
-  24      61720A74 
-  24      656D7065 
-  24      72617475 
-  24      72793A20 
-  25 0029 000000   		.align	2
-  26              	.LC4:
-  27 002c 506F6D69 		.ascii	"Pomiar\012wilgotnosci: \000"
-  27      61720A77 
-  27      696C676F 
-  27      746E6F73 
-  27      63693A20 
-  28 0041 000000   		.align	2
-  29              	.LC8:
-  30 0044 506F6D69 		.ascii	"Pomiar\012jasnosci: \000"
-  30      61720A6A 
-  30      61736E6F 
-  30      7363693A 
-  30      2000
-  31 0056 0000     		.align	2
-  32              	.LC10:
-  33 0058 506F6D69 		.ascii	"Pomiar\012cisnienia: \000"
-  33      61720A63 
-  33      69736E69 
-  33      656E6961 
-  33      3A2000
-  34 006b 00       		.align	2
-  35              	.LC12:
-  36 006c 53746163 		.ascii	"Stacja pogody.\012Wybor funkcji\012przy pomocy\012j"
-  36      6A612070 
-  36      6F676F64 
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 2
+  20              	.LC8:
+  21 0004 25642573 		.ascii	"%d%s\000"
+  21      00
+  22 0009 000000   		.align	2
+  23              	.LC12:
+  24 000c 256400   		.ascii	"%d\000"
+  25 000f 00       		.align	2
+  26              	.LC0:
+  27 0010 416B7475 		.ascii	"Aktualny czas: \000"
+  27      616C6E79 
+  27      20637A61 
+  27      733A2000 
+  28              		.align	2
+  29              	.LC2:
+  30 0020 506F6D69 		.ascii	"Pomiar\012temperatury: \000"
+  30      61720A74 
+  30      656D7065 
+  30      72617475 
+  30      72793A20 
+  31 0035 000000   		.align	2
+  32              	.LC4:
+  33 0038 506F6D69 		.ascii	"Pomiar\012wilgotnosci: \000"
+  33      61720A77 
+  33      696C676F 
+  33      746E6F73 
+  33      63693A20 
+  34 004d 000000   		.align	2
+  35              	.LC10:
+  36 0050 506F6D69 		.ascii	"Pomiar\012jasnosci: \000"
+  36      61720A6A 
+  36      61736E6F 
+  36      7363693A 
+  36      2000
+  37 0062 0000     		.align	2
+  38              	.LC14:
+  39 0064 506F6D69 		.ascii	"Pomiar\012cisnienia: \000"
+  39      61720A63 
+  39      69736E69 
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 2
 
 
-  36      792E0A57 
-  36      79626F72 
-  37 0096 6F797374 		.ascii	"oystick'a:\012L - temperatura\012R - jasnosc\012G -"
-  37      69636B27 
-  37      613A0A4C 
-  37      202D2074 
-  37      656D7065 
-  38 00c0 2077696C 		.ascii	" wilgotnosc\012D - cisnienie\000"
-  38      676F746E 
-  38      6F73630A 
-  38      44202D20 
-  38      6369736E 
-  39              		.text
-  40              		.align	1
-  41              		.global	main
-  42              		.syntax unified
-  43              		.code	16
-  44              		.thumb_func
-  45              		.fpu softvfp
-  46              		.type	main, %function
-  47              	main:
-  48              	.LFB0:
-  49              		.file 1 "main.c"
+  39      656E6961 
+  39      3A2000
+  40 0077 00       		.align	2
+  41              	.LC16:
+  42 0078 53746163 		.ascii	"Stacja pogody.\012Wybor funkcji\012przy pomocy\012j"
+  42      6A612070 
+  42      6F676F64 
+  42      792E0A57 
+  42      79626F72 
+  43 00a2 6F797374 		.ascii	"oystick'a:\012L - temperatura\012R - jasnosc\012G -"
+  43      69636B27 
+  43      613A0A4C 
+  43      202D2074 
+  43      656D7065 
+  44 00cc 2077696C 		.ascii	" wilgotnosc\012D - cisnienie\000"
+  44      676F746E 
+  44      6F73630A 
+  44      44202D20 
+  44      6369736E 
+  45              		.text
+  46              		.align	1
+  47              		.global	main
+  48              		.syntax unified
+  49              		.code	16
+  50              		.thumb_func
+  51              		.fpu softvfp
+  52              		.type	main, %function
+  53              	main:
+  54              	.LFB0:
+  55              		.file 1 "main.c"
    1:main.c        **** #include "general.h"
    2:main.c        **** #include <lpc2xxx.h>
    3:main.c        **** #include <printf_P.h>
@@ -107,80 +114,83 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 1
   21:main.c        **** 
   22:main.c        **** int main(void)
   23:main.c        **** {
-  50              		.loc 1 23 0
-  51              		.cfi_startproc
-  52              		@ Function supports interworking.
-  53              		@ args = 0, pretend = 0, frame = 256
-  54              		@ frame_needed = 1, uses_anonymous_args = 0
-  55 0000 B0B5     		push	{r4, r5, r7, lr}
-  56              	.LCFI0:
-  57              		.cfi_def_cfa_offset 16
-  58              		.cfi_offset 4, -16
-  59              		.cfi_offset 5, -12
-  60              		.cfi_offset 7, -8
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 3
+  56              		.loc 1 23 0
+  57              		.cfi_startproc
+  58              		@ Function supports interworking.
+  59              		@ args = 0, pretend = 0, frame = 264
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 3
 
 
-  61              		.cfi_offset 14, -4
-  62 0002 C0B0     		sub	sp, sp, #256
-  63              	.LCFI1:
-  64              		.cfi_def_cfa_offset 272
-  65 0004 00AF     		add	r7, sp, #0
-  66              	.LCFI2:
-  67              		.cfi_def_cfa_register 7
+  60              		@ frame_needed = 1, uses_anonymous_args = 0
+  61 0000 B0B5     		push	{r4, r5, r7, lr}
+  62              	.LCFI0:
+  63              		.cfi_def_cfa_offset 16
+  64              		.cfi_offset 4, -16
+  65              		.cfi_offset 5, -12
+  66              		.cfi_offset 7, -8
+  67              		.cfi_offset 14, -4
+  68 0002 C2B0     		sub	sp, sp, #264
+  69              	.LCFI1:
+  70              		.cfi_def_cfa_offset 280
+  71 0004 00AF     		add	r7, sp, #0
+  72              	.LCFI2:
+  73              		.cfi_def_cfa_register 7
   24:main.c        **** 	tS8 retCode = 0;
-  68              		.loc 1 24 0
-  69 0006 FF23     		movs	r3, #255
-  70 0008 FB18     		adds	r3, r7, r3
-  71 000a 0022     		movs	r2, #0
-  72 000c 1A70     		strb	r2, [r3]
+  74              		.loc 1 24 0
+  75 0006 0823     		movs	r3, #8
+  76 0008 FF33     		adds	r3, r3, #255
+  77 000a FB18     		adds	r3, r7, r3
+  78 000c 0022     		movs	r2, #0
+  79 000e 1A70     		strb	r2, [r3]
   25:main.c        **** 	tU8 pca9532Present = FALSE;
-  73              		.loc 1 25 0
-  74 000e FE25     		movs	r5, #254
-  75 0010 7B19     		adds	r3, r7, r5
-  76 0012 0022     		movs	r2, #0
-  77 0014 1A70     		strb	r2, [r3]
+  80              		.loc 1 25 0
+  81 0010 FB1D     		adds	r3, r7, #7
+  82 0012 FF33     		adds	r3, r3, #255
+  83 0014 0022     		movs	r2, #0
+  84 0016 1A70     		strb	r2, [r3]
   26:main.c        **** 	// Check if connection with PCA9532 is established
   27:main.c        **** 	i2cInit();
-  78              		.loc 1 27 0
-  79 0016 FFF7FEFF 		bl	i2cInit
+  85              		.loc 1 27 0
+  86 0018 FFF7FEFF 		bl	i2cInit
   28:main.c        **** 	pca9532Present = pca9532Init();
-  80              		.loc 1 28 0
-  81 001a 7C19     		adds	r4, r7, r5
-  82 001c FFF7FEFF 		bl	pca9532Init
-  83 0020 0300     		movs	r3, r0
-  84 0022 2370     		strb	r3, [r4]
+  87              		.loc 1 28 0
+  88 001c FC1D     		adds	r4, r7, #7
+  89 001e FF34     		adds	r4, r4, #255
+  90 0020 FFF7FEFF 		bl	pca9532Init
+  91 0024 0300     		movs	r3, r0
+  92 0026 2370     		strb	r3, [r4]
   29:main.c        **** 	printf_init();
-  85              		.loc 1 29 0
-  86 0024 FFF7FEFF 		bl	printf_init
+  93              		.loc 1 29 0
+  94 0028 FFF7FEFF 		bl	printf_init
   30:main.c        **** 	if ((tU8)TRUE == pca9532Present)
-  87              		.loc 1 30 0
-  88 0028 7B19     		adds	r3, r7, r5
-  89 002a 1B78     		ldrb	r3, [r3]
-  90 002c 012B     		cmp	r3, #1
-  91 002e 00D0     		beq	.LCB36
-  92 0030 28E1     		b	.L2	@long jump
-  93              	.LCB36:
-  94              	.LBB2:
+  95              		.loc 1 30 0
+  96 002c FB1D     		adds	r3, r7, #7
+  97 002e FF33     		adds	r3, r3, #255
+  98 0030 1B78     		ldrb	r3, [r3]
+  99 0032 012B     		cmp	r3, #1
+ 100 0034 00D0     		beq	.LCB37
+ 101 0036 93E1     		b	.L2	@long jump
+ 102              	.LCB37:
+ 103              	.LBB2:
   31:main.c        **** 	{
   32:main.c        **** 		/*
   33:main.c        **** 			Inicjalizacja I2C
   34:main.c        **** 		*/
   35:main.c        **** 
   36:main.c        **** 		lcdInit();
-  95              		.loc 1 36 0
-  96 0032 FFF7FEFF 		bl	lcdInit
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 4
+
+
+ 104              		.loc 1 36 0
+ 105 0038 FFF7FEFF 		bl	lcdInit
   37:main.c        **** 		lcdColor(0xff, 0x00);
-  97              		.loc 1 37 0
-  98 0036 0021     		movs	r1, #0
-  99 0038 FF20     		movs	r0, #255
- 100 003a FFF7FEFF 		bl	lcdColor
+ 106              		.loc 1 37 0
+ 107 003c 0021     		movs	r1, #0
+ 108 003e FF20     		movs	r0, #255
+ 109 0040 FFF7FEFF 		bl	lcdColor
   38:main.c        **** 		lcdClrscr();
- 101              		.loc 1 38 0
- 102 003e FFF7FEFF 		bl	lcdClrscr
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 4
-
-
+ 110              		.loc 1 38 0
+ 111 0044 FFF7FEFF 		bl	lcdClrscr
   39:main.c        **** 
   40:main.c        **** 		/*
   41:main.c        **** 			Main loop containg enitre program logic. With every iteration, joystick position is checked
@@ -190,1758 +200,1947 @@ ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 1
   45:main.c        **** 		// Address of the LM75 thermometer, when not soldered. 
   46:main.c        **** 		// tU8 lm75Address = 0x9F;
   47:main.c        **** 		// Address of the LM75 thermometer, when soldered.
-  48:main.c        **** 		tU8 charArray[10] = {0};
- 103              		.loc 1 48 0
- 104 0042 DC23     		movs	r3, #220
- 105 0044 FB18     		adds	r3, r7, r3
- 106 0046 1800     		movs	r0, r3
- 107 0048 0A23     		movs	r3, #10
- 108 004a 1A00     		movs	r2, r3
- 109 004c 0021     		movs	r1, #0
- 110 004e FFF7FEFF 		bl	memset
-  49:main.c        **** 		tU8 amountOfLettersCopied = 0;
- 111              		.loc 1 49 0
- 112 0052 FD23     		movs	r3, #253
- 113 0054 FB18     		adds	r3, r7, r3
- 114 0056 0022     		movs	r2, #0
- 115 0058 1A70     		strb	r2, [r3]
-  50:main.c        **** 
-  51:main.c        **** 		tU8 helperValue = (tU8)1;
- 116              		.loc 1 51 0
- 117 005a FC23     		movs	r3, #252
- 118 005c FB18     		adds	r3, r7, r3
- 119 005e 0122     		movs	r2, #1
- 120 0060 1A70     		strb	r2, [r3]
-  52:main.c        **** 		while (helperValue == (tU8)TRUE)
- 121              		.loc 1 52 0
- 122 0062 09E1     		b	.L3
- 123              	.L10:
-  53:main.c        **** 		{
-  54:main.c        **** 			if ((IOPIN & 0x00000100) == 0)
- 124              		.loc 1 54 0
- 125 0064 8B4B     		ldr	r3, .L12
- 126 0066 1A68     		ldr	r2, [r3]
- 127 0068 8023     		movs	r3, #128
- 128 006a 5B00     		lsls	r3, r3, #1
- 129 006c 1340     		ands	r3, r2
- 130 006e 15D1     		bne	.L4
- 131              	.LBB3:
-  55:main.c        **** 			{
-  56:main.c        **** 				// Key P0.8 center-key is pressed
-  57:main.c        **** 				lcdGotoxy(0, 0);
- 132              		.loc 1 57 0
- 133 0070 0021     		movs	r1, #0
- 134 0072 0020     		movs	r0, #0
- 135 0074 FFF7FEFF 		bl	lcdGotoxy
-  58:main.c        **** 				tU8 textToBeWritten[] = "Aktualny czas: ";
- 136              		.loc 1 58 0
- 137 0078 CC21     		movs	r1, #204
- 138 007a 7B18     		adds	r3, r7, r1
- 139 007c 864A     		ldr	r2, .L12+4
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 5
+  48:main.c        **** 		tU8 amountOfLettersCopied = 0;
+ 112              		.loc 1 48 0
+ 113 0048 BB1D     		adds	r3, r7, #6
+ 114 004a FF33     		adds	r3, r3, #255
+ 115 004c 0022     		movs	r2, #0
+ 116 004e 1A70     		strb	r2, [r3]
+  49:main.c        **** 
+  50:main.c        **** 		tU8 helperValue = (tU8)1;
+ 117              		.loc 1 50 0
+ 118 0050 7B1D     		adds	r3, r7, #5
+ 119 0052 FF33     		adds	r3, r3, #255
+ 120 0054 0122     		movs	r2, #1
+ 121 0056 1A70     		strb	r2, [r3]
+  51:main.c        **** 
+  52:main.c        **** 		IODIR1 &= ~0x00F00000;
+ 122              		.loc 1 52 0
+ 123 0058 C54B     		ldr	r3, .L17
+ 124 005a 1A68     		ldr	r2, [r3]
+ 125 005c C44B     		ldr	r3, .L17
+ 126 005e C549     		ldr	r1, .L17+4
+ 127 0060 0A40     		ands	r2, r1
+ 128 0062 1A60     		str	r2, [r3]
+  53:main.c        **** 		PINSEL0 &= ~0x30000000;
+ 129              		.loc 1 53 0
+ 130 0064 C44B     		ldr	r3, .L17+8
+ 131 0066 1A68     		ldr	r2, [r3]
+ 132 0068 C34B     		ldr	r3, .L17+8
+ 133 006a C449     		ldr	r1, .L17+12
+ 134 006c 0A40     		ands	r2, r1
+ 135 006e 1A60     		str	r2, [r3]
+  54:main.c        **** 
+  55:main.c        **** 		while (helperValue == (tU8)TRUE)
+ 136              		.loc 1 55 0
+ 137 0070 70E1     		b	.L3
+ 138              	.L15:
+ 139              	.LBB3:
+  56:main.c        **** 		{
+  57:main.c        **** 			tU8 charArray[20] = {0};
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 5
 
 
- 140 007e 31CA     		ldmia	r2!, {r0, r4, r5}
- 141 0080 31C3     		stmia	r3!, {r0, r4, r5}
- 142 0082 1268     		ldr	r2, [r2]
- 143 0084 1A60     		str	r2, [r3]
-  59:main.c        **** 				lcdPuts(textToBeWritten);
- 144              		.loc 1 59 0
- 145 0086 7B18     		adds	r3, r7, r1
- 146 0088 1800     		movs	r0, r3
- 147 008a FFF7FEFF 		bl	lcdPuts
-  60:main.c        **** 				lcdGotoxy(0, 15);
- 148              		.loc 1 60 0
- 149 008e 0F21     		movs	r1, #15
- 150 0090 0020     		movs	r0, #0
- 151 0092 FFF7FEFF 		bl	lcdGotoxy
-  61:main.c        **** 			 	printCurrentTime();
- 152              		.loc 1 61 0
- 153 0096 FFF7FEFF 		bl	printCurrentTime
- 154              	.LBE3:
- 155 009a E8E0     		b	.L5
- 156              	.L4:
-  62:main.c        **** 			}
-  63:main.c        **** 			else if ((IOPIN & 0x00000200) == 0)
- 157              		.loc 1 63 0
- 158 009c 7D4B     		ldr	r3, .L12
- 159 009e 1A68     		ldr	r2, [r3]
- 160 00a0 8023     		movs	r3, #128
- 161 00a2 9B00     		lsls	r3, r3, #2
- 162 00a4 1340     		ands	r3, r2
- 163 00a6 1DD1     		bne	.L6
- 164              	.LBB4:
-  64:main.c        **** 			{
-  65:main.c        **** 				// Key P0.9 left-key is pressed
-  66:main.c        **** 				lcdGotoxy(0, 0);
- 165              		.loc 1 66 0
- 166 00a8 0021     		movs	r1, #0
- 167 00aa 0020     		movs	r0, #0
- 168 00ac FFF7FEFF 		bl	lcdGotoxy
-  67:main.c        **** 				tU8 textToBeWritten[] = "Pomiar\ntemperatury: ";
- 169              		.loc 1 67 0
- 170 00b0 B421     		movs	r1, #180
- 171 00b2 7B18     		adds	r3, r7, r1
- 172 00b4 794A     		ldr	r2, .L12+8
- 173 00b6 31CA     		ldmia	r2!, {r0, r4, r5}
- 174 00b8 31C3     		stmia	r3!, {r0, r4, r5}
- 175 00ba 11CA     		ldmia	r2!, {r0, r4}
- 176 00bc 11C3     		stmia	r3!, {r0, r4}
- 177 00be 1278     		ldrb	r2, [r2]
- 178 00c0 1A70     		strb	r2, [r3]
-  68:main.c        **** 				lcdPuts(textToBeWritten);
- 179              		.loc 1 68 0
- 180 00c2 7B18     		adds	r3, r7, r1
- 181 00c4 1800     		movs	r0, r3
- 182 00c6 FFF7FEFF 		bl	lcdPuts
-  69:main.c        **** 				lcdGotoxy(0, 30);
- 183              		.loc 1 69 0
- 184 00ca 1E21     		movs	r1, #30
- 185 00cc 0020     		movs	r0, #0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 6
+ 140              		.loc 1 57 0
+ 141 0072 D823     		movs	r3, #216
+ 142 0074 FB18     		adds	r3, r7, r3
+ 143 0076 1800     		movs	r0, r3
+ 144 0078 1423     		movs	r3, #20
+ 145 007a 1A00     		movs	r2, r3
+ 146 007c 0021     		movs	r1, #0
+ 147 007e FFF7FEFF 		bl	memset
+  58:main.c        **** 
+  59:main.c        **** 			//  IOPIN0 -> gets values from GPIO Port 0 register.
+  60:main.c        **** 			// 	IOPIN1 -> gets values from GPIO Port 0 register.
+  61:main.c        **** 
+  62:main.c        **** 			if ((IOPIN0 & 0x00000100) == 0 || (IOPIN1 & 0x00400000) == 0)
+ 148              		.loc 1 62 0
+ 149 0082 BF4B     		ldr	r3, .L17+16
+ 150 0084 1A68     		ldr	r2, [r3]
+ 151 0086 8023     		movs	r3, #128
+ 152 0088 5B00     		lsls	r3, r3, #1
+ 153 008a 1340     		ands	r3, r2
+ 154 008c 05D0     		beq	.L4
+ 155              		.loc 1 62 0 is_stmt 0 discriminator 1
+ 156 008e BD4B     		ldr	r3, .L17+20
+ 157 0090 1A68     		ldr	r2, [r3]
+ 158 0092 8023     		movs	r3, #128
+ 159 0094 DB03     		lsls	r3, r3, #15
+ 160 0096 1340     		ands	r3, r2
+ 161 0098 15D1     		bne	.L5
+ 162              	.L4:
+ 163              	.LBB4:
+  63:main.c        **** 			{
+  64:main.c        **** 				// Key P0.8 center-key is pressed
+  65:main.c        **** 				// 0x00000100 = 0b 0000 0000 0000 0000 0000 0001 0000 0000
+  66:main.c        **** 				// Key P1.22 is pressed
+  67:main.c        **** 				// 0x00400000 = 0b 0000 0000 0100 0000 0000 0000 0000 0000
+  68:main.c        **** 				lcdGotoxy(0, 0);
+ 164              		.loc 1 68 0 is_stmt 1
+ 165 009a 0021     		movs	r1, #0
+ 166 009c 0020     		movs	r0, #0
+ 167 009e FFF7FEFF 		bl	lcdGotoxy
+  69:main.c        **** 				tU8 textToBeWritten[] = "Aktualny czas: ";
+ 168              		.loc 1 69 0
+ 169 00a2 C821     		movs	r1, #200
+ 170 00a4 7B18     		adds	r3, r7, r1
+ 171 00a6 B84A     		ldr	r2, .L17+24
+ 172 00a8 31CA     		ldmia	r2!, {r0, r4, r5}
+ 173 00aa 31C3     		stmia	r3!, {r0, r4, r5}
+ 174 00ac 1268     		ldr	r2, [r2]
+ 175 00ae 1A60     		str	r2, [r3]
+  70:main.c        **** 				lcdPuts(textToBeWritten);
+ 176              		.loc 1 70 0
+ 177 00b0 7B18     		adds	r3, r7, r1
+ 178 00b2 1800     		movs	r0, r3
+ 179 00b4 FFF7FEFF 		bl	lcdPuts
+  71:main.c        **** 				lcdGotoxy(0, 15);
+ 180              		.loc 1 71 0
+ 181 00b8 0F21     		movs	r1, #15
+ 182 00ba 0020     		movs	r0, #0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 6
 
 
- 186 00ce FFF7FEFF 		bl	lcdGotoxy
-  70:main.c        **** 				measureTemperature();
- 187              		.loc 1 70 0
- 188 00d2 FFF7FEFF 		bl	measureTemperature
-  71:main.c        **** 				manageLED(pca9532Present);
- 189              		.loc 1 71 0
- 190 00d6 FE23     		movs	r3, #254
- 191 00d8 FB18     		adds	r3, r7, r3
- 192 00da 1B78     		ldrb	r3, [r3]
- 193 00dc 1800     		movs	r0, r3
- 194 00de FFF7FEFF 		bl	manageLED
- 195              	.LBE4:
- 196 00e2 C4E0     		b	.L5
- 197              	.L6:
-  72:main.c        **** 			}
-  73:main.c        **** 			else if ((IOPIN & 0x00000400) == 0)
- 198              		.loc 1 73 0
- 199 00e4 6B4B     		ldr	r3, .L12
- 200 00e6 1A68     		ldr	r2, [r3]
- 201 00e8 8023     		movs	r3, #128
- 202 00ea DB00     		lsls	r3, r3, #3
- 203 00ec 1340     		ands	r3, r2
- 204 00ee 32D1     		bne	.L7
+ 183 00bc FFF7FEFF 		bl	lcdGotoxy
+  72:main.c        **** 			 	printCurrentTime();
+ 184              		.loc 1 72 0
+ 185 00c0 FFF7FEFF 		bl	printCurrentTime
+ 186              	.LBE4:
+  63:main.c        **** 				// Key P0.8 center-key is pressed
+ 187              		.loc 1 63 0
+ 188 00c4 41E1     		b	.L6
+ 189              	.L5:
+  73:main.c        **** 			}
+  74:main.c        **** 			else if ((IOPIN0 & 0x00000200) == 0 || (IOPIN1 & 0x00100000) == 0)
+ 190              		.loc 1 74 0
+ 191 00c6 AE4B     		ldr	r3, .L17+16
+ 192 00c8 1A68     		ldr	r2, [r3]
+ 193 00ca 8023     		movs	r3, #128
+ 194 00cc 9B00     		lsls	r3, r3, #2
+ 195 00ce 1340     		ands	r3, r2
+ 196 00d0 05D0     		beq	.L7
+ 197              		.loc 1 74 0 is_stmt 0 discriminator 1
+ 198 00d2 AC4B     		ldr	r3, .L17+20
+ 199 00d4 1A68     		ldr	r2, [r3]
+ 200 00d6 8023     		movs	r3, #128
+ 201 00d8 5B03     		lsls	r3, r3, #13
+ 202 00da 1340     		ands	r3, r2
+ 203 00dc 1DD1     		bne	.L8
+ 204              	.L7:
  205              	.LBB5:
-  74:main.c        **** 			{
-  75:main.c        **** 				// Key P0.10 up-key is pressed
-  76:main.c        **** 				lcdGotoxy(0, 0);
- 206              		.loc 1 76 0
- 207 00f0 0021     		movs	r1, #0
- 208 00f2 0020     		movs	r0, #0
- 209 00f4 FFF7FEFF 		bl	lcdGotoxy
-  77:main.c        **** 				tU8 textToBeWritten[] = "Pomiar\nwilgotnosci: ";
- 210              		.loc 1 77 0
- 211 00f8 9C21     		movs	r1, #156
- 212 00fa 7B18     		adds	r3, r7, r1
- 213 00fc 684A     		ldr	r2, .L12+12
- 214 00fe 31CA     		ldmia	r2!, {r0, r4, r5}
- 215 0100 31C3     		stmia	r3!, {r0, r4, r5}
- 216 0102 11CA     		ldmia	r2!, {r0, r4}
- 217 0104 11C3     		stmia	r3!, {r0, r4}
- 218 0106 1278     		ldrb	r2, [r2]
- 219 0108 1A70     		strb	r2, [r3]
-  78:main.c        **** 				lcdPuts(textToBeWritten);
- 220              		.loc 1 78 0
- 221 010a 7B18     		adds	r3, r7, r1
- 222 010c 1800     		movs	r0, r3
- 223 010e FFF7FEFF 		bl	lcdPuts
-  79:main.c        **** 				tU16 humidityValue = measureHumidity();
- 224              		.loc 1 79 0
- 225 0112 FFF7FEFF 		bl	measureHumidity
- 226 0116 0300     		movs	r3, r0
- 227 0118 1A00     		movs	r2, r3
- 228 011a E621     		movs	r1, #230
- 229 011c 7B18     		adds	r3, r7, r1
- 230 011e 1A80     		strh	r2, [r3]
-  80:main.c        **** 				retCode = sprintf(charArray, "%d", humidityValue);
- 231              		.loc 1 80 0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 7
+  75:main.c        **** 			{
+  76:main.c        **** 				// Key P0.9 left-key is pressed
+  77:main.c        **** 				// 0x00000100 = 0b 0000 0000 0000 0000 0000 0010 0000 0000
+  78:main.c        **** 				// Key P1.20 is pressed
+  79:main.c        **** 				// 0x00100000 = 0b 0000 0000 0001 0000 0000 0000 0000 0000
+  80:main.c        **** 				lcdGotoxy(0, 0);
+ 206              		.loc 1 80 0 is_stmt 1 discriminator 2
+ 207 00de 0021     		movs	r1, #0
+ 208 00e0 0020     		movs	r0, #0
+ 209 00e2 FFF7FEFF 		bl	lcdGotoxy
+  81:main.c        **** 				tU8 textToBeWritten[] = "Pomiar\ntemperatury: ";
+ 210              		.loc 1 81 0 discriminator 2
+ 211 00e6 B021     		movs	r1, #176
+ 212 00e8 7B18     		adds	r3, r7, r1
+ 213 00ea A84A     		ldr	r2, .L17+28
+ 214 00ec 31CA     		ldmia	r2!, {r0, r4, r5}
+ 215 00ee 31C3     		stmia	r3!, {r0, r4, r5}
+ 216 00f0 11CA     		ldmia	r2!, {r0, r4}
+ 217 00f2 11C3     		stmia	r3!, {r0, r4}
+ 218 00f4 1278     		ldrb	r2, [r2]
+ 219 00f6 1A70     		strb	r2, [r3]
+  82:main.c        **** 				lcdPuts(textToBeWritten);
+ 220              		.loc 1 82 0 discriminator 2
+ 221 00f8 7B18     		adds	r3, r7, r1
+ 222 00fa 1800     		movs	r0, r3
+ 223 00fc FFF7FEFF 		bl	lcdPuts
+  83:main.c        **** 				lcdGotoxy(0, 30);
+ 224              		.loc 1 83 0 discriminator 2
+ 225 0100 1E21     		movs	r1, #30
+ 226 0102 0020     		movs	r0, #0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 7
 
 
- 232 0120 7B18     		adds	r3, r7, r1
- 233 0122 1A88     		ldrh	r2, [r3]
- 234 0124 5F49     		ldr	r1, .L12+16
- 235 0126 DC24     		movs	r4, #220
- 236 0128 3B19     		adds	r3, r7, r4
- 237 012a 1800     		movs	r0, r3
- 238 012c FFF7FEFF 		bl	sprintf
- 239 0130 0200     		movs	r2, r0
- 240 0132 FF23     		movs	r3, #255
- 241 0134 FB18     		adds	r3, r7, r3
- 242 0136 1A70     		strb	r2, [r3]
-  81:main.c        **** 				lcdGotoxy(0, 30);
- 243              		.loc 1 81 0
- 244 0138 1E21     		movs	r1, #30
- 245 013a 0020     		movs	r0, #0
- 246 013c FFF7FEFF 		bl	lcdGotoxy
-  82:main.c        **** 				lcdPuts(charArray);
- 247              		.loc 1 82 0
- 248 0140 3B19     		adds	r3, r7, r4
- 249 0142 1800     		movs	r0, r3
- 250 0144 FFF7FEFF 		bl	lcdPuts
-  83:main.c        **** 				manageLED(pca9532Present);
- 251              		.loc 1 83 0
- 252 0148 FE23     		movs	r3, #254
- 253 014a FB18     		adds	r3, r7, r3
- 254 014c 1B78     		ldrb	r3, [r3]
- 255 014e 1800     		movs	r0, r3
- 256 0150 FFF7FEFF 		bl	manageLED
- 257              	.LBE5:
- 258 0154 8BE0     		b	.L5
- 259              	.L7:
-  84:main.c        **** 			}
-  85:main.c        **** 			else if ((IOPIN & 0x00000800) == 0)
- 260              		.loc 1 85 0
- 261 0156 4F4B     		ldr	r3, .L12
- 262 0158 1A68     		ldr	r2, [r3]
- 263 015a 8023     		movs	r3, #128
- 264 015c 1B01     		lsls	r3, r3, #4
- 265 015e 1340     		ands	r3, r2
- 266 0160 35D1     		bne	.L8
- 267              	.LBB6:
-  86:main.c        **** 			{
-  87:main.c        **** 				// Key P0.11 right-key is pressed
-  88:main.c        **** 				lcdGotoxy(0, 0);
- 268              		.loc 1 88 0
- 269 0162 0021     		movs	r1, #0
- 270 0164 0020     		movs	r0, #0
- 271 0166 FFF7FEFF 		bl	lcdGotoxy
-  89:main.c        **** 				tU8 textToBeWritten[] = "Pomiar\njasnosci: ";
- 272              		.loc 1 89 0
- 273 016a 8820     		movs	r0, #136
- 274 016c 3B18     		adds	r3, r7, r0
- 275 016e 4E4A     		ldr	r2, .L12+20
- 276 0170 32CA     		ldmia	r2!, {r1, r4, r5}
- 277 0172 32C3     		stmia	r3!, {r1, r4, r5}
- 278 0174 1168     		ldr	r1, [r2]
- 279 0176 1960     		str	r1, [r3]
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 8
+ 227 0104 FFF7FEFF 		bl	lcdGotoxy
+  84:main.c        **** 				measureTemperature();
+ 228              		.loc 1 84 0 discriminator 2
+ 229 0108 FFF7FEFF 		bl	measureTemperature
+  85:main.c        **** 				manageLED(pca9532Present);
+ 230              		.loc 1 85 0 discriminator 2
+ 231 010c FB1D     		adds	r3, r7, #7
+ 232 010e FF33     		adds	r3, r3, #255
+ 233 0110 1B78     		ldrb	r3, [r3]
+ 234 0112 1800     		movs	r0, r3
+ 235 0114 FFF7FEFF 		bl	manageLED
+ 236              	.LBE5:
+  75:main.c        **** 				// Key P0.9 left-key is pressed
+ 237              		.loc 1 75 0 discriminator 2
+ 238 0118 17E1     		b	.L6
+ 239              	.L8:
+  86:main.c        **** 			}
+  87:main.c        **** 			else if ((IOPIN0 & 0x00000400) == 0 || (IOPIN1 & 0x00200000) == 0)
+ 240              		.loc 1 87 0
+ 241 011a 994B     		ldr	r3, .L17+16
+ 242 011c 1A68     		ldr	r2, [r3]
+ 243 011e 8023     		movs	r3, #128
+ 244 0120 DB00     		lsls	r3, r3, #3
+ 245 0122 1340     		ands	r3, r2
+ 246 0124 05D0     		beq	.L9
+ 247              		.loc 1 87 0 is_stmt 0 discriminator 1
+ 248 0126 974B     		ldr	r3, .L17+20
+ 249 0128 1A68     		ldr	r2, [r3]
+ 250 012a 8023     		movs	r3, #128
+ 251 012c 9B03     		lsls	r3, r3, #14
+ 252 012e 1340     		ands	r3, r2
+ 253 0130 33D1     		bne	.L10
+ 254              	.L9:
+ 255              	.LBB6:
+  88:main.c        **** 			{
+  89:main.c        **** 				// Key P0.10 up-key is pressed
+  90:main.c        **** 				// 0x00000100 = 0b 0000 0000 0000 0000 0000 0100 0000 0000
+  91:main.c        **** 				// Key P1.21 is pressed
+  92:main.c        **** 				// 0x00200000 = 0b 0000 0000 0010 0000 0000 0000 0000 0000
+  93:main.c        **** 				lcdGotoxy(0, 0);
+ 256              		.loc 1 93 0 is_stmt 1 discriminator 3
+ 257 0132 0021     		movs	r1, #0
+ 258 0134 0020     		movs	r0, #0
+ 259 0136 FFF7FEFF 		bl	lcdGotoxy
+  94:main.c        **** 				tU8 textToBeWritten[] = "Pomiar\nwilgotnosci: ";
+ 260              		.loc 1 94 0 discriminator 3
+ 261 013a 9821     		movs	r1, #152
+ 262 013c 7B18     		adds	r3, r7, r1
+ 263 013e 944A     		ldr	r2, .L17+32
+ 264 0140 31CA     		ldmia	r2!, {r0, r4, r5}
+ 265 0142 31C3     		stmia	r3!, {r0, r4, r5}
+ 266 0144 11CA     		ldmia	r2!, {r0, r4}
+ 267 0146 11C3     		stmia	r3!, {r0, r4}
+ 268 0148 1278     		ldrb	r2, [r2]
+ 269 014a 1A70     		strb	r2, [r3]
+  95:main.c        **** 				lcdPuts(textToBeWritten);
+ 270              		.loc 1 95 0 discriminator 3
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 8
 
 
- 280 0178 9288     		ldrh	r2, [r2, #4]
- 281 017a 9A80     		strh	r2, [r3, #4]
-  90:main.c        **** 				lcdPuts(textToBeWritten);
- 282              		.loc 1 90 0
- 283 017c 3B18     		adds	r3, r7, r0
- 284 017e 1800     		movs	r0, r3
- 285 0180 FFF7FEFF 		bl	lcdPuts
-  91:main.c        **** 				tU64 brightnessValue = measureBrightness();
- 286              		.loc 1 91 0
- 287 0184 FFF7FEFF 		bl	measureBrightness
- 288 0188 0300     		movs	r3, r0
- 289 018a 0C00     		movs	r4, r1
- 290 018c E822     		movs	r2, #232
- 291 018e B918     		adds	r1, r7, r2
- 292 0190 0B60     		str	r3, [r1]
- 293 0192 4C60     		str	r4, [r1, #4]
-  92:main.c        **** 				retCode = sprintf(charArray, "%d", brightnessValue);
- 294              		.loc 1 92 0
- 295 0194 BB18     		adds	r3, r7, r2
- 296 0196 5C68     		ldr	r4, [r3, #4]
- 297 0198 1B68     		ldr	r3, [r3]
- 298 019a 4249     		ldr	r1, .L12+16
- 299 019c DC25     		movs	r5, #220
- 300 019e 7819     		adds	r0, r7, r5
- 301 01a0 1A00     		movs	r2, r3
- 302 01a2 2300     		movs	r3, r4
- 303 01a4 FFF7FEFF 		bl	sprintf
- 304 01a8 0200     		movs	r2, r0
- 305 01aa FF23     		movs	r3, #255
- 306 01ac FB18     		adds	r3, r7, r3
- 307 01ae 1A70     		strb	r2, [r3]
-  93:main.c        **** 				lcdGotoxy(0, 30);
- 308              		.loc 1 93 0
- 309 01b0 1E21     		movs	r1, #30
- 310 01b2 0020     		movs	r0, #0
- 311 01b4 FFF7FEFF 		bl	lcdGotoxy
-  94:main.c        **** 				lcdPuts(charArray);
- 312              		.loc 1 94 0
- 313 01b8 7B19     		adds	r3, r7, r5
- 314 01ba 1800     		movs	r0, r3
- 315 01bc FFF7FEFF 		bl	lcdPuts
-  95:main.c        **** 				manageLED(pca9532Present);
- 316              		.loc 1 95 0
- 317 01c0 FE23     		movs	r3, #254
- 318 01c2 FB18     		adds	r3, r7, r3
- 319 01c4 1B78     		ldrb	r3, [r3]
- 320 01c6 1800     		movs	r0, r3
- 321 01c8 FFF7FEFF 		bl	manageLED
- 322              	.LBE6:
- 323 01cc 4FE0     		b	.L5
- 324              	.L8:
-  96:main.c        **** 			}
-  97:main.c        **** 			else if ((IOPIN & 0x00001000) == 0)
- 325              		.loc 1 97 0
- 326 01ce 314B     		ldr	r3, .L12
- 327 01d0 1A68     		ldr	r2, [r3]
- 328 01d2 8023     		movs	r3, #128
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 9
+ 271 014c 7B18     		adds	r3, r7, r1
+ 272 014e 1800     		movs	r0, r3
+ 273 0150 FFF7FEFF 		bl	lcdPuts
+  96:main.c        **** 				tU16 humidityValue = measureHumidity();
+ 274              		.loc 1 96 0 discriminator 3
+ 275 0154 FFF7FEFF 		bl	measureHumidity
+ 276 0158 0300     		movs	r3, r0
+ 277 015a 1A00     		movs	r2, r3
+ 278 015c EE21     		movs	r1, #238
+ 279 015e 7B18     		adds	r3, r7, r1
+ 280 0160 1A80     		strh	r2, [r3]
+  97:main.c        **** 				retCode = sprintf(charArray, "%d%s", humidityValue, " %");
+ 281              		.loc 1 97 0 discriminator 3
+ 282 0162 7B18     		adds	r3, r7, r1
+ 283 0164 1A88     		ldrh	r2, [r3]
+ 284 0166 8B4B     		ldr	r3, .L17+36
+ 285 0168 8B49     		ldr	r1, .L17+40
+ 286 016a D824     		movs	r4, #216
+ 287 016c 3819     		adds	r0, r7, r4
+ 288 016e FFF7FEFF 		bl	sprintf
+ 289 0172 0200     		movs	r2, r0
+ 290 0174 0823     		movs	r3, #8
+ 291 0176 FF33     		adds	r3, r3, #255
+ 292 0178 FB18     		adds	r3, r7, r3
+ 293 017a 1A70     		strb	r2, [r3]
+  98:main.c        **** 				lcdGotoxy(0, 30);
+ 294              		.loc 1 98 0 discriminator 3
+ 295 017c 1E21     		movs	r1, #30
+ 296 017e 0020     		movs	r0, #0
+ 297 0180 FFF7FEFF 		bl	lcdGotoxy
+  99:main.c        **** 				lcdPuts(charArray);
+ 298              		.loc 1 99 0 discriminator 3
+ 299 0184 3B19     		adds	r3, r7, r4
+ 300 0186 1800     		movs	r0, r3
+ 301 0188 FFF7FEFF 		bl	lcdPuts
+ 100:main.c        **** 				manageLED(pca9532Present);
+ 302              		.loc 1 100 0 discriminator 3
+ 303 018c FB1D     		adds	r3, r7, #7
+ 304 018e FF33     		adds	r3, r3, #255
+ 305 0190 1B78     		ldrb	r3, [r3]
+ 306 0192 1800     		movs	r0, r3
+ 307 0194 FFF7FEFF 		bl	manageLED
+ 308              	.LBE6:
+  88:main.c        **** 				// Key P0.10 up-key is pressed
+ 309              		.loc 1 88 0 discriminator 3
+ 310 0198 D7E0     		b	.L6
+ 311              	.L10:
+ 101:main.c        **** 			}
+ 102:main.c        **** 			else if ((IOPIN0 & 0x00000800) == 0 || (IOPIN0 & 0x00004000) == 0)
+ 312              		.loc 1 102 0
+ 313 019a 794B     		ldr	r3, .L17+16
+ 314 019c 1A68     		ldr	r2, [r3]
+ 315 019e 8023     		movs	r3, #128
+ 316 01a0 1B01     		lsls	r3, r3, #4
+ 317 01a2 1340     		ands	r3, r2
+ 318 01a4 05D0     		beq	.L11
+ 319              		.loc 1 102 0 is_stmt 0 discriminator 1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 9
 
 
- 329 01d4 5B01     		lsls	r3, r3, #5
- 330 01d6 1340     		ands	r3, r2
- 331 01d8 39D1     		bne	.L9
- 332              	.LBB7:
-  98:main.c        **** 			{
-  99:main.c        **** 				// Key P0.12 down-key is pressed
- 100:main.c        **** 				lcdGotoxy(0, 0);
- 333              		.loc 1 100 0
- 334 01da 0021     		movs	r1, #0
- 335 01dc 0020     		movs	r0, #0
- 336 01de FFF7FEFF 		bl	lcdGotoxy
- 101:main.c        **** 				tU8 textToBeWritten[] = "Pomiar\ncisnienia: ";
- 337              		.loc 1 101 0
- 338 01e2 7420     		movs	r0, #116
- 339 01e4 3B18     		adds	r3, r7, r0
- 340 01e6 314A     		ldr	r2, .L12+24
- 341 01e8 32CA     		ldmia	r2!, {r1, r4, r5}
- 342 01ea 32C3     		stmia	r3!, {r1, r4, r5}
- 343 01ec 1168     		ldr	r1, [r2]
- 344 01ee 1960     		str	r1, [r3]
- 345 01f0 9188     		ldrh	r1, [r2, #4]
- 346 01f2 9980     		strh	r1, [r3, #4]
- 347 01f4 9279     		ldrb	r2, [r2, #6]
- 348 01f6 9A71     		strb	r2, [r3, #6]
- 102:main.c        **** 				lcdPuts(textToBeWritten);
- 349              		.loc 1 102 0
- 350 01f8 3B18     		adds	r3, r7, r0
- 351 01fa 1800     		movs	r0, r3
- 352 01fc FFF7FEFF 		bl	lcdPuts
- 103:main.c        **** 				tS64 pressureValue = measurePressure();
- 353              		.loc 1 103 0
- 354 0200 FFF7FEFF 		bl	measurePressure
- 355 0204 0300     		movs	r3, r0
- 356 0206 F022     		movs	r2, #240
- 357 0208 B918     		adds	r1, r7, r2
- 358 020a 0B60     		str	r3, [r1]
- 359 020c DB17     		asrs	r3, r3, #31
- 360 020e F421     		movs	r1, #244
- 361 0210 7918     		adds	r1, r7, r1
- 362 0212 0B60     		str	r3, [r1]
- 104:main.c        **** 				retCode = sprintf(charArray, "%d", pressureValue);
- 363              		.loc 1 104 0
- 364 0214 BB18     		adds	r3, r7, r2
- 365 0216 5C68     		ldr	r4, [r3, #4]
- 366 0218 1B68     		ldr	r3, [r3]
- 367 021a 2249     		ldr	r1, .L12+16
- 368 021c DC25     		movs	r5, #220
- 369 021e 7819     		adds	r0, r7, r5
- 370 0220 1A00     		movs	r2, r3
- 371 0222 2300     		movs	r3, r4
- 372 0224 FFF7FEFF 		bl	sprintf
- 373 0228 0200     		movs	r2, r0
- 374 022a FF23     		movs	r3, #255
- 375 022c FB18     		adds	r3, r7, r3
- 376 022e 1A70     		strb	r2, [r3]
- 105:main.c        **** 				lcdGotoxy(0, 30);
- 377              		.loc 1 105 0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 10
+ 320 01a6 764B     		ldr	r3, .L17+16
+ 321 01a8 1A68     		ldr	r2, [r3]
+ 322 01aa 8023     		movs	r3, #128
+ 323 01ac DB01     		lsls	r3, r3, #7
+ 324 01ae 1340     		ands	r3, r2
+ 325 01b0 57D1     		bne	.L12
+ 326              	.L11:
+ 327              	.LBB7:
+ 103:main.c        **** 			{
+ 104:main.c        **** 				// Key P0.11 right-key is pressed
+ 105:main.c        **** 				// 0x00000100 = 0b 0000 0000 0000 0000 0000 1000 0000 0000
+ 106:main.c        **** 				// Key P0.14 is pressed
+ 107:main.c        **** 				// 0x00004000 = 0b 0000 0000 0000 0000 0100 0000 0000 0000
+ 108:main.c        **** 				lcdGotoxy(0, 0);
+ 328              		.loc 1 108 0 is_stmt 1 discriminator 4
+ 329 01b2 0021     		movs	r1, #0
+ 330 01b4 0020     		movs	r0, #0
+ 331 01b6 FFF7FEFF 		bl	lcdGotoxy
+ 109:main.c        **** 				tU8 textToBeWritten[] = "Pomiar\njasnosci: ";
+ 332              		.loc 1 109 0 discriminator 4
+ 333 01ba 8420     		movs	r0, #132
+ 334 01bc 3B18     		adds	r3, r7, r0
+ 335 01be 774A     		ldr	r2, .L17+44
+ 336 01c0 32CA     		ldmia	r2!, {r1, r4, r5}
+ 337 01c2 32C3     		stmia	r3!, {r1, r4, r5}
+ 338 01c4 1168     		ldr	r1, [r2]
+ 339 01c6 1960     		str	r1, [r3]
+ 340 01c8 9288     		ldrh	r2, [r2, #4]
+ 341 01ca 9A80     		strh	r2, [r3, #4]
+ 110:main.c        **** 				lcdPuts(textToBeWritten);
+ 342              		.loc 1 110 0 discriminator 4
+ 343 01cc 3B18     		adds	r3, r7, r0
+ 344 01ce 1800     		movs	r0, r3
+ 345 01d0 FFF7FEFF 		bl	lcdPuts
+ 111:main.c        **** 				tU64 brightnessValue = measureBrightness();
+ 346              		.loc 1 111 0 discriminator 4
+ 347 01d4 FFF7FEFF 		bl	measureBrightness
+ 348 01d8 0300     		movs	r3, r0
+ 349 01da 0C00     		movs	r4, r1
+ 350 01dc F022     		movs	r2, #240
+ 351 01de B918     		adds	r1, r7, r2
+ 352 01e0 0B60     		str	r3, [r1]
+ 353 01e2 4C60     		str	r4, [r1, #4]
+ 112:main.c        **** 				retCode = sprintf(charArray, "%d", brightnessValue);
+ 354              		.loc 1 112 0 discriminator 4
+ 355 01e4 BB18     		adds	r3, r7, r2
+ 356 01e6 5C68     		ldr	r4, [r3, #4]
+ 357 01e8 1B68     		ldr	r3, [r3]
+ 358 01ea 6D49     		ldr	r1, .L17+48
+ 359 01ec D825     		movs	r5, #216
+ 360 01ee 7819     		adds	r0, r7, r5
+ 361 01f0 1A00     		movs	r2, r3
+ 362 01f2 2300     		movs	r3, r4
+ 363 01f4 FFF7FEFF 		bl	sprintf
+ 364 01f8 0200     		movs	r2, r0
+ 365 01fa 0820     		movs	r0, #8
+ 366 01fc FF30     		adds	r0, r0, #255
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 10
 
 
- 378 0230 1E21     		movs	r1, #30
- 379 0232 0020     		movs	r0, #0
- 380 0234 FFF7FEFF 		bl	lcdGotoxy
- 106:main.c        **** 				lcdPuts(charArray);
- 381              		.loc 1 106 0
- 382 0238 7B19     		adds	r3, r7, r5
- 383 023a 1800     		movs	r0, r3
- 384 023c FFF7FEFF 		bl	lcdPuts
- 107:main.c        **** 				manageLED(pca9532Present);
- 385              		.loc 1 107 0
- 386 0240 FE23     		movs	r3, #254
- 387 0242 FB18     		adds	r3, r7, r3
- 388 0244 1B78     		ldrb	r3, [r3]
- 389 0246 1800     		movs	r0, r3
- 390 0248 FFF7FEFF 		bl	manageLED
- 391              	.LBE7:
- 392 024c 0FE0     		b	.L5
- 393              	.L9:
- 394              	.LBB8:
- 108:main.c        **** 			}
- 109:main.c        **** 			else
- 110:main.c        **** 			{
- 111:main.c        **** 				// Joystick is not pressed at all.
- 112:main.c        **** 				lcdGotoxy(0, 0);
- 395              		.loc 1 112 0
- 396 024e 0021     		movs	r1, #0
- 397 0250 0020     		movs	r0, #0
- 398 0252 FFF7FEFF 		bl	lcdGotoxy
- 113:main.c        **** 				tU8 textToBeWritten[] = "Stacja pogody.\nWybor funkcji\nprzy pomocy\njoystick'a:\nL - temperatu
- 399              		.loc 1 113 0
- 400 0256 3A1D     		adds	r2, r7, #4
- 401 0258 154B     		ldr	r3, .L12+28
- 402 025a 1000     		movs	r0, r2
- 403 025c 1900     		movs	r1, r3
- 404 025e 6E23     		movs	r3, #110
- 405 0260 1A00     		movs	r2, r3
- 406 0262 FFF7FEFF 		bl	memcpy
- 114:main.c        **** 				lcdPuts(textToBeWritten);
- 407              		.loc 1 114 0
- 408 0266 3B1D     		adds	r3, r7, #4
- 409 0268 1800     		movs	r0, r3
- 410 026a FFF7FEFF 		bl	lcdPuts
- 411              	.L5:
- 412              	.LBE8:
- 115:main.c        **** 			}
- 116:main.c        **** 			sdelay(1);
- 413              		.loc 1 116 0
- 414 026e 0120     		movs	r0, #1
- 415 0270 FFF7FEFF 		bl	sdelay
- 117:main.c        **** 			lcdClrscr();
- 416              		.loc 1 117 0
- 417 0274 FFF7FEFF 		bl	lcdClrscr
- 418              	.L3:
-  52:main.c        **** 		{
- 419              		.loc 1 52 0
- 420 0278 FC23     		movs	r3, #252
- 421 027a FB18     		adds	r3, r7, r3
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 11
+ 367 01fe 0400     		movs	r4, r0
+ 368 0200 3B18     		adds	r3, r7, r0
+ 369 0202 1A70     		strb	r2, [r3]
+ 113:main.c        **** 				lcdGotoxy(0, 30);
+ 370              		.loc 1 113 0 discriminator 4
+ 371 0204 1E21     		movs	r1, #30
+ 372 0206 0020     		movs	r0, #0
+ 373 0208 FFF7FEFF 		bl	lcdGotoxy
+ 114:main.c        **** 				charArray[retCode] = ' ';
+ 374              		.loc 1 114 0 discriminator 4
+ 375 020c 2000     		movs	r0, r4
+ 376 020e 3B18     		adds	r3, r7, r0
+ 377 0210 1B78     		ldrb	r3, [r3]
+ 378 0212 1B06     		lsls	r3, r3, #24
+ 379 0214 1B16     		asrs	r3, r3, #24
+ 380 0216 7A19     		adds	r2, r7, r5
+ 381 0218 2021     		movs	r1, #32
+ 382 021a D154     		strb	r1, [r2, r3]
+ 115:main.c        **** 				charArray[retCode + 1] = 'l';
+ 383              		.loc 1 115 0 discriminator 4
+ 384 021c 3B18     		adds	r3, r7, r0
+ 385 021e 1B78     		ldrb	r3, [r3]
+ 386 0220 1B06     		lsls	r3, r3, #24
+ 387 0222 1B16     		asrs	r3, r3, #24
+ 388 0224 0133     		adds	r3, r3, #1
+ 389 0226 7A19     		adds	r2, r7, r5
+ 390 0228 6C21     		movs	r1, #108
+ 391 022a D154     		strb	r1, [r2, r3]
+ 116:main.c        **** 				charArray[retCode + 2] = 'u';
+ 392              		.loc 1 116 0 discriminator 4
+ 393 022c 3B18     		adds	r3, r7, r0
+ 394 022e 1B78     		ldrb	r3, [r3]
+ 395 0230 1B06     		lsls	r3, r3, #24
+ 396 0232 1B16     		asrs	r3, r3, #24
+ 397 0234 0233     		adds	r3, r3, #2
+ 398 0236 7A19     		adds	r2, r7, r5
+ 399 0238 7521     		movs	r1, #117
+ 400 023a D154     		strb	r1, [r2, r3]
+ 117:main.c        **** 				charArray[retCode + 3] = 'x';
+ 401              		.loc 1 117 0 discriminator 4
+ 402 023c 3B18     		adds	r3, r7, r0
+ 403 023e 1B78     		ldrb	r3, [r3]
+ 404 0240 1B06     		lsls	r3, r3, #24
+ 405 0242 1B16     		asrs	r3, r3, #24
+ 406 0244 0333     		adds	r3, r3, #3
+ 407 0246 7A19     		adds	r2, r7, r5
+ 408 0248 7821     		movs	r1, #120
+ 409 024a D154     		strb	r1, [r2, r3]
+ 118:main.c        **** 				lcdPuts(charArray);
+ 410              		.loc 1 118 0 discriminator 4
+ 411 024c 7B19     		adds	r3, r7, r5
+ 412 024e 1800     		movs	r0, r3
+ 413 0250 FFF7FEFF 		bl	lcdPuts
+ 119:main.c        **** 				manageLED(pca9532Present);
+ 414              		.loc 1 119 0 discriminator 4
+ 415 0254 FB1D     		adds	r3, r7, #7
+ 416 0256 FF33     		adds	r3, r3, #255
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 11
 
 
- 422 027c 1B78     		ldrb	r3, [r3]
- 423 027e 012B     		cmp	r3, #1
- 424 0280 00D1     		bne	.LCB334
- 425 0282 EFE6     		b	.L10	@long jump
- 426              	.LCB334:
- 427              	.L2:
- 428              	.LBE2:
- 429 0284 0023     		movs	r3, #0
- 118:main.c        **** 		}
- 119:main.c        **** 	}
- 120:main.c        **** }
- 430              		.loc 1 120 0
- 431 0286 1800     		movs	r0, r3
- 432 0288 BD46     		mov	sp, r7
- 433 028a 40B0     		add	sp, sp, #256
- 434              		@ sp needed
- 435 028c B0BC     		pop	{r4, r5, r7}
- 436 028e 02BC     		pop	{r1}
- 437 0290 0847     		bx	r1
+ 417 0258 1B78     		ldrb	r3, [r3]
+ 418 025a 1800     		movs	r0, r3
+ 419 025c FFF7FEFF 		bl	manageLED
+ 420              	.LBE7:
+ 103:main.c        **** 				// Key P0.11 right-key is pressed
+ 421              		.loc 1 103 0 discriminator 4
+ 422 0260 73E0     		b	.L6
+ 423              	.L12:
+ 120:main.c        **** 			}
+ 121:main.c        **** 			else if ((IOPIN0 & 0x00001000) == 0 || (IOPIN1 & 0x00800000) == 0)
+ 424              		.loc 1 121 0
+ 425 0262 474B     		ldr	r3, .L17+16
+ 426 0264 1A68     		ldr	r2, [r3]
+ 427 0266 8023     		movs	r3, #128
+ 428 0268 5B01     		lsls	r3, r3, #5
+ 429 026a 1340     		ands	r3, r2
+ 430 026c 05D0     		beq	.L13
+ 431              		.loc 1 121 0 is_stmt 0 discriminator 1
+ 432 026e 454B     		ldr	r3, .L17+20
+ 433 0270 1A68     		ldr	r2, [r3]
+ 434 0272 8023     		movs	r3, #128
+ 435 0274 1B04     		lsls	r3, r3, #16
+ 436 0276 1340     		ands	r3, r2
+ 437 0278 53D1     		bne	.L14
  438              	.L13:
- 439 0292 C046     		.align	2
- 440              	.L12:
- 441 0294 008002E0 		.word	-536707072
- 442 0298 04000000 		.word	.LC0
- 443 029c 14000000 		.word	.LC2
- 444 02a0 2C000000 		.word	.LC4
- 445 02a4 00000000 		.word	.LC6
- 446 02a8 44000000 		.word	.LC8
- 447 02ac 58000000 		.word	.LC10
- 448 02b0 6C000000 		.word	.LC12
- 449              		.cfi_endproc
- 450              	.LFE0:
- 451              		.size	main, .-main
- 452              		.global	__aeabi_uidiv
- 453              		.align	1
- 454              		.global	printCurrentTime
- 455              		.syntax unified
- 456              		.code	16
- 457              		.thumb_func
- 458              		.fpu softvfp
- 459              		.type	printCurrentTime, %function
- 460              	printCurrentTime:
- 461              	.LFB1:
- 121:main.c        **** 
- 122:main.c        **** /*
- 123:main.c        ****  * @brief   Funkcja printCurrentTime() służy do wyświetlenia aktualnego czasu względem zegara
- 124:main.c        ****  * 			czasu rzeczywistego (RTC) w formacie HH:MM:SS (gdzie H - oznacza godzinę, M - minutę,
- 125:main.c        ****  *			a S - sekundę).
- 126:main.c        ****  *
- 127:main.c        ****  * @param   void
- 128:main.c        ****  *
- 129:main.c        ****  * @returns void
- 130:main.c        ****  *
- 131:main.c        ****  * @side effects:
- 132:main.c        ****  *          Wyświetlany czas jest zależy od wartości inicjalizującej zegar czasu reczywistego (
- 133:main.c        ****  * 			gdzie w tym przypadku nie jest on inicjalizowany.
- 134:main.c        ****  */
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 12
+ 439              	.LBB8:
+ 122:main.c        **** 			{
+ 123:main.c        **** 				// Key P0.12 down-key is pressed
+ 124:main.c        **** 				// 0x00000100 = 0b 0000 0000 0000 0000 0001 0000 0000 0000
+ 125:main.c        **** 				// Key P1.23 is pressed
+ 126:main.c        **** 				// 0x00800000 = 0b 0000 0000 1000 0000 0000 0000 0000 0000
+ 127:main.c        **** 				lcdGotoxy(0, 0);
+ 440              		.loc 1 127 0 is_stmt 1 discriminator 5
+ 441 027a 0021     		movs	r1, #0
+ 442 027c 0020     		movs	r0, #0
+ 443 027e FFF7FEFF 		bl	lcdGotoxy
+ 128:main.c        **** 				tU8 textToBeWritten[] = "Pomiar\ncisnienia: ";
+ 444              		.loc 1 128 0 discriminator 5
+ 445 0282 7020     		movs	r0, #112
+ 446 0284 3B18     		adds	r3, r7, r0
+ 447 0286 474A     		ldr	r2, .L17+52
+ 448 0288 32CA     		ldmia	r2!, {r1, r4, r5}
+ 449 028a 32C3     		stmia	r3!, {r1, r4, r5}
+ 450 028c 1168     		ldr	r1, [r2]
+ 451 028e 1960     		str	r1, [r3]
+ 452 0290 9188     		ldrh	r1, [r2, #4]
+ 453 0292 9980     		strh	r1, [r3, #4]
+ 454 0294 9279     		ldrb	r2, [r2, #6]
+ 455 0296 9A71     		strb	r2, [r3, #6]
+ 129:main.c        **** 				lcdPuts(textToBeWritten);
+ 456              		.loc 1 129 0 discriminator 5
+ 457 0298 3B18     		adds	r3, r7, r0
+ 458 029a 1800     		movs	r0, r3
+ 459 029c FFF7FEFF 		bl	lcdPuts
+ 130:main.c        **** 				tS64 pressureValue = measurePressure();
+ 460              		.loc 1 130 0 discriminator 5
+ 461 02a0 FFF7FEFF 		bl	measurePressure
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 12
 
 
- 135:main.c        **** 
- 136:main.c        **** void printCurrentTime(void)
- 137:main.c        **** {
- 462              		.loc 1 137 0
- 463              		.cfi_startproc
- 464              		@ Function supports interworking.
- 465              		@ args = 0, pretend = 0, frame = 16
- 466              		@ frame_needed = 1, uses_anonymous_args = 0
- 467 02b4 80B5     		push	{r7, lr}
- 468              	.LCFI3:
- 469              		.cfi_def_cfa_offset 8
- 470              		.cfi_offset 7, -8
- 471              		.cfi_offset 14, -4
- 472 02b6 84B0     		sub	sp, sp, #16
- 473              	.LCFI4:
- 474              		.cfi_def_cfa_offset 24
- 475 02b8 00AF     		add	r7, sp, #0
- 476              	.LCFI5:
- 477              		.cfi_def_cfa_register 7
- 138:main.c        **** 	// TODO: Write comments to below code
- 139:main.c        **** 	RTC_CCR = 0x00000010;
- 478              		.loc 1 139 0
- 479 02ba 6A4B     		ldr	r3, .L21
- 480 02bc 1022     		movs	r2, #16
- 481 02be 1A60     		str	r2, [r3]
- 140:main.c        **** 	RTC_ILR = 0x00000000;
- 482              		.loc 1 140 0
- 483 02c0 694B     		ldr	r3, .L21+4
- 484 02c2 0022     		movs	r2, #0
- 485 02c4 1A60     		str	r2, [r3]
- 141:main.c        **** 	RTC_CIIR = 0x00000000;
- 486              		.loc 1 141 0
- 487 02c6 694B     		ldr	r3, .L21+8
- 488 02c8 0022     		movs	r2, #0
- 489 02ca 1A60     		str	r2, [r3]
- 142:main.c        **** 	RTC_AMR = 0x00000000;
- 490              		.loc 1 142 0
- 491 02cc 684B     		ldr	r3, .L21+12
- 492 02ce 0022     		movs	r2, #0
- 493 02d0 1A60     		str	r2, [r3]
- 143:main.c        **** 	mdelay(100);
- 494              		.loc 1 143 0
- 495 02d2 6420     		movs	r0, #100
- 496 02d4 FFF7FEFF 		bl	mdelay
- 144:main.c        **** 	RTC_CCR = 0x00000011;
- 497              		.loc 1 144 0
- 498 02d8 624B     		ldr	r3, .L21
- 499 02da 1122     		movs	r2, #17
- 500 02dc 1A60     		str	r2, [r3]
- 145:main.c        **** 	// Till here
- 146:main.c        **** 
- 147:main.c        **** 	tU8 fullHourTable[9] = {0};
- 501              		.loc 1 147 0
- 502 02de 3B1D     		adds	r3, r7, #4
- 503 02e0 1800     		movs	r0, r3
- 504 02e2 0923     		movs	r3, #9
- 505 02e4 1A00     		movs	r2, r3
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 13
+ 462 02a4 0300     		movs	r3, r0
+ 463 02a6 F822     		movs	r2, #248
+ 464 02a8 B918     		adds	r1, r7, r2
+ 465 02aa 0B60     		str	r3, [r1]
+ 466 02ac DB17     		asrs	r3, r3, #31
+ 467 02ae FC21     		movs	r1, #252
+ 468 02b0 7918     		adds	r1, r7, r1
+ 469 02b2 0B60     		str	r3, [r1]
+ 131:main.c        **** 				retCode = sprintf(charArray, "%d", pressureValue);
+ 470              		.loc 1 131 0 discriminator 5
+ 471 02b4 BB18     		adds	r3, r7, r2
+ 472 02b6 5C68     		ldr	r4, [r3, #4]
+ 473 02b8 1B68     		ldr	r3, [r3]
+ 474 02ba 3949     		ldr	r1, .L17+48
+ 475 02bc D825     		movs	r5, #216
+ 476 02be 7819     		adds	r0, r7, r5
+ 477 02c0 1A00     		movs	r2, r3
+ 478 02c2 2300     		movs	r3, r4
+ 479 02c4 FFF7FEFF 		bl	sprintf
+ 480 02c8 0200     		movs	r2, r0
+ 481 02ca 0820     		movs	r0, #8
+ 482 02cc FF30     		adds	r0, r0, #255
+ 483 02ce 0400     		movs	r4, r0
+ 484 02d0 3B18     		adds	r3, r7, r0
+ 485 02d2 1A70     		strb	r2, [r3]
+ 132:main.c        **** 				lcdGotoxy(0, 30);
+ 486              		.loc 1 132 0 discriminator 5
+ 487 02d4 1E21     		movs	r1, #30
+ 488 02d6 0020     		movs	r0, #0
+ 489 02d8 FFF7FEFF 		bl	lcdGotoxy
+ 133:main.c        **** 				charArray[retCode] = ' ';
+ 490              		.loc 1 133 0 discriminator 5
+ 491 02dc 2000     		movs	r0, r4
+ 492 02de 3B18     		adds	r3, r7, r0
+ 493 02e0 1B78     		ldrb	r3, [r3]
+ 494 02e2 1B06     		lsls	r3, r3, #24
+ 495 02e4 1B16     		asrs	r3, r3, #24
+ 496 02e6 7A19     		adds	r2, r7, r5
+ 497 02e8 2021     		movs	r1, #32
+ 498 02ea D154     		strb	r1, [r2, r3]
+ 134:main.c        **** 				charArray[retCode + 1] = 'P';
+ 499              		.loc 1 134 0 discriminator 5
+ 500 02ec 3B18     		adds	r3, r7, r0
+ 501 02ee 1B78     		ldrb	r3, [r3]
+ 502 02f0 1B06     		lsls	r3, r3, #24
+ 503 02f2 1B16     		asrs	r3, r3, #24
+ 504 02f4 0133     		adds	r3, r3, #1
+ 505 02f6 7A19     		adds	r2, r7, r5
+ 506 02f8 5021     		movs	r1, #80
+ 507 02fa D154     		strb	r1, [r2, r3]
+ 135:main.c        **** 				charArray[retCode + 2] = 'a';
+ 508              		.loc 1 135 0 discriminator 5
+ 509 02fc 3B18     		adds	r3, r7, r0
+ 510 02fe 1B78     		ldrb	r3, [r3]
+ 511 0300 1B06     		lsls	r3, r3, #24
+ 512 0302 1B16     		asrs	r3, r3, #24
+ 513 0304 0233     		adds	r3, r3, #2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 13
 
 
- 506 02e6 0021     		movs	r1, #0
- 507 02e8 FFF7FEFF 		bl	memset
- 148:main.c        **** 	fullHourTable[2] = ':';
- 508              		.loc 1 148 0
- 509 02ec 3B1D     		adds	r3, r7, #4
- 510 02ee 3A22     		movs	r2, #58
- 511 02f0 9A70     		strb	r2, [r3, #2]
- 149:main.c        **** 	fullHourTable[5] = ':';
- 512              		.loc 1 149 0
- 513 02f2 3B1D     		adds	r3, r7, #4
- 514 02f4 3A22     		movs	r2, #58
- 515 02f6 5A71     		strb	r2, [r3, #5]
- 150:main.c        **** 	if (RTC_SEC < 10) {
- 516              		.loc 1 150 0
- 517 02f8 5E4B     		ldr	r3, .L21+16
- 518 02fa 1B68     		ldr	r3, [r3]
- 519 02fc 092B     		cmp	r3, #9
- 520 02fe 0CD8     		bhi	.L15
- 151:main.c        **** 		fullHourTable[6] = (tU8)0x30; 				// Ascii code for '0'.
- 521              		.loc 1 151 0
- 522 0300 3B1D     		adds	r3, r7, #4
- 523 0302 3022     		movs	r2, #48
- 524 0304 9A71     		strb	r2, [r3, #6]
- 152:main.c        **** 		fullHourTable[7] = RTC_SEC + (tU8)0x30; 	// Ascii code for '0'.
- 525              		.loc 1 152 0
- 526 0306 5B4B     		ldr	r3, .L21+16
- 527 0308 1B68     		ldr	r3, [r3]
- 528 030a 1B06     		lsls	r3, r3, #24
- 529 030c 1B0E     		lsrs	r3, r3, #24
- 530 030e 3033     		adds	r3, r3, #48
- 531 0310 1B06     		lsls	r3, r3, #24
- 532 0312 1A0E     		lsrs	r2, r3, #24
- 533 0314 3B1D     		adds	r3, r7, #4
- 534 0316 DA71     		strb	r2, [r3, #7]
- 535 0318 27E0     		b	.L16
- 536              	.L15:
- 537              	.LBB9:
- 153:main.c        **** 	} else {
- 154:main.c        **** 		tU8 div = RTC_SEC / 10;
- 538              		.loc 1 154 0
- 539 031a 564B     		ldr	r3, .L21+16
- 540 031c 1B68     		ldr	r3, [r3]
- 541 031e 0A21     		movs	r1, #10
- 542 0320 1800     		movs	r0, r3
- 543 0322 FFF7FEFF 		bl	__aeabi_uidiv
- 544              	.LVL0:
- 545 0326 0300     		movs	r3, r0
- 546 0328 1A00     		movs	r2, r3
- 547 032a 0F21     		movs	r1, #15
- 548 032c 7B18     		adds	r3, r7, r1
- 549 032e 1A70     		strb	r2, [r3]
- 155:main.c        **** 		fullHourTable[6] = div + (tU8)0x30;
- 550              		.loc 1 155 0
- 551 0330 7B18     		adds	r3, r7, r1
- 552 0332 1B78     		ldrb	r3, [r3]
- 553 0334 3033     		adds	r3, r3, #48
- 554 0336 1B06     		lsls	r3, r3, #24
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 14
+ 514 0306 7A19     		adds	r2, r7, r5
+ 515 0308 6121     		movs	r1, #97
+ 516 030a D154     		strb	r1, [r2, r3]
+ 136:main.c        **** 				lcdPuts(charArray);
+ 517              		.loc 1 136 0 discriminator 5
+ 518 030c 7B19     		adds	r3, r7, r5
+ 519 030e 1800     		movs	r0, r3
+ 520 0310 FFF7FEFF 		bl	lcdPuts
+ 137:main.c        **** 				manageLED(pca9532Present);
+ 521              		.loc 1 137 0 discriminator 5
+ 522 0314 FB1D     		adds	r3, r7, #7
+ 523 0316 FF33     		adds	r3, r3, #255
+ 524 0318 1B78     		ldrb	r3, [r3]
+ 525 031a 1800     		movs	r0, r3
+ 526 031c FFF7FEFF 		bl	manageLED
+ 527              	.LBE8:
+ 122:main.c        **** 				// Key P0.12 down-key is pressed
+ 528              		.loc 1 122 0 discriminator 5
+ 529 0320 13E0     		b	.L6
+ 530              	.L14:
+ 531              	.LBB9:
+ 138:main.c        **** 			}
+ 139:main.c        **** 			else
+ 140:main.c        **** 			{
+ 141:main.c        **** 				// Joystick is not pressed at all.
+ 142:main.c        **** 				lcdGotoxy(0, 0);
+ 532              		.loc 1 142 0 discriminator 6
+ 533 0322 0021     		movs	r1, #0
+ 534 0324 0020     		movs	r0, #0
+ 535 0326 FFF7FEFF 		bl	lcdGotoxy
+ 143:main.c        **** 				tU8 textToBeWritten[] = "Stacja pogody.\nWybor funkcji\nprzy pomocy\njoystick'a:\nL - temperatu
+ 536              		.loc 1 143 0 discriminator 6
+ 537 032a 1F4B     		ldr	r3, .L17+56
+ 538 032c 8422     		movs	r2, #132
+ 539 032e 5200     		lsls	r2, r2, #1
+ 540 0330 BA18     		adds	r2, r7, r2
+ 541 0332 D218     		adds	r2, r2, r3
+ 542 0334 1D4B     		ldr	r3, .L17+60
+ 543 0336 1000     		movs	r0, r2
+ 544 0338 1900     		movs	r1, r3
+ 545 033a 6E23     		movs	r3, #110
+ 546 033c 1A00     		movs	r2, r3
+ 547 033e FFF7FEFF 		bl	memcpy
+ 144:main.c        **** 				lcdPuts(textToBeWritten);
+ 548              		.loc 1 144 0 discriminator 6
+ 549 0342 3B00     		movs	r3, r7
+ 550 0344 1800     		movs	r0, r3
+ 551 0346 FFF7FEFF 		bl	lcdPuts
+ 552              	.L6:
+ 553              	.LBE9:
+ 145:main.c        **** 			}
+ 146:main.c        **** 			sdelay(1);
+ 554              		.loc 1 146 0 discriminator 1
+ 555 034a 0120     		movs	r0, #1
+ 556 034c FFF7FEFF 		bl	sdelay
+ 147:main.c        **** 			lcdClrscr();
+ 557              		.loc 1 147 0 discriminator 1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 14
 
 
- 555 0338 1A0E     		lsrs	r2, r3, #24
- 556 033a 3B1D     		adds	r3, r7, #4
- 557 033c 9A71     		strb	r2, [r3, #6]
- 156:main.c        **** 		fullHourTable[7] = ((tU8)RTC_SEC - (div * (tU8)10)) + (tU8)0x30;
- 558              		.loc 1 156 0
- 559 033e 4D4B     		ldr	r3, .L21+16
- 560 0340 1B68     		ldr	r3, [r3]
- 561 0342 1B06     		lsls	r3, r3, #24
- 562 0344 1A0E     		lsrs	r2, r3, #24
- 563 0346 7B18     		adds	r3, r7, r1
- 564 0348 1B78     		ldrb	r3, [r3]
- 565 034a 191C     		adds	r1, r3, #0
- 566 034c 4901     		lsls	r1, r1, #5
- 567 034e C91A     		subs	r1, r1, r3
- 568 0350 8900     		lsls	r1, r1, #2
- 569 0352 CB1A     		subs	r3, r1, r3
- 570 0354 DB18     		adds	r3, r3, r3
- 571 0356 1B06     		lsls	r3, r3, #24
- 572 0358 1B0E     		lsrs	r3, r3, #24
- 573 035a D318     		adds	r3, r2, r3
- 574 035c 1B06     		lsls	r3, r3, #24
- 575 035e 1B0E     		lsrs	r3, r3, #24
- 576 0360 3033     		adds	r3, r3, #48
- 577 0362 1B06     		lsls	r3, r3, #24
- 578 0364 1A0E     		lsrs	r2, r3, #24
- 579 0366 3B1D     		adds	r3, r7, #4
- 580 0368 DA71     		strb	r2, [r3, #7]
- 581              	.L16:
- 582              	.LBE9:
- 157:main.c        **** 	}
- 158:main.c        **** 	
- 159:main.c        **** 	if (RTC_MIN < 10) {
- 583              		.loc 1 159 0
- 584 036a 434B     		ldr	r3, .L21+20
- 585 036c 1B68     		ldr	r3, [r3]
- 586 036e 092B     		cmp	r3, #9
- 587 0370 0CD8     		bhi	.L17
- 160:main.c        **** 		fullHourTable[3] = (tU8)0x30;				// Ascii code for '0'.
- 588              		.loc 1 160 0
- 589 0372 3B1D     		adds	r3, r7, #4
- 590 0374 3022     		movs	r2, #48
- 591 0376 DA70     		strb	r2, [r3, #3]
- 161:main.c        **** 		fullHourTable[4] = RTC_MIN + (tU8)0x30;		// Ascii code for '0'.
- 592              		.loc 1 161 0
- 593 0378 3F4B     		ldr	r3, .L21+20
- 594 037a 1B68     		ldr	r3, [r3]
- 595 037c 1B06     		lsls	r3, r3, #24
- 596 037e 1B0E     		lsrs	r3, r3, #24
- 597 0380 3033     		adds	r3, r3, #48
- 598 0382 1B06     		lsls	r3, r3, #24
- 599 0384 1A0E     		lsrs	r2, r3, #24
- 600 0386 3B1D     		adds	r3, r7, #4
- 601 0388 1A71     		strb	r2, [r3, #4]
- 602 038a 27E0     		b	.L18
- 603              	.L17:
- 604              	.LBB10:
- 162:main.c        **** 	} else {
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 15
+ 558 0350 FFF7FEFF 		bl	lcdClrscr
+ 559              	.L3:
+ 560              	.LBE3:
+  55:main.c        **** 		{
+ 561              		.loc 1 55 0
+ 562 0354 7B1D     		adds	r3, r7, #5
+ 563 0356 FF33     		adds	r3, r3, #255
+ 564 0358 1B78     		ldrb	r3, [r3]
+ 565 035a 012B     		cmp	r3, #1
+ 566 035c 00D1     		bne	.LCB468
+ 567 035e 88E6     		b	.L15	@long jump
+ 568              	.LCB468:
+ 569              	.L2:
+ 570              	.LBE2:
+ 571 0360 0023     		movs	r3, #0
+ 148:main.c        **** 		}
+ 149:main.c        **** 	}
+ 150:main.c        **** }
+ 572              		.loc 1 150 0
+ 573 0362 1800     		movs	r0, r3
+ 574 0364 BD46     		mov	sp, r7
+ 575 0366 42B0     		add	sp, sp, #264
+ 576              		@ sp needed
+ 577 0368 B0BC     		pop	{r4, r5, r7}
+ 578 036a 02BC     		pop	{r1}
+ 579 036c 0847     		bx	r1
+ 580              	.L18:
+ 581 036e C046     		.align	2
+ 582              	.L17:
+ 583 0370 188002E0 		.word	-536707048
+ 584 0374 FFFF0FFF 		.word	-15728641
+ 585 0378 00C002E0 		.word	-536690688
+ 586 037c FFFFFFCF 		.word	-805306369
+ 587 0380 008002E0 		.word	-536707072
+ 588 0384 108002E0 		.word	-536707056
+ 589 0388 10000000 		.word	.LC0
+ 590 038c 20000000 		.word	.LC2
+ 591 0390 38000000 		.word	.LC4
+ 592 0394 00000000 		.word	.LC6
+ 593 0398 04000000 		.word	.LC8
+ 594 039c 50000000 		.word	.LC10
+ 595 03a0 0C000000 		.word	.LC12
+ 596 03a4 64000000 		.word	.LC14
+ 597 03a8 F8FEFFFF 		.word	-264
+ 598 03ac 78000000 		.word	.LC16
+ 599              		.cfi_endproc
+ 600              	.LFE0:
+ 601              		.size	main, .-main
+ 602              		.global	__aeabi_uidiv
+ 603              		.align	1
+ 604              		.global	printCurrentTime
+ 605              		.syntax unified
+ 606              		.code	16
+ 607              		.thumb_func
+ 608              		.fpu softvfp
+ 609              		.type	printCurrentTime, %function
+ 610              	printCurrentTime:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 15
 
 
- 163:main.c        **** 		tU8 div = RTC_MIN / 10;
- 605              		.loc 1 163 0
- 606 038c 3A4B     		ldr	r3, .L21+20
- 607 038e 1B68     		ldr	r3, [r3]
- 608 0390 0A21     		movs	r1, #10
- 609 0392 1800     		movs	r0, r3
- 610 0394 FFF7FEFF 		bl	__aeabi_uidiv
- 611              	.LVL1:
- 612 0398 0300     		movs	r3, r0
- 613 039a 1A00     		movs	r2, r3
- 614 039c 0E21     		movs	r1, #14
- 615 039e 7B18     		adds	r3, r7, r1
- 616 03a0 1A70     		strb	r2, [r3]
- 164:main.c        **** 		fullHourTable[3] = div + (tU8)0x30;
- 617              		.loc 1 164 0
- 618 03a2 7B18     		adds	r3, r7, r1
- 619 03a4 1B78     		ldrb	r3, [r3]
- 620 03a6 3033     		adds	r3, r3, #48
- 621 03a8 1B06     		lsls	r3, r3, #24
- 622 03aa 1A0E     		lsrs	r2, r3, #24
- 623 03ac 3B1D     		adds	r3, r7, #4
- 624 03ae DA70     		strb	r2, [r3, #3]
- 165:main.c        **** 		fullHourTable[4] = ((tU8)RTC_MIN - (div * (tU8)10)) + (tU8)0x30;
- 625              		.loc 1 165 0
- 626 03b0 314B     		ldr	r3, .L21+20
- 627 03b2 1B68     		ldr	r3, [r3]
- 628 03b4 1B06     		lsls	r3, r3, #24
- 629 03b6 1A0E     		lsrs	r2, r3, #24
- 630 03b8 7B18     		adds	r3, r7, r1
- 631 03ba 1B78     		ldrb	r3, [r3]
- 632 03bc 191C     		adds	r1, r3, #0
- 633 03be 4901     		lsls	r1, r1, #5
- 634 03c0 C91A     		subs	r1, r1, r3
- 635 03c2 8900     		lsls	r1, r1, #2
- 636 03c4 CB1A     		subs	r3, r1, r3
- 637 03c6 DB18     		adds	r3, r3, r3
- 638 03c8 1B06     		lsls	r3, r3, #24
- 639 03ca 1B0E     		lsrs	r3, r3, #24
- 640 03cc D318     		adds	r3, r2, r3
- 641 03ce 1B06     		lsls	r3, r3, #24
- 642 03d0 1B0E     		lsrs	r3, r3, #24
- 643 03d2 3033     		adds	r3, r3, #48
- 644 03d4 1B06     		lsls	r3, r3, #24
- 645 03d6 1A0E     		lsrs	r2, r3, #24
- 646 03d8 3B1D     		adds	r3, r7, #4
- 647 03da 1A71     		strb	r2, [r3, #4]
- 648              	.L18:
- 649              	.LBE10:
- 166:main.c        **** 	}
- 167:main.c        **** 	
- 168:main.c        **** 	if (RTC_HOUR < 10){
- 650              		.loc 1 168 0
- 651 03dc 274B     		ldr	r3, .L21+24
- 652 03de 1B68     		ldr	r3, [r3]
- 653 03e0 092B     		cmp	r3, #9
- 654 03e2 0CD8     		bhi	.L19
- 169:main.c        **** 		fullHourTable[0] = (tU8)0x30;				// Ascii code for '0'.
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 16
+ 611              	.LFB1:
+ 151:main.c        **** 
+ 152:main.c        **** /*
+ 153:main.c        ****  * @brief   Funkcja printCurrentTime() służy do wyświetlenia aktualnego czasu względem zegara
+ 154:main.c        ****  * 			czasu rzeczywistego (RTC) w formacie HH:MM:SS (gdzie H - oznacza godzinę, M - minutę,
+ 155:main.c        ****  *			a S - sekundę).
+ 156:main.c        ****  *
+ 157:main.c        ****  * @param   void
+ 158:main.c        ****  *
+ 159:main.c        ****  * @returns void
+ 160:main.c        ****  *
+ 161:main.c        ****  * @side effects:
+ 162:main.c        ****  *          Wyświetlany czas jest zależy od wartości inicjalizującej zegar czasu reczywistego (
+ 163:main.c        ****  * 			gdzie w tym przypadku nie jest on inicjalizowany.
+ 164:main.c        ****  */
+ 165:main.c        **** 
+ 166:main.c        **** void printCurrentTime(void)
+ 167:main.c        **** {
+ 612              		.loc 1 167 0
+ 613              		.cfi_startproc
+ 614              		@ Function supports interworking.
+ 615              		@ args = 0, pretend = 0, frame = 16
+ 616              		@ frame_needed = 1, uses_anonymous_args = 0
+ 617 03b0 80B5     		push	{r7, lr}
+ 618              	.LCFI3:
+ 619              		.cfi_def_cfa_offset 8
+ 620              		.cfi_offset 7, -8
+ 621              		.cfi_offset 14, -4
+ 622 03b2 84B0     		sub	sp, sp, #16
+ 623              	.LCFI4:
+ 624              		.cfi_def_cfa_offset 24
+ 625 03b4 00AF     		add	r7, sp, #0
+ 626              	.LCFI5:
+ 627              		.cfi_def_cfa_register 7
+ 168:main.c        **** 	// TODO: Write comments to below code
+ 169:main.c        **** 	RTC_CCR = 0x00000010;
+ 628              		.loc 1 169 0
+ 629 03b6 6A4B     		ldr	r3, .L26
+ 630 03b8 1022     		movs	r2, #16
+ 631 03ba 1A60     		str	r2, [r3]
+ 170:main.c        **** 	RTC_ILR = 0x00000000;
+ 632              		.loc 1 170 0
+ 633 03bc 694B     		ldr	r3, .L26+4
+ 634 03be 0022     		movs	r2, #0
+ 635 03c0 1A60     		str	r2, [r3]
+ 171:main.c        **** 	RTC_CIIR = 0x00000000;
+ 636              		.loc 1 171 0
+ 637 03c2 694B     		ldr	r3, .L26+8
+ 638 03c4 0022     		movs	r2, #0
+ 639 03c6 1A60     		str	r2, [r3]
+ 172:main.c        **** 	RTC_AMR = 0x00000000;
+ 640              		.loc 1 172 0
+ 641 03c8 684B     		ldr	r3, .L26+12
+ 642 03ca 0022     		movs	r2, #0
+ 643 03cc 1A60     		str	r2, [r3]
+ 173:main.c        **** 	mdelay(100);
+ 644              		.loc 1 173 0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 16
 
 
- 655              		.loc 1 169 0
- 656 03e4 3B1D     		adds	r3, r7, #4
- 657 03e6 3022     		movs	r2, #48
- 658 03e8 1A70     		strb	r2, [r3]
- 170:main.c        **** 		fullHourTable[1] = RTC_HOUR + (tU8)0x30;	// Ascii code for '0'.
- 659              		.loc 1 170 0
- 660 03ea 244B     		ldr	r3, .L21+24
- 661 03ec 1B68     		ldr	r3, [r3]
- 662 03ee 1B06     		lsls	r3, r3, #24
- 663 03f0 1B0E     		lsrs	r3, r3, #24
- 664 03f2 3033     		adds	r3, r3, #48
- 665 03f4 1B06     		lsls	r3, r3, #24
- 666 03f6 1A0E     		lsrs	r2, r3, #24
- 667 03f8 3B1D     		adds	r3, r7, #4
- 668 03fa 5A70     		strb	r2, [r3, #1]
- 669 03fc 27E0     		b	.L20
- 670              	.L19:
- 671              	.LBB11:
- 171:main.c        **** 	} else {
- 172:main.c        **** 		tU8 div = RTC_HOUR / 10;
- 672              		.loc 1 172 0
- 673 03fe 1F4B     		ldr	r3, .L21+24
- 674 0400 1B68     		ldr	r3, [r3]
- 675 0402 0A21     		movs	r1, #10
- 676 0404 1800     		movs	r0, r3
- 677 0406 FFF7FEFF 		bl	__aeabi_uidiv
- 678              	.LVL2:
- 679 040a 0300     		movs	r3, r0
- 680 040c 1A00     		movs	r2, r3
- 681 040e 0D21     		movs	r1, #13
- 682 0410 7B18     		adds	r3, r7, r1
- 683 0412 1A70     		strb	r2, [r3]
- 173:main.c        **** 		fullHourTable[0] = div + (tU8)0x30;
- 684              		.loc 1 173 0
- 685 0414 7B18     		adds	r3, r7, r1
- 686 0416 1B78     		ldrb	r3, [r3]
- 687 0418 3033     		adds	r3, r3, #48
- 688 041a 1B06     		lsls	r3, r3, #24
- 689 041c 1A0E     		lsrs	r2, r3, #24
- 690 041e 3B1D     		adds	r3, r7, #4
- 691 0420 1A70     		strb	r2, [r3]
- 174:main.c        **** 		fullHourTable[1] = ((tU8)RTC_HOUR - (div * (tU8)10)) + (tU8)0x30;
- 692              		.loc 1 174 0
- 693 0422 164B     		ldr	r3, .L21+24
- 694 0424 1B68     		ldr	r3, [r3]
- 695 0426 1B06     		lsls	r3, r3, #24
- 696 0428 1A0E     		lsrs	r2, r3, #24
- 697 042a 7B18     		adds	r3, r7, r1
- 698 042c 1B78     		ldrb	r3, [r3]
- 699 042e 191C     		adds	r1, r3, #0
- 700 0430 4901     		lsls	r1, r1, #5
- 701 0432 C91A     		subs	r1, r1, r3
- 702 0434 8900     		lsls	r1, r1, #2
- 703 0436 CB1A     		subs	r3, r1, r3
- 704 0438 DB18     		adds	r3, r3, r3
- 705 043a 1B06     		lsls	r3, r3, #24
- 706 043c 1B0E     		lsrs	r3, r3, #24
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 17
-
-
- 707 043e D318     		adds	r3, r2, r3
- 708 0440 1B06     		lsls	r3, r3, #24
- 709 0442 1B0E     		lsrs	r3, r3, #24
- 710 0444 3033     		adds	r3, r3, #48
- 711 0446 1B06     		lsls	r3, r3, #24
- 712 0448 1A0E     		lsrs	r2, r3, #24
- 713 044a 3B1D     		adds	r3, r7, #4
- 714 044c 5A70     		strb	r2, [r3, #1]
- 715              	.L20:
- 716              	.LBE11:
- 175:main.c        **** 	}
+ 645 03ce 6420     		movs	r0, #100
+ 646 03d0 FFF7FEFF 		bl	mdelay
+ 174:main.c        **** 	RTC_CCR = 0x00000011;
+ 647              		.loc 1 174 0
+ 648 03d4 624B     		ldr	r3, .L26
+ 649 03d6 1122     		movs	r2, #17
+ 650 03d8 1A60     		str	r2, [r3]
+ 175:main.c        **** 	// Till here
  176:main.c        **** 
- 177:main.c        **** 	lcdPuts(fullHourTable);
- 717              		.loc 1 177 0
- 718 044e 3B1D     		adds	r3, r7, #4
- 719 0450 1800     		movs	r0, r3
- 720 0452 FFF7FEFF 		bl	lcdPuts
- 178:main.c        **** }
- 721              		.loc 1 178 0
- 722 0456 C046     		nop
- 723 0458 BD46     		mov	sp, r7
- 724 045a 04B0     		add	sp, sp, #16
- 725              		@ sp needed
- 726 045c 80BC     		pop	{r7}
- 727 045e 01BC     		pop	{r0}
- 728 0460 0047     		bx	r0
- 729              	.L22:
- 730 0462 C046     		.align	2
+ 177:main.c        **** 	tU8 fullHourTable[9] = {0};
+ 651              		.loc 1 177 0
+ 652 03da 3B1D     		adds	r3, r7, #4
+ 653 03dc 1800     		movs	r0, r3
+ 654 03de 0923     		movs	r3, #9
+ 655 03e0 1A00     		movs	r2, r3
+ 656 03e2 0021     		movs	r1, #0
+ 657 03e4 FFF7FEFF 		bl	memset
+ 178:main.c        **** 	fullHourTable[2] = ':';
+ 658              		.loc 1 178 0
+ 659 03e8 3B1D     		adds	r3, r7, #4
+ 660 03ea 3A22     		movs	r2, #58
+ 661 03ec 9A70     		strb	r2, [r3, #2]
+ 179:main.c        **** 	fullHourTable[5] = ':';
+ 662              		.loc 1 179 0
+ 663 03ee 3B1D     		adds	r3, r7, #4
+ 664 03f0 3A22     		movs	r2, #58
+ 665 03f2 5A71     		strb	r2, [r3, #5]
+ 180:main.c        **** 	if (RTC_SEC < 10) {
+ 666              		.loc 1 180 0
+ 667 03f4 5E4B     		ldr	r3, .L26+16
+ 668 03f6 1B68     		ldr	r3, [r3]
+ 669 03f8 092B     		cmp	r3, #9
+ 670 03fa 0CD8     		bhi	.L20
+ 181:main.c        **** 		fullHourTable[6] = (tU8)0x30; 				// Ascii code for '0'.
+ 671              		.loc 1 181 0
+ 672 03fc 3B1D     		adds	r3, r7, #4
+ 673 03fe 3022     		movs	r2, #48
+ 674 0400 9A71     		strb	r2, [r3, #6]
+ 182:main.c        **** 		fullHourTable[7] = RTC_SEC + (tU8)0x30; 	// Ascii code for '0'.
+ 675              		.loc 1 182 0
+ 676 0402 5B4B     		ldr	r3, .L26+16
+ 677 0404 1B68     		ldr	r3, [r3]
+ 678 0406 1B06     		lsls	r3, r3, #24
+ 679 0408 1B0E     		lsrs	r3, r3, #24
+ 680 040a 3033     		adds	r3, r3, #48
+ 681 040c 1B06     		lsls	r3, r3, #24
+ 682 040e 1A0E     		lsrs	r2, r3, #24
+ 683 0410 3B1D     		adds	r3, r7, #4
+ 684 0412 DA71     		strb	r2, [r3, #7]
+ 685 0414 27E0     		b	.L21
+ 686              	.L20:
+ 687              	.LBB10:
+ 183:main.c        **** 	} else {
+ 184:main.c        **** 		tU8 div = RTC_SEC / 10;
+ 688              		.loc 1 184 0
+ 689 0416 564B     		ldr	r3, .L26+16
+ 690 0418 1B68     		ldr	r3, [r3]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 17
+
+
+ 691 041a 0A21     		movs	r1, #10
+ 692 041c 1800     		movs	r0, r3
+ 693 041e FFF7FEFF 		bl	__aeabi_uidiv
+ 694              	.LVL0:
+ 695 0422 0300     		movs	r3, r0
+ 696 0424 1A00     		movs	r2, r3
+ 697 0426 0F21     		movs	r1, #15
+ 698 0428 7B18     		adds	r3, r7, r1
+ 699 042a 1A70     		strb	r2, [r3]
+ 185:main.c        **** 		fullHourTable[6] = div + (tU8)0x30;
+ 700              		.loc 1 185 0
+ 701 042c 7B18     		adds	r3, r7, r1
+ 702 042e 1B78     		ldrb	r3, [r3]
+ 703 0430 3033     		adds	r3, r3, #48
+ 704 0432 1B06     		lsls	r3, r3, #24
+ 705 0434 1A0E     		lsrs	r2, r3, #24
+ 706 0436 3B1D     		adds	r3, r7, #4
+ 707 0438 9A71     		strb	r2, [r3, #6]
+ 186:main.c        **** 		fullHourTable[7] = ((tU8)RTC_SEC - (div * (tU8)10)) + (tU8)0x30;
+ 708              		.loc 1 186 0
+ 709 043a 4D4B     		ldr	r3, .L26+16
+ 710 043c 1B68     		ldr	r3, [r3]
+ 711 043e 1B06     		lsls	r3, r3, #24
+ 712 0440 1A0E     		lsrs	r2, r3, #24
+ 713 0442 7B18     		adds	r3, r7, r1
+ 714 0444 1B78     		ldrb	r3, [r3]
+ 715 0446 191C     		adds	r1, r3, #0
+ 716 0448 4901     		lsls	r1, r1, #5
+ 717 044a C91A     		subs	r1, r1, r3
+ 718 044c 8900     		lsls	r1, r1, #2
+ 719 044e CB1A     		subs	r3, r1, r3
+ 720 0450 DB18     		adds	r3, r3, r3
+ 721 0452 1B06     		lsls	r3, r3, #24
+ 722 0454 1B0E     		lsrs	r3, r3, #24
+ 723 0456 D318     		adds	r3, r2, r3
+ 724 0458 1B06     		lsls	r3, r3, #24
+ 725 045a 1B0E     		lsrs	r3, r3, #24
+ 726 045c 3033     		adds	r3, r3, #48
+ 727 045e 1B06     		lsls	r3, r3, #24
+ 728 0460 1A0E     		lsrs	r2, r3, #24
+ 729 0462 3B1D     		adds	r3, r7, #4
+ 730 0464 DA71     		strb	r2, [r3, #7]
  731              	.L21:
- 732 0464 084002E0 		.word	-536723448
- 733 0468 004002E0 		.word	-536723456
- 734 046c 0C4002E0 		.word	-536723444
- 735 0470 104002E0 		.word	-536723440
- 736 0474 204002E0 		.word	-536723424
- 737 0478 244002E0 		.word	-536723420
- 738 047c 284002E0 		.word	-536723416
- 739              		.cfi_endproc
- 740              	.LFE1:
- 741              		.size	printCurrentTime, .-printCurrentTime
- 742              	.Letext0:
- 743              		.file 2 "general.h"
- 744              		.file 3 "<built-in>"
- 745              		.section	.debug_info,"",%progbits
- 746              	.Ldebug_info0:
- 747 0000 39030000 		.4byte	0x339
- 748 0004 0200     		.2byte	0x2
- 749 0006 00000000 		.4byte	.Ldebug_abbrev0
- 750 000a 04       		.byte	0x4
- 751 000b 01       		.uleb128 0x1
- 752 000c CE000000 		.4byte	.LASF24
- 753 0010 0C       		.byte	0xc
- 754 0011 39000000 		.4byte	.LASF25
- 755 0015 6F010000 		.4byte	.LASF26
- 756 0019 00000000 		.4byte	.Ltext0
- 757 001d 80040000 		.4byte	.Letext0
- 758 0021 00000000 		.4byte	.Ldebug_line0
- 759 0025 02       		.uleb128 0x2
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 18
+ 732              	.LBE10:
+ 187:main.c        **** 	}
+ 188:main.c        **** 	
+ 189:main.c        **** 	if (RTC_MIN < 10) {
+ 733              		.loc 1 189 0
+ 734 0466 434B     		ldr	r3, .L26+20
+ 735 0468 1B68     		ldr	r3, [r3]
+ 736 046a 092B     		cmp	r3, #9
+ 737 046c 0CD8     		bhi	.L22
+ 190:main.c        **** 		fullHourTable[3] = (tU8)0x30;				// Ascii code for '0'.
+ 738              		.loc 1 190 0
+ 739 046e 3B1D     		adds	r3, r7, #4
+ 740 0470 3022     		movs	r2, #48
+ 741 0472 DA70     		strb	r2, [r3, #3]
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 18
 
 
- 760 0026 74553800 		.ascii	"tU8\000"
- 761 002a 02       		.byte	0x2
- 762 002b 20       		.byte	0x20
- 763 002c 30000000 		.4byte	0x30
- 764 0030 03       		.uleb128 0x3
- 765 0031 01       		.byte	0x1
- 766 0032 08       		.byte	0x8
- 767 0033 A7000000 		.4byte	.LASF1
- 768 0037 04       		.uleb128 0x4
- 769 0038 C4010000 		.4byte	.LASF0
- 770 003c 02       		.byte	0x2
- 771 003d 21       		.byte	0x21
- 772 003e 42000000 		.4byte	0x42
- 773 0042 03       		.uleb128 0x3
- 774 0043 02       		.byte	0x2
- 775 0044 07       		.byte	0x7
- 776 0045 8D010000 		.4byte	.LASF2
- 777 0049 03       		.uleb128 0x3
- 778 004a 04       		.byte	0x4
- 779 004b 07       		.byte	0x7
- 780 004c 1C000000 		.4byte	.LASF3
- 781 0050 04       		.uleb128 0x4
- 782 0051 64000000 		.4byte	.LASF4
- 783 0055 02       		.byte	0x2
- 784 0056 23       		.byte	0x23
- 785 0057 5B000000 		.4byte	0x5b
- 786 005b 03       		.uleb128 0x3
- 787 005c 08       		.byte	0x8
- 788 005d 07       		.byte	0x7
- 789 005e 90000000 		.4byte	.LASF5
- 790 0062 02       		.uleb128 0x2
- 791 0063 74533800 		.ascii	"tS8\000"
- 792 0067 02       		.byte	0x2
- 793 0068 24       		.byte	0x24
- 794 0069 6D000000 		.4byte	0x6d
- 795 006d 03       		.uleb128 0x3
- 796 006e 01       		.byte	0x1
- 797 006f 06       		.byte	0x6
- 798 0070 A0010000 		.4byte	.LASF6
- 799 0074 03       		.uleb128 0x3
- 800 0075 02       		.byte	0x2
- 801 0076 05       		.byte	0x5
- 802 0077 C9010000 		.4byte	.LASF7
- 803 007b 05       		.uleb128 0x5
- 804 007c 04       		.byte	0x4
- 805 007d 05       		.byte	0x5
- 806 007e 696E7400 		.ascii	"int\000"
- 807 0082 04       		.uleb128 0x4
- 808 0083 4E010000 		.4byte	.LASF8
- 809 0087 02       		.byte	0x2
- 810 0088 27       		.byte	0x27
- 811 0089 8D000000 		.4byte	0x8d
- 812 008d 03       		.uleb128 0x3
- 813 008e 08       		.byte	0x8
- 814 008f 05       		.byte	0x5
- 815 0090 00000000 		.4byte	.LASF9
- 816 0094 06       		.uleb128 0x6
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 19
+ 191:main.c        **** 		fullHourTable[4] = RTC_MIN + (tU8)0x30;		// Ascii code for '0'.
+ 742              		.loc 1 191 0
+ 743 0474 3F4B     		ldr	r3, .L26+20
+ 744 0476 1B68     		ldr	r3, [r3]
+ 745 0478 1B06     		lsls	r3, r3, #24
+ 746 047a 1B0E     		lsrs	r3, r3, #24
+ 747 047c 3033     		adds	r3, r3, #48
+ 748 047e 1B06     		lsls	r3, r3, #24
+ 749 0480 1A0E     		lsrs	r2, r3, #24
+ 750 0482 3B1D     		adds	r3, r7, #4
+ 751 0484 1A71     		strb	r2, [r3, #4]
+ 752 0486 27E0     		b	.L23
+ 753              	.L22:
+ 754              	.LBB11:
+ 192:main.c        **** 	} else {
+ 193:main.c        **** 		tU8 div = RTC_MIN / 10;
+ 755              		.loc 1 193 0
+ 756 0488 3A4B     		ldr	r3, .L26+20
+ 757 048a 1B68     		ldr	r3, [r3]
+ 758 048c 0A21     		movs	r1, #10
+ 759 048e 1800     		movs	r0, r3
+ 760 0490 FFF7FEFF 		bl	__aeabi_uidiv
+ 761              	.LVL1:
+ 762 0494 0300     		movs	r3, r0
+ 763 0496 1A00     		movs	r2, r3
+ 764 0498 0E21     		movs	r1, #14
+ 765 049a 7B18     		adds	r3, r7, r1
+ 766 049c 1A70     		strb	r2, [r3]
+ 194:main.c        **** 		fullHourTable[3] = div + (tU8)0x30;
+ 767              		.loc 1 194 0
+ 768 049e 7B18     		adds	r3, r7, r1
+ 769 04a0 1B78     		ldrb	r3, [r3]
+ 770 04a2 3033     		adds	r3, r3, #48
+ 771 04a4 1B06     		lsls	r3, r3, #24
+ 772 04a6 1A0E     		lsrs	r2, r3, #24
+ 773 04a8 3B1D     		adds	r3, r7, #4
+ 774 04aa DA70     		strb	r2, [r3, #3]
+ 195:main.c        **** 		fullHourTable[4] = ((tU8)RTC_MIN - (div * (tU8)10)) + (tU8)0x30;
+ 775              		.loc 1 195 0
+ 776 04ac 314B     		ldr	r3, .L26+20
+ 777 04ae 1B68     		ldr	r3, [r3]
+ 778 04b0 1B06     		lsls	r3, r3, #24
+ 779 04b2 1A0E     		lsrs	r2, r3, #24
+ 780 04b4 7B18     		adds	r3, r7, r1
+ 781 04b6 1B78     		ldrb	r3, [r3]
+ 782 04b8 191C     		adds	r1, r3, #0
+ 783 04ba 4901     		lsls	r1, r1, #5
+ 784 04bc C91A     		subs	r1, r1, r3
+ 785 04be 8900     		lsls	r1, r1, #2
+ 786 04c0 CB1A     		subs	r3, r1, r3
+ 787 04c2 DB18     		adds	r3, r3, r3
+ 788 04c4 1B06     		lsls	r3, r3, #24
+ 789 04c6 1B0E     		lsrs	r3, r3, #24
+ 790 04c8 D318     		adds	r3, r2, r3
+ 791 04ca 1B06     		lsls	r3, r3, #24
+ 792 04cc 1B0E     		lsrs	r3, r3, #24
+ 793 04ce 3033     		adds	r3, r3, #48
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 19
 
 
- 817 0095 07       		.byte	0x7
- 818 0096 01       		.byte	0x1
- 819 0097 30000000 		.4byte	0x30
- 820 009b 02       		.byte	0x2
- 821 009c 28       		.byte	0x28
- 822 009d AE000000 		.4byte	0xae
- 823 00a1 07       		.uleb128 0x7
- 824 00a2 5E000000 		.4byte	.LASF10
- 825 00a6 00       		.byte	0
- 826 00a7 07       		.uleb128 0x7
- 827 00a8 B5000000 		.4byte	.LASF11
- 828 00ac 01       		.byte	0x1
- 829 00ad 00       		.byte	0
- 830 00ae 08       		.uleb128 0x8
- 831 00af 01       		.byte	0x1
- 832 00b0 7F000000 		.4byte	.LASF27
- 833 00b4 01       		.byte	0x1
- 834 00b5 88       		.byte	0x88
- 835 00b6 01       		.byte	0x1
- 836 00b7 B4020000 		.4byte	.LFB1
- 837 00bb 80040000 		.4byte	.LFE1
- 838 00bf 00000000 		.4byte	.LLST1
- 839 00c3 01       		.byte	0x1
- 840 00c4 27010000 		.4byte	0x127
- 841 00c8 09       		.uleb128 0x9
- 842 00c9 0E000000 		.4byte	.LASF12
- 843 00cd 01       		.byte	0x1
- 844 00ce 93       		.byte	0x93
- 845 00cf 27010000 		.4byte	0x127
- 846 00d3 02       		.byte	0x2
- 847 00d4 91       		.byte	0x91
- 848 00d5 6C       		.sleb128 -20
- 849 00d6 0A       		.uleb128 0xa
- 850 00d7 1A030000 		.4byte	.LBB9
- 851 00db 6A030000 		.4byte	.LBE9
- 852 00df F2000000 		.4byte	0xf2
- 853 00e3 0B       		.uleb128 0xb
- 854 00e4 64697600 		.ascii	"div\000"
- 855 00e8 01       		.byte	0x1
- 856 00e9 9A       		.byte	0x9a
- 857 00ea 25000000 		.4byte	0x25
- 858 00ee 02       		.byte	0x2
- 859 00ef 91       		.byte	0x91
- 860 00f0 77       		.sleb128 -9
- 861 00f1 00       		.byte	0
- 862 00f2 0A       		.uleb128 0xa
- 863 00f3 8C030000 		.4byte	.LBB10
- 864 00f7 DC030000 		.4byte	.LBE10
- 865 00fb 0E010000 		.4byte	0x10e
- 866 00ff 0B       		.uleb128 0xb
- 867 0100 64697600 		.ascii	"div\000"
- 868 0104 01       		.byte	0x1
- 869 0105 A3       		.byte	0xa3
- 870 0106 25000000 		.4byte	0x25
- 871 010a 02       		.byte	0x2
- 872 010b 91       		.byte	0x91
- 873 010c 76       		.sleb128 -10
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 20
+ 794 04d0 1B06     		lsls	r3, r3, #24
+ 795 04d2 1A0E     		lsrs	r2, r3, #24
+ 796 04d4 3B1D     		adds	r3, r7, #4
+ 797 04d6 1A71     		strb	r2, [r3, #4]
+ 798              	.L23:
+ 799              	.LBE11:
+ 196:main.c        **** 	}
+ 197:main.c        **** 	
+ 198:main.c        **** 	if (RTC_HOUR < 10){
+ 800              		.loc 1 198 0
+ 801 04d8 274B     		ldr	r3, .L26+24
+ 802 04da 1B68     		ldr	r3, [r3]
+ 803 04dc 092B     		cmp	r3, #9
+ 804 04de 0CD8     		bhi	.L24
+ 199:main.c        **** 		fullHourTable[0] = (tU8)0x30;				// Ascii code for '0'.
+ 805              		.loc 1 199 0
+ 806 04e0 3B1D     		adds	r3, r7, #4
+ 807 04e2 3022     		movs	r2, #48
+ 808 04e4 1A70     		strb	r2, [r3]
+ 200:main.c        **** 		fullHourTable[1] = RTC_HOUR + (tU8)0x30;	// Ascii code for '0'.
+ 809              		.loc 1 200 0
+ 810 04e6 244B     		ldr	r3, .L26+24
+ 811 04e8 1B68     		ldr	r3, [r3]
+ 812 04ea 1B06     		lsls	r3, r3, #24
+ 813 04ec 1B0E     		lsrs	r3, r3, #24
+ 814 04ee 3033     		adds	r3, r3, #48
+ 815 04f0 1B06     		lsls	r3, r3, #24
+ 816 04f2 1A0E     		lsrs	r2, r3, #24
+ 817 04f4 3B1D     		adds	r3, r7, #4
+ 818 04f6 5A70     		strb	r2, [r3, #1]
+ 819 04f8 27E0     		b	.L25
+ 820              	.L24:
+ 821              	.LBB12:
+ 201:main.c        **** 	} else {
+ 202:main.c        **** 		tU8 div = RTC_HOUR / 10;
+ 822              		.loc 1 202 0
+ 823 04fa 1F4B     		ldr	r3, .L26+24
+ 824 04fc 1B68     		ldr	r3, [r3]
+ 825 04fe 0A21     		movs	r1, #10
+ 826 0500 1800     		movs	r0, r3
+ 827 0502 FFF7FEFF 		bl	__aeabi_uidiv
+ 828              	.LVL2:
+ 829 0506 0300     		movs	r3, r0
+ 830 0508 1A00     		movs	r2, r3
+ 831 050a 0D21     		movs	r1, #13
+ 832 050c 7B18     		adds	r3, r7, r1
+ 833 050e 1A70     		strb	r2, [r3]
+ 203:main.c        **** 		fullHourTable[0] = div + (tU8)0x30;
+ 834              		.loc 1 203 0
+ 835 0510 7B18     		adds	r3, r7, r1
+ 836 0512 1B78     		ldrb	r3, [r3]
+ 837 0514 3033     		adds	r3, r3, #48
+ 838 0516 1B06     		lsls	r3, r3, #24
+ 839 0518 1A0E     		lsrs	r2, r3, #24
+ 840 051a 3B1D     		adds	r3, r7, #4
+ 841 051c 1A70     		strb	r2, [r3]
+ 204:main.c        **** 		fullHourTable[1] = ((tU8)RTC_HOUR - (div * (tU8)10)) + (tU8)0x30;
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 20
 
 
- 874 010d 00       		.byte	0
- 875 010e 0C       		.uleb128 0xc
- 876 010f FE030000 		.4byte	.LBB11
- 877 0113 4E040000 		.4byte	.LBE11
- 878 0117 0B       		.uleb128 0xb
- 879 0118 64697600 		.ascii	"div\000"
- 880 011c 01       		.byte	0x1
- 881 011d AC       		.byte	0xac
- 882 011e 25000000 		.4byte	0x25
- 883 0122 02       		.byte	0x2
- 884 0123 91       		.byte	0x91
- 885 0124 75       		.sleb128 -11
- 886 0125 00       		.byte	0
- 887 0126 00       		.byte	0
- 888 0127 0D       		.uleb128 0xd
- 889 0128 25000000 		.4byte	0x25
- 890 012c 37010000 		.4byte	0x137
- 891 0130 0E       		.uleb128 0xe
- 892 0131 49000000 		.4byte	0x49
- 893 0135 08       		.byte	0x8
- 894 0136 00       		.byte	0
- 895 0137 0F       		.uleb128 0xf
- 896 0138 01       		.byte	0x1
- 897 0139 BA000000 		.4byte	.LASF28
- 898 013d 01       		.byte	0x1
- 899 013e 16       		.byte	0x16
- 900 013f 01       		.byte	0x1
- 901 0140 7B000000 		.4byte	0x7b
- 902 0144 00000000 		.4byte	.LFB0
- 903 0148 B4020000 		.4byte	.LFE0
- 904 014c 38000000 		.4byte	.LLST0
- 905 0150 01       		.byte	0x1
- 906 0151 C8020000 		.4byte	0x2c8
- 907 0155 09       		.uleb128 0x9
- 908 0156 4E000000 		.4byte	.LASF13
- 909 015a 01       		.byte	0x1
- 910 015b 18       		.byte	0x18
- 911 015c 62000000 		.4byte	0x62
- 912 0160 02       		.byte	0x2
- 913 0161 91       		.byte	0x91
- 914 0162 6F       		.sleb128 -17
- 915 0163 09       		.uleb128 0x9
- 916 0164 BF000000 		.4byte	.LASF14
- 917 0168 01       		.byte	0x1
- 918 0169 19       		.byte	0x19
- 919 016a 25000000 		.4byte	0x25
- 920 016e 02       		.byte	0x2
- 921 016f 91       		.byte	0x91
- 922 0170 6E       		.sleb128 -18
- 923 0171 0C       		.uleb128 0xc
- 924 0172 32000000 		.4byte	.LBB2
- 925 0176 84020000 		.4byte	.LBE2
- 926 017a 09       		.uleb128 0x9
- 927 017b AC010000 		.4byte	.LASF15
- 928 017f 01       		.byte	0x1
- 929 0180 30       		.byte	0x30
- 930 0181 C8020000 		.4byte	0x2c8
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 21
+ 842              		.loc 1 204 0
+ 843 051e 164B     		ldr	r3, .L26+24
+ 844 0520 1B68     		ldr	r3, [r3]
+ 845 0522 1B06     		lsls	r3, r3, #24
+ 846 0524 1A0E     		lsrs	r2, r3, #24
+ 847 0526 7B18     		adds	r3, r7, r1
+ 848 0528 1B78     		ldrb	r3, [r3]
+ 849 052a 191C     		adds	r1, r3, #0
+ 850 052c 4901     		lsls	r1, r1, #5
+ 851 052e C91A     		subs	r1, r1, r3
+ 852 0530 8900     		lsls	r1, r1, #2
+ 853 0532 CB1A     		subs	r3, r1, r3
+ 854 0534 DB18     		adds	r3, r3, r3
+ 855 0536 1B06     		lsls	r3, r3, #24
+ 856 0538 1B0E     		lsrs	r3, r3, #24
+ 857 053a D318     		adds	r3, r2, r3
+ 858 053c 1B06     		lsls	r3, r3, #24
+ 859 053e 1B0E     		lsrs	r3, r3, #24
+ 860 0540 3033     		adds	r3, r3, #48
+ 861 0542 1B06     		lsls	r3, r3, #24
+ 862 0544 1A0E     		lsrs	r2, r3, #24
+ 863 0546 3B1D     		adds	r3, r7, #4
+ 864 0548 5A70     		strb	r2, [r3, #1]
+ 865              	.L25:
+ 866              	.LBE12:
+ 205:main.c        **** 	}
+ 206:main.c        **** 
+ 207:main.c        **** 	lcdPuts(fullHourTable);
+ 867              		.loc 1 207 0
+ 868 054a 3B1D     		adds	r3, r7, #4
+ 869 054c 1800     		movs	r0, r3
+ 870 054e FFF7FEFF 		bl	lcdPuts
+ 208:main.c        **** }
+ 871              		.loc 1 208 0
+ 872 0552 C046     		nop
+ 873 0554 BD46     		mov	sp, r7
+ 874 0556 04B0     		add	sp, sp, #16
+ 875              		@ sp needed
+ 876 0558 80BC     		pop	{r7}
+ 877 055a 01BC     		pop	{r0}
+ 878 055c 0047     		bx	r0
+ 879              	.L27:
+ 880 055e C046     		.align	2
+ 881              	.L26:
+ 882 0560 084002E0 		.word	-536723448
+ 883 0564 004002E0 		.word	-536723456
+ 884 0568 0C4002E0 		.word	-536723444
+ 885 056c 104002E0 		.word	-536723440
+ 886 0570 204002E0 		.word	-536723424
+ 887 0574 244002E0 		.word	-536723420
+ 888 0578 284002E0 		.word	-536723416
+ 889              		.cfi_endproc
+ 890              	.LFE1:
+ 891              		.size	printCurrentTime, .-printCurrentTime
+ 892              	.Letext0:
+ 893              		.file 2 "general.h"
+ 894              		.file 3 "<built-in>"
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 21
 
 
- 931 0185 02       		.byte	0x2
- 932 0186 91       		.byte	0x91
- 933 0187 4C       		.sleb128 -52
- 934 0188 09       		.uleb128 0x9
- 935 0189 69000000 		.4byte	.LASF16
- 936 018d 01       		.byte	0x1
- 937 018e 31       		.byte	0x31
- 938 018f 25000000 		.4byte	0x25
- 939 0193 02       		.byte	0x2
- 940 0194 91       		.byte	0x91
- 941 0195 6D       		.sleb128 -19
- 942 0196 09       		.uleb128 0x9
- 943 0197 53010000 		.4byte	.LASF17
- 944 019b 01       		.byte	0x1
- 945 019c 33       		.byte	0x33
- 946 019d 25000000 		.4byte	0x25
- 947 01a1 02       		.byte	0x2
- 948 01a2 91       		.byte	0x91
- 949 01a3 6C       		.sleb128 -20
- 950 01a4 0A       		.uleb128 0xa
- 951 01a5 70000000 		.4byte	.LBB3
- 952 01a9 9A000000 		.4byte	.LBE3
- 953 01ad C1010000 		.4byte	0x1c1
- 954 01b1 09       		.uleb128 0x9
- 955 01b2 29000000 		.4byte	.LASF18
- 956 01b6 01       		.byte	0x1
- 957 01b7 3A       		.byte	0x3a
- 958 01b8 D8020000 		.4byte	0x2d8
- 959 01bc 03       		.byte	0x3
- 960 01bd 91       		.byte	0x91
- 961 01be BC7F     		.sleb128 -68
- 962 01c0 00       		.byte	0
- 963 01c1 0A       		.uleb128 0xa
- 964 01c2 A8000000 		.4byte	.LBB4
- 965 01c6 E2000000 		.4byte	.LBE4
- 966 01ca DE010000 		.4byte	0x1de
- 967 01ce 09       		.uleb128 0x9
- 968 01cf 29000000 		.4byte	.LASF18
- 969 01d3 01       		.byte	0x1
- 970 01d4 43       		.byte	0x43
- 971 01d5 E8020000 		.4byte	0x2e8
- 972 01d9 03       		.byte	0x3
- 973 01da 91       		.byte	0x91
- 974 01db A47F     		.sleb128 -92
- 975 01dd 00       		.byte	0
- 976 01de 0A       		.uleb128 0xa
- 977 01df F0000000 		.4byte	.LBB5
- 978 01e3 54010000 		.4byte	.LBE5
- 979 01e7 23020000 		.4byte	0x223
- 980 01eb 09       		.uleb128 0x9
- 981 01ec 29000000 		.4byte	.LASF18
- 982 01f0 01       		.byte	0x1
- 983 01f1 4D       		.byte	0x4d
- 984 01f2 E8020000 		.4byte	0x2e8
- 985 01f6 03       		.byte	0x3
- 986 01f7 91       		.byte	0x91
- 987 01f8 8C7F     		.sleb128 -116
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 22
+ 895              		.section	.debug_info,"",%progbits
+ 896              	.Ldebug_info0:
+ 897 0000 43030000 		.4byte	0x343
+ 898 0004 0200     		.2byte	0x2
+ 899 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 900 000a 04       		.byte	0x4
+ 901 000b 01       		.uleb128 0x1
+ 902 000c CE000000 		.4byte	.LASF24
+ 903 0010 0C       		.byte	0xc
+ 904 0011 39000000 		.4byte	.LASF25
+ 905 0015 63010000 		.4byte	.LASF26
+ 906 0019 00000000 		.4byte	.Ltext0
+ 907 001d 7C050000 		.4byte	.Letext0
+ 908 0021 00000000 		.4byte	.Ldebug_line0
+ 909 0025 02       		.uleb128 0x2
+ 910 0026 74553800 		.ascii	"tU8\000"
+ 911 002a 02       		.byte	0x2
+ 912 002b 20       		.byte	0x20
+ 913 002c 30000000 		.4byte	0x30
+ 914 0030 03       		.uleb128 0x3
+ 915 0031 01       		.byte	0x1
+ 916 0032 08       		.byte	0x8
+ 917 0033 A7000000 		.4byte	.LASF1
+ 918 0037 04       		.uleb128 0x4
+ 919 0038 C4010000 		.4byte	.LASF0
+ 920 003c 02       		.byte	0x2
+ 921 003d 21       		.byte	0x21
+ 922 003e 42000000 		.4byte	0x42
+ 923 0042 03       		.uleb128 0x3
+ 924 0043 02       		.byte	0x2
+ 925 0044 07       		.byte	0x7
+ 926 0045 81010000 		.4byte	.LASF2
+ 927 0049 03       		.uleb128 0x3
+ 928 004a 04       		.byte	0x4
+ 929 004b 07       		.byte	0x7
+ 930 004c 1C000000 		.4byte	.LASF3
+ 931 0050 04       		.uleb128 0x4
+ 932 0051 64000000 		.4byte	.LASF4
+ 933 0055 02       		.byte	0x2
+ 934 0056 23       		.byte	0x23
+ 935 0057 5B000000 		.4byte	0x5b
+ 936 005b 03       		.uleb128 0x3
+ 937 005c 08       		.byte	0x8
+ 938 005d 07       		.byte	0x7
+ 939 005e 90000000 		.4byte	.LASF5
+ 940 0062 02       		.uleb128 0x2
+ 941 0063 74533800 		.ascii	"tS8\000"
+ 942 0067 02       		.byte	0x2
+ 943 0068 24       		.byte	0x24
+ 944 0069 6D000000 		.4byte	0x6d
+ 945 006d 03       		.uleb128 0x3
+ 946 006e 01       		.byte	0x1
+ 947 006f 06       		.byte	0x6
+ 948 0070 94010000 		.4byte	.LASF6
+ 949 0074 03       		.uleb128 0x3
+ 950 0075 02       		.byte	0x2
+ 951 0076 05       		.byte	0x5
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 22
 
 
- 988 01fa 09       		.uleb128 0x9
- 989 01fb 40000000 		.4byte	.LASF19
- 990 01ff 01       		.byte	0x1
- 991 0200 4F       		.byte	0x4f
- 992 0201 37000000 		.4byte	0x37
- 993 0205 02       		.byte	0x2
- 994 0206 91       		.byte	0x91
- 995 0207 56       		.sleb128 -42
- 996 0208 10       		.uleb128 0x10
- 997 0209 01       		.byte	0x1
- 998 020a 56000000 		.4byte	.LASF21
- 999 020e 03       		.byte	0x3
- 1000 020f 00       		.byte	0
- 1001 0210 01       		.byte	0x1
- 1002 0211 7B000000 		.4byte	0x7b
- 1003 0215 01       		.byte	0x1
- 1004 0216 11       		.uleb128 0x11
- 1005 0217 F8020000 		.4byte	0x2f8
- 1006 021b 11       		.uleb128 0x11
- 1007 021c 0A030000 		.4byte	0x30a
- 1008 0220 12       		.uleb128 0x12
- 1009 0221 00       		.byte	0
- 1010 0222 00       		.byte	0
- 1011 0223 0A       		.uleb128 0xa
- 1012 0224 62010000 		.4byte	.LBB6
- 1013 0228 CC010000 		.4byte	.LBE6
- 1014 022c 68020000 		.4byte	0x268
- 1015 0230 09       		.uleb128 0x9
- 1016 0231 29000000 		.4byte	.LASF18
- 1017 0235 01       		.byte	0x1
- 1018 0236 59       		.byte	0x59
- 1019 0237 10030000 		.4byte	0x310
- 1020 023b 03       		.byte	0x3
- 1021 023c 91       		.byte	0x91
- 1022 023d F87E     		.sleb128 -136
- 1023 023f 09       		.uleb128 0x9
- 1024 0240 5F010000 		.4byte	.LASF20
- 1025 0244 01       		.byte	0x1
- 1026 0245 5B       		.byte	0x5b
- 1027 0246 50000000 		.4byte	0x50
- 1028 024a 02       		.byte	0x2
- 1029 024b 91       		.byte	0x91
- 1030 024c 58       		.sleb128 -40
- 1031 024d 10       		.uleb128 0x10
- 1032 024e 01       		.byte	0x1
- 1033 024f 56000000 		.4byte	.LASF21
- 1034 0253 03       		.byte	0x3
- 1035 0254 00       		.byte	0
- 1036 0255 01       		.byte	0x1
- 1037 0256 7B000000 		.4byte	0x7b
- 1038 025a 01       		.byte	0x1
- 1039 025b 11       		.uleb128 0x11
- 1040 025c F8020000 		.4byte	0x2f8
- 1041 0260 11       		.uleb128 0x11
- 1042 0261 0A030000 		.4byte	0x30a
- 1043 0265 12       		.uleb128 0x12
- 1044 0266 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 23
+ 952 0077 C9010000 		.4byte	.LASF7
+ 953 007b 05       		.uleb128 0x5
+ 954 007c 04       		.byte	0x4
+ 955 007d 05       		.byte	0x5
+ 956 007e 696E7400 		.ascii	"int\000"
+ 957 0082 04       		.uleb128 0x4
+ 958 0083 4E010000 		.4byte	.LASF8
+ 959 0087 02       		.byte	0x2
+ 960 0088 27       		.byte	0x27
+ 961 0089 8D000000 		.4byte	0x8d
+ 962 008d 03       		.uleb128 0x3
+ 963 008e 08       		.byte	0x8
+ 964 008f 05       		.byte	0x5
+ 965 0090 00000000 		.4byte	.LASF9
+ 966 0094 06       		.uleb128 0x6
+ 967 0095 07       		.byte	0x7
+ 968 0096 01       		.byte	0x1
+ 969 0097 30000000 		.4byte	0x30
+ 970 009b 02       		.byte	0x2
+ 971 009c 28       		.byte	0x28
+ 972 009d AE000000 		.4byte	0xae
+ 973 00a1 07       		.uleb128 0x7
+ 974 00a2 5E000000 		.4byte	.LASF10
+ 975 00a6 00       		.byte	0
+ 976 00a7 07       		.uleb128 0x7
+ 977 00a8 B5000000 		.4byte	.LASF11
+ 978 00ac 01       		.byte	0x1
+ 979 00ad 00       		.byte	0
+ 980 00ae 08       		.uleb128 0x8
+ 981 00af 01       		.byte	0x1
+ 982 00b0 7F000000 		.4byte	.LASF27
+ 983 00b4 01       		.byte	0x1
+ 984 00b5 A6       		.byte	0xa6
+ 985 00b6 01       		.byte	0x1
+ 986 00b7 B0030000 		.4byte	.LFB1
+ 987 00bb 7C050000 		.4byte	.LFE1
+ 988 00bf 00000000 		.4byte	.LLST1
+ 989 00c3 01       		.byte	0x1
+ 990 00c4 27010000 		.4byte	0x127
+ 991 00c8 09       		.uleb128 0x9
+ 992 00c9 0E000000 		.4byte	.LASF12
+ 993 00cd 01       		.byte	0x1
+ 994 00ce B1       		.byte	0xb1
+ 995 00cf 27010000 		.4byte	0x127
+ 996 00d3 02       		.byte	0x2
+ 997 00d4 91       		.byte	0x91
+ 998 00d5 6C       		.sleb128 -20
+ 999 00d6 0A       		.uleb128 0xa
+ 1000 00d7 16040000 		.4byte	.LBB10
+ 1001 00db 66040000 		.4byte	.LBE10
+ 1002 00df F2000000 		.4byte	0xf2
+ 1003 00e3 0B       		.uleb128 0xb
+ 1004 00e4 64697600 		.ascii	"div\000"
+ 1005 00e8 01       		.byte	0x1
+ 1006 00e9 B8       		.byte	0xb8
+ 1007 00ea 25000000 		.4byte	0x25
+ 1008 00ee 02       		.byte	0x2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 23
 
 
- 1045 0267 00       		.byte	0
- 1046 0268 0A       		.uleb128 0xa
- 1047 0269 DA010000 		.4byte	.LBB7
- 1048 026d 4C020000 		.4byte	.LBE7
- 1049 0271 AD020000 		.4byte	0x2ad
- 1050 0275 09       		.uleb128 0x9
- 1051 0276 29000000 		.4byte	.LASF18
- 1052 027a 01       		.byte	0x1
- 1053 027b 65       		.byte	0x65
- 1054 027c 20030000 		.4byte	0x320
- 1055 0280 03       		.byte	0x3
- 1056 0281 91       		.byte	0x91
- 1057 0282 E47E     		.sleb128 -156
- 1058 0284 09       		.uleb128 0x9
- 1059 0285 B6010000 		.4byte	.LASF22
- 1060 0289 01       		.byte	0x1
- 1061 028a 67       		.byte	0x67
- 1062 028b 82000000 		.4byte	0x82
- 1063 028f 02       		.byte	0x2
- 1064 0290 91       		.byte	0x91
- 1065 0291 60       		.sleb128 -32
- 1066 0292 10       		.uleb128 0x10
- 1067 0293 01       		.byte	0x1
- 1068 0294 56000000 		.4byte	.LASF21
- 1069 0298 03       		.byte	0x3
- 1070 0299 00       		.byte	0
- 1071 029a 01       		.byte	0x1
- 1072 029b 7B000000 		.4byte	0x7b
- 1073 029f 01       		.byte	0x1
- 1074 02a0 11       		.uleb128 0x11
- 1075 02a1 F8020000 		.4byte	0x2f8
- 1076 02a5 11       		.uleb128 0x11
- 1077 02a6 0A030000 		.4byte	0x30a
- 1078 02aa 12       		.uleb128 0x12
- 1079 02ab 00       		.byte	0
- 1080 02ac 00       		.byte	0
- 1081 02ad 0C       		.uleb128 0xc
- 1082 02ae 4E020000 		.4byte	.LBB8
- 1083 02b2 6E020000 		.4byte	.LBE8
- 1084 02b6 09       		.uleb128 0x9
- 1085 02b7 29000000 		.4byte	.LASF18
- 1086 02bb 01       		.byte	0x1
- 1087 02bc 71       		.byte	0x71
- 1088 02bd 30030000 		.4byte	0x330
- 1089 02c1 03       		.byte	0x3
- 1090 02c2 91       		.byte	0x91
- 1091 02c3 F47D     		.sleb128 -268
- 1092 02c5 00       		.byte	0
- 1093 02c6 00       		.byte	0
- 1094 02c7 00       		.byte	0
- 1095 02c8 0D       		.uleb128 0xd
- 1096 02c9 25000000 		.4byte	0x25
- 1097 02cd D8020000 		.4byte	0x2d8
- 1098 02d1 0E       		.uleb128 0xe
- 1099 02d2 49000000 		.4byte	0x49
- 1100 02d6 09       		.byte	0x9
- 1101 02d7 00       		.byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 24
+ 1009 00ef 91       		.byte	0x91
+ 1010 00f0 77       		.sleb128 -9
+ 1011 00f1 00       		.byte	0
+ 1012 00f2 0A       		.uleb128 0xa
+ 1013 00f3 88040000 		.4byte	.LBB11
+ 1014 00f7 D8040000 		.4byte	.LBE11
+ 1015 00fb 0E010000 		.4byte	0x10e
+ 1016 00ff 0B       		.uleb128 0xb
+ 1017 0100 64697600 		.ascii	"div\000"
+ 1018 0104 01       		.byte	0x1
+ 1019 0105 C1       		.byte	0xc1
+ 1020 0106 25000000 		.4byte	0x25
+ 1021 010a 02       		.byte	0x2
+ 1022 010b 91       		.byte	0x91
+ 1023 010c 76       		.sleb128 -10
+ 1024 010d 00       		.byte	0
+ 1025 010e 0C       		.uleb128 0xc
+ 1026 010f FA040000 		.4byte	.LBB12
+ 1027 0113 4A050000 		.4byte	.LBE12
+ 1028 0117 0B       		.uleb128 0xb
+ 1029 0118 64697600 		.ascii	"div\000"
+ 1030 011c 01       		.byte	0x1
+ 1031 011d CA       		.byte	0xca
+ 1032 011e 25000000 		.4byte	0x25
+ 1033 0122 02       		.byte	0x2
+ 1034 0123 91       		.byte	0x91
+ 1035 0124 75       		.sleb128 -11
+ 1036 0125 00       		.byte	0
+ 1037 0126 00       		.byte	0
+ 1038 0127 0D       		.uleb128 0xd
+ 1039 0128 25000000 		.4byte	0x25
+ 1040 012c 37010000 		.4byte	0x137
+ 1041 0130 0E       		.uleb128 0xe
+ 1042 0131 49000000 		.4byte	0x49
+ 1043 0135 08       		.byte	0x8
+ 1044 0136 00       		.byte	0
+ 1045 0137 0F       		.uleb128 0xf
+ 1046 0138 01       		.byte	0x1
+ 1047 0139 BA000000 		.4byte	.LASF28
+ 1048 013d 01       		.byte	0x1
+ 1049 013e 16       		.byte	0x16
+ 1050 013f 01       		.byte	0x1
+ 1051 0140 7B000000 		.4byte	0x7b
+ 1052 0144 00000000 		.4byte	.LFB0
+ 1053 0148 B0030000 		.4byte	.LFE0
+ 1054 014c 38000000 		.4byte	.LLST0
+ 1055 0150 01       		.byte	0x1
+ 1056 0151 D2020000 		.4byte	0x2d2
+ 1057 0155 09       		.uleb128 0x9
+ 1058 0156 4E000000 		.4byte	.LASF13
+ 1059 015a 01       		.byte	0x1
+ 1060 015b 18       		.byte	0x18
+ 1061 015c 62000000 		.4byte	0x62
+ 1062 0160 02       		.byte	0x2
+ 1063 0161 91       		.byte	0x91
+ 1064 0162 6F       		.sleb128 -17
+ 1065 0163 09       		.uleb128 0x9
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 24
 
 
- 1102 02d8 0D       		.uleb128 0xd
- 1103 02d9 25000000 		.4byte	0x25
- 1104 02dd E8020000 		.4byte	0x2e8
- 1105 02e1 0E       		.uleb128 0xe
- 1106 02e2 49000000 		.4byte	0x49
- 1107 02e6 0F       		.byte	0xf
- 1108 02e7 00       		.byte	0
- 1109 02e8 0D       		.uleb128 0xd
- 1110 02e9 25000000 		.4byte	0x25
- 1111 02ed F8020000 		.4byte	0x2f8
- 1112 02f1 0E       		.uleb128 0xe
- 1113 02f2 49000000 		.4byte	0x49
- 1114 02f6 14       		.byte	0x14
- 1115 02f7 00       		.byte	0
- 1116 02f8 13       		.uleb128 0x13
- 1117 02f9 04       		.byte	0x4
- 1118 02fa FE020000 		.4byte	0x2fe
- 1119 02fe 03       		.uleb128 0x3
- 1120 02ff 01       		.byte	0x1
- 1121 0300 08       		.byte	0x8
- 1122 0301 D3010000 		.4byte	.LASF23
- 1123 0305 14       		.uleb128 0x14
- 1124 0306 FE020000 		.4byte	0x2fe
- 1125 030a 13       		.uleb128 0x13
- 1126 030b 04       		.byte	0x4
- 1127 030c 05030000 		.4byte	0x305
- 1128 0310 0D       		.uleb128 0xd
- 1129 0311 25000000 		.4byte	0x25
- 1130 0315 20030000 		.4byte	0x320
- 1131 0319 0E       		.uleb128 0xe
- 1132 031a 49000000 		.4byte	0x49
- 1133 031e 11       		.byte	0x11
- 1134 031f 00       		.byte	0
- 1135 0320 0D       		.uleb128 0xd
- 1136 0321 25000000 		.4byte	0x25
- 1137 0325 30030000 		.4byte	0x330
- 1138 0329 0E       		.uleb128 0xe
- 1139 032a 49000000 		.4byte	0x49
- 1140 032e 12       		.byte	0x12
- 1141 032f 00       		.byte	0
- 1142 0330 15       		.uleb128 0x15
- 1143 0331 25000000 		.4byte	0x25
- 1144 0335 0E       		.uleb128 0xe
- 1145 0336 49000000 		.4byte	0x49
- 1146 033a 6D       		.byte	0x6d
- 1147 033b 00       		.byte	0
- 1148 033c 00       		.byte	0
- 1149              		.section	.debug_abbrev,"",%progbits
- 1150              	.Ldebug_abbrev0:
- 1151 0000 01       		.uleb128 0x1
- 1152 0001 11       		.uleb128 0x11
- 1153 0002 01       		.byte	0x1
- 1154 0003 25       		.uleb128 0x25
- 1155 0004 0E       		.uleb128 0xe
- 1156 0005 13       		.uleb128 0x13
- 1157 0006 0B       		.uleb128 0xb
- 1158 0007 03       		.uleb128 0x3
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 25
+ 1066 0164 BF000000 		.4byte	.LASF14
+ 1067 0168 01       		.byte	0x1
+ 1068 0169 19       		.byte	0x19
+ 1069 016a 25000000 		.4byte	0x25
+ 1070 016e 02       		.byte	0x2
+ 1071 016f 91       		.byte	0x91
+ 1072 0170 6E       		.sleb128 -18
+ 1073 0171 0C       		.uleb128 0xc
+ 1074 0172 38000000 		.4byte	.LBB2
+ 1075 0176 60030000 		.4byte	.LBE2
+ 1076 017a 09       		.uleb128 0x9
+ 1077 017b 69000000 		.4byte	.LASF15
+ 1078 017f 01       		.byte	0x1
+ 1079 0180 30       		.byte	0x30
+ 1080 0181 25000000 		.4byte	0x25
+ 1081 0185 02       		.byte	0x2
+ 1082 0186 91       		.byte	0x91
+ 1083 0187 6D       		.sleb128 -19
+ 1084 0188 09       		.uleb128 0x9
+ 1085 0189 A0010000 		.4byte	.LASF16
+ 1086 018d 01       		.byte	0x1
+ 1087 018e 32       		.byte	0x32
+ 1088 018f 25000000 		.4byte	0x25
+ 1089 0193 02       		.byte	0x2
+ 1090 0194 91       		.byte	0x91
+ 1091 0195 6C       		.sleb128 -20
+ 1092 0196 0C       		.uleb128 0xc
+ 1093 0197 72000000 		.4byte	.LBB3
+ 1094 019b 54030000 		.4byte	.LBE3
+ 1095 019f 09       		.uleb128 0x9
+ 1096 01a0 BA010000 		.4byte	.LASF17
+ 1097 01a4 01       		.byte	0x1
+ 1098 01a5 39       		.byte	0x39
+ 1099 01a6 D2020000 		.4byte	0x2d2
+ 1100 01aa 02       		.byte	0x2
+ 1101 01ab 91       		.byte	0x91
+ 1102 01ac 40       		.sleb128 -64
+ 1103 01ad 0A       		.uleb128 0xa
+ 1104 01ae 9A000000 		.4byte	.LBB4
+ 1105 01b2 C4000000 		.4byte	.LBE4
+ 1106 01b6 CA010000 		.4byte	0x1ca
+ 1107 01ba 09       		.uleb128 0x9
+ 1108 01bb 29000000 		.4byte	.LASF18
+ 1109 01bf 01       		.byte	0x1
+ 1110 01c0 45       		.byte	0x45
+ 1111 01c1 E2020000 		.4byte	0x2e2
+ 1112 01c5 03       		.byte	0x3
+ 1113 01c6 91       		.byte	0x91
+ 1114 01c7 B07F     		.sleb128 -80
+ 1115 01c9 00       		.byte	0
+ 1116 01ca 0A       		.uleb128 0xa
+ 1117 01cb DE000000 		.4byte	.LBB5
+ 1118 01cf 18010000 		.4byte	.LBE5
+ 1119 01d3 E7010000 		.4byte	0x1e7
+ 1120 01d7 09       		.uleb128 0x9
+ 1121 01d8 29000000 		.4byte	.LASF18
+ 1122 01dc 01       		.byte	0x1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 25
 
 
- 1159 0008 0E       		.uleb128 0xe
- 1160 0009 1B       		.uleb128 0x1b
- 1161 000a 0E       		.uleb128 0xe
- 1162 000b 11       		.uleb128 0x11
- 1163 000c 01       		.uleb128 0x1
- 1164 000d 12       		.uleb128 0x12
- 1165 000e 01       		.uleb128 0x1
- 1166 000f 10       		.uleb128 0x10
- 1167 0010 06       		.uleb128 0x6
- 1168 0011 00       		.byte	0
- 1169 0012 00       		.byte	0
- 1170 0013 02       		.uleb128 0x2
- 1171 0014 16       		.uleb128 0x16
- 1172 0015 00       		.byte	0
- 1173 0016 03       		.uleb128 0x3
- 1174 0017 08       		.uleb128 0x8
- 1175 0018 3A       		.uleb128 0x3a
- 1176 0019 0B       		.uleb128 0xb
- 1177 001a 3B       		.uleb128 0x3b
- 1178 001b 0B       		.uleb128 0xb
- 1179 001c 49       		.uleb128 0x49
- 1180 001d 13       		.uleb128 0x13
- 1181 001e 00       		.byte	0
- 1182 001f 00       		.byte	0
- 1183 0020 03       		.uleb128 0x3
- 1184 0021 24       		.uleb128 0x24
- 1185 0022 00       		.byte	0
- 1186 0023 0B       		.uleb128 0xb
- 1187 0024 0B       		.uleb128 0xb
- 1188 0025 3E       		.uleb128 0x3e
- 1189 0026 0B       		.uleb128 0xb
- 1190 0027 03       		.uleb128 0x3
- 1191 0028 0E       		.uleb128 0xe
- 1192 0029 00       		.byte	0
- 1193 002a 00       		.byte	0
- 1194 002b 04       		.uleb128 0x4
- 1195 002c 16       		.uleb128 0x16
- 1196 002d 00       		.byte	0
- 1197 002e 03       		.uleb128 0x3
- 1198 002f 0E       		.uleb128 0xe
- 1199 0030 3A       		.uleb128 0x3a
- 1200 0031 0B       		.uleb128 0xb
- 1201 0032 3B       		.uleb128 0x3b
- 1202 0033 0B       		.uleb128 0xb
- 1203 0034 49       		.uleb128 0x49
- 1204 0035 13       		.uleb128 0x13
- 1205 0036 00       		.byte	0
- 1206 0037 00       		.byte	0
- 1207 0038 05       		.uleb128 0x5
- 1208 0039 24       		.uleb128 0x24
- 1209 003a 00       		.byte	0
- 1210 003b 0B       		.uleb128 0xb
- 1211 003c 0B       		.uleb128 0xb
- 1212 003d 3E       		.uleb128 0x3e
- 1213 003e 0B       		.uleb128 0xb
- 1214 003f 03       		.uleb128 0x3
- 1215 0040 08       		.uleb128 0x8
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 26
+ 1123 01dd 51       		.byte	0x51
+ 1124 01de F2020000 		.4byte	0x2f2
+ 1125 01e2 03       		.byte	0x3
+ 1126 01e3 91       		.byte	0x91
+ 1127 01e4 987F     		.sleb128 -104
+ 1128 01e6 00       		.byte	0
+ 1129 01e7 0A       		.uleb128 0xa
+ 1130 01e8 32010000 		.4byte	.LBB6
+ 1131 01ec 98010000 		.4byte	.LBE6
+ 1132 01f0 2C020000 		.4byte	0x22c
+ 1133 01f4 09       		.uleb128 0x9
+ 1134 01f5 29000000 		.4byte	.LASF18
+ 1135 01f9 01       		.byte	0x1
+ 1136 01fa 5E       		.byte	0x5e
+ 1137 01fb F2020000 		.4byte	0x2f2
+ 1138 01ff 03       		.byte	0x3
+ 1139 0200 91       		.byte	0x91
+ 1140 0201 807F     		.sleb128 -128
+ 1141 0203 09       		.uleb128 0x9
+ 1142 0204 40000000 		.4byte	.LASF19
+ 1143 0208 01       		.byte	0x1
+ 1144 0209 60       		.byte	0x60
+ 1145 020a 37000000 		.4byte	0x37
+ 1146 020e 02       		.byte	0x2
+ 1147 020f 91       		.byte	0x91
+ 1148 0210 56       		.sleb128 -42
+ 1149 0211 10       		.uleb128 0x10
+ 1150 0212 01       		.byte	0x1
+ 1151 0213 56000000 		.4byte	.LASF21
+ 1152 0217 03       		.byte	0x3
+ 1153 0218 00       		.byte	0
+ 1154 0219 01       		.byte	0x1
+ 1155 021a 7B000000 		.4byte	0x7b
+ 1156 021e 01       		.byte	0x1
+ 1157 021f 11       		.uleb128 0x11
+ 1158 0220 02030000 		.4byte	0x302
+ 1159 0224 11       		.uleb128 0x11
+ 1160 0225 14030000 		.4byte	0x314
+ 1161 0229 12       		.uleb128 0x12
+ 1162 022a 00       		.byte	0
+ 1163 022b 00       		.byte	0
+ 1164 022c 0A       		.uleb128 0xa
+ 1165 022d B2010000 		.4byte	.LBB7
+ 1166 0231 60020000 		.4byte	.LBE7
+ 1167 0235 71020000 		.4byte	0x271
+ 1168 0239 09       		.uleb128 0x9
+ 1169 023a 29000000 		.4byte	.LASF18
+ 1170 023e 01       		.byte	0x1
+ 1171 023f 6D       		.byte	0x6d
+ 1172 0240 1A030000 		.4byte	0x31a
+ 1173 0244 03       		.byte	0x3
+ 1174 0245 91       		.byte	0x91
+ 1175 0246 EC7E     		.sleb128 -148
+ 1176 0248 09       		.uleb128 0x9
+ 1177 0249 53010000 		.4byte	.LASF20
+ 1178 024d 01       		.byte	0x1
+ 1179 024e 6F       		.byte	0x6f
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 26
 
 
- 1216 0041 00       		.byte	0
- 1217 0042 00       		.byte	0
- 1218 0043 06       		.uleb128 0x6
- 1219 0044 04       		.uleb128 0x4
- 1220 0045 01       		.byte	0x1
- 1221 0046 3E       		.uleb128 0x3e
- 1222 0047 0B       		.uleb128 0xb
- 1223 0048 0B       		.uleb128 0xb
- 1224 0049 0B       		.uleb128 0xb
- 1225 004a 49       		.uleb128 0x49
- 1226 004b 13       		.uleb128 0x13
- 1227 004c 3A       		.uleb128 0x3a
- 1228 004d 0B       		.uleb128 0xb
- 1229 004e 3B       		.uleb128 0x3b
- 1230 004f 0B       		.uleb128 0xb
- 1231 0050 01       		.uleb128 0x1
- 1232 0051 13       		.uleb128 0x13
- 1233 0052 00       		.byte	0
- 1234 0053 00       		.byte	0
- 1235 0054 07       		.uleb128 0x7
- 1236 0055 28       		.uleb128 0x28
- 1237 0056 00       		.byte	0
- 1238 0057 03       		.uleb128 0x3
- 1239 0058 0E       		.uleb128 0xe
- 1240 0059 1C       		.uleb128 0x1c
- 1241 005a 0B       		.uleb128 0xb
- 1242 005b 00       		.byte	0
- 1243 005c 00       		.byte	0
- 1244 005d 08       		.uleb128 0x8
- 1245 005e 2E       		.uleb128 0x2e
- 1246 005f 01       		.byte	0x1
- 1247 0060 3F       		.uleb128 0x3f
- 1248 0061 0C       		.uleb128 0xc
- 1249 0062 03       		.uleb128 0x3
- 1250 0063 0E       		.uleb128 0xe
- 1251 0064 3A       		.uleb128 0x3a
- 1252 0065 0B       		.uleb128 0xb
- 1253 0066 3B       		.uleb128 0x3b
- 1254 0067 0B       		.uleb128 0xb
- 1255 0068 27       		.uleb128 0x27
- 1256 0069 0C       		.uleb128 0xc
- 1257 006a 11       		.uleb128 0x11
- 1258 006b 01       		.uleb128 0x1
- 1259 006c 12       		.uleb128 0x12
- 1260 006d 01       		.uleb128 0x1
- 1261 006e 40       		.uleb128 0x40
- 1262 006f 06       		.uleb128 0x6
- 1263 0070 9642     		.uleb128 0x2116
- 1264 0072 0C       		.uleb128 0xc
- 1265 0073 01       		.uleb128 0x1
- 1266 0074 13       		.uleb128 0x13
- 1267 0075 00       		.byte	0
- 1268 0076 00       		.byte	0
- 1269 0077 09       		.uleb128 0x9
- 1270 0078 34       		.uleb128 0x34
- 1271 0079 00       		.byte	0
- 1272 007a 03       		.uleb128 0x3
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 27
+ 1180 024f 50000000 		.4byte	0x50
+ 1181 0253 02       		.byte	0x2
+ 1182 0254 91       		.byte	0x91
+ 1183 0255 58       		.sleb128 -40
+ 1184 0256 10       		.uleb128 0x10
+ 1185 0257 01       		.byte	0x1
+ 1186 0258 56000000 		.4byte	.LASF21
+ 1187 025c 03       		.byte	0x3
+ 1188 025d 00       		.byte	0
+ 1189 025e 01       		.byte	0x1
+ 1190 025f 7B000000 		.4byte	0x7b
+ 1191 0263 01       		.byte	0x1
+ 1192 0264 11       		.uleb128 0x11
+ 1193 0265 02030000 		.4byte	0x302
+ 1194 0269 11       		.uleb128 0x11
+ 1195 026a 14030000 		.4byte	0x314
+ 1196 026e 12       		.uleb128 0x12
+ 1197 026f 00       		.byte	0
+ 1198 0270 00       		.byte	0
+ 1199 0271 0A       		.uleb128 0xa
+ 1200 0272 7A020000 		.4byte	.LBB8
+ 1201 0276 20030000 		.4byte	.LBE8
+ 1202 027a B6020000 		.4byte	0x2b6
+ 1203 027e 09       		.uleb128 0x9
+ 1204 027f 29000000 		.4byte	.LASF18
+ 1205 0283 01       		.byte	0x1
+ 1206 0284 80       		.byte	0x80
+ 1207 0285 2A030000 		.4byte	0x32a
+ 1208 0289 03       		.byte	0x3
+ 1209 028a 91       		.byte	0x91
+ 1210 028b D87E     		.sleb128 -168
+ 1211 028d 09       		.uleb128 0x9
+ 1212 028e AC010000 		.4byte	.LASF22
+ 1213 0292 01       		.byte	0x1
+ 1214 0293 82       		.byte	0x82
+ 1215 0294 82000000 		.4byte	0x82
+ 1216 0298 02       		.byte	0x2
+ 1217 0299 91       		.byte	0x91
+ 1218 029a 60       		.sleb128 -32
+ 1219 029b 10       		.uleb128 0x10
+ 1220 029c 01       		.byte	0x1
+ 1221 029d 56000000 		.4byte	.LASF21
+ 1222 02a1 03       		.byte	0x3
+ 1223 02a2 00       		.byte	0
+ 1224 02a3 01       		.byte	0x1
+ 1225 02a4 7B000000 		.4byte	0x7b
+ 1226 02a8 01       		.byte	0x1
+ 1227 02a9 11       		.uleb128 0x11
+ 1228 02aa 02030000 		.4byte	0x302
+ 1229 02ae 11       		.uleb128 0x11
+ 1230 02af 14030000 		.4byte	0x314
+ 1231 02b3 12       		.uleb128 0x12
+ 1232 02b4 00       		.byte	0
+ 1233 02b5 00       		.byte	0
+ 1234 02b6 0C       		.uleb128 0xc
+ 1235 02b7 22030000 		.4byte	.LBB9
+ 1236 02bb 4A030000 		.4byte	.LBE9
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 27
 
 
- 1273 007b 0E       		.uleb128 0xe
- 1274 007c 3A       		.uleb128 0x3a
- 1275 007d 0B       		.uleb128 0xb
- 1276 007e 3B       		.uleb128 0x3b
- 1277 007f 0B       		.uleb128 0xb
- 1278 0080 49       		.uleb128 0x49
- 1279 0081 13       		.uleb128 0x13
- 1280 0082 02       		.uleb128 0x2
- 1281 0083 0A       		.uleb128 0xa
- 1282 0084 00       		.byte	0
- 1283 0085 00       		.byte	0
- 1284 0086 0A       		.uleb128 0xa
- 1285 0087 0B       		.uleb128 0xb
- 1286 0088 01       		.byte	0x1
- 1287 0089 11       		.uleb128 0x11
- 1288 008a 01       		.uleb128 0x1
- 1289 008b 12       		.uleb128 0x12
- 1290 008c 01       		.uleb128 0x1
- 1291 008d 01       		.uleb128 0x1
- 1292 008e 13       		.uleb128 0x13
- 1293 008f 00       		.byte	0
- 1294 0090 00       		.byte	0
- 1295 0091 0B       		.uleb128 0xb
- 1296 0092 34       		.uleb128 0x34
- 1297 0093 00       		.byte	0
- 1298 0094 03       		.uleb128 0x3
- 1299 0095 08       		.uleb128 0x8
- 1300 0096 3A       		.uleb128 0x3a
- 1301 0097 0B       		.uleb128 0xb
- 1302 0098 3B       		.uleb128 0x3b
- 1303 0099 0B       		.uleb128 0xb
- 1304 009a 49       		.uleb128 0x49
- 1305 009b 13       		.uleb128 0x13
- 1306 009c 02       		.uleb128 0x2
- 1307 009d 0A       		.uleb128 0xa
- 1308 009e 00       		.byte	0
- 1309 009f 00       		.byte	0
- 1310 00a0 0C       		.uleb128 0xc
- 1311 00a1 0B       		.uleb128 0xb
- 1312 00a2 01       		.byte	0x1
- 1313 00a3 11       		.uleb128 0x11
- 1314 00a4 01       		.uleb128 0x1
- 1315 00a5 12       		.uleb128 0x12
- 1316 00a6 01       		.uleb128 0x1
- 1317 00a7 00       		.byte	0
- 1318 00a8 00       		.byte	0
- 1319 00a9 0D       		.uleb128 0xd
- 1320 00aa 01       		.uleb128 0x1
- 1321 00ab 01       		.byte	0x1
- 1322 00ac 49       		.uleb128 0x49
- 1323 00ad 13       		.uleb128 0x13
- 1324 00ae 01       		.uleb128 0x1
- 1325 00af 13       		.uleb128 0x13
- 1326 00b0 00       		.byte	0
- 1327 00b1 00       		.byte	0
- 1328 00b2 0E       		.uleb128 0xe
- 1329 00b3 21       		.uleb128 0x21
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 28
+ 1237 02bf 09       		.uleb128 0x9
+ 1238 02c0 29000000 		.4byte	.LASF18
+ 1239 02c4 01       		.byte	0x1
+ 1240 02c5 8F       		.byte	0x8f
+ 1241 02c6 3A030000 		.4byte	0x33a
+ 1242 02ca 03       		.byte	0x3
+ 1243 02cb 91       		.byte	0x91
+ 1244 02cc E87D     		.sleb128 -280
+ 1245 02ce 00       		.byte	0
+ 1246 02cf 00       		.byte	0
+ 1247 02d0 00       		.byte	0
+ 1248 02d1 00       		.byte	0
+ 1249 02d2 0D       		.uleb128 0xd
+ 1250 02d3 25000000 		.4byte	0x25
+ 1251 02d7 E2020000 		.4byte	0x2e2
+ 1252 02db 0E       		.uleb128 0xe
+ 1253 02dc 49000000 		.4byte	0x49
+ 1254 02e0 13       		.byte	0x13
+ 1255 02e1 00       		.byte	0
+ 1256 02e2 0D       		.uleb128 0xd
+ 1257 02e3 25000000 		.4byte	0x25
+ 1258 02e7 F2020000 		.4byte	0x2f2
+ 1259 02eb 0E       		.uleb128 0xe
+ 1260 02ec 49000000 		.4byte	0x49
+ 1261 02f0 0F       		.byte	0xf
+ 1262 02f1 00       		.byte	0
+ 1263 02f2 0D       		.uleb128 0xd
+ 1264 02f3 25000000 		.4byte	0x25
+ 1265 02f7 02030000 		.4byte	0x302
+ 1266 02fb 0E       		.uleb128 0xe
+ 1267 02fc 49000000 		.4byte	0x49
+ 1268 0300 14       		.byte	0x14
+ 1269 0301 00       		.byte	0
+ 1270 0302 13       		.uleb128 0x13
+ 1271 0303 04       		.byte	0x4
+ 1272 0304 08030000 		.4byte	0x308
+ 1273 0308 03       		.uleb128 0x3
+ 1274 0309 01       		.byte	0x1
+ 1275 030a 08       		.byte	0x8
+ 1276 030b D3010000 		.4byte	.LASF23
+ 1277 030f 14       		.uleb128 0x14
+ 1278 0310 08030000 		.4byte	0x308
+ 1279 0314 13       		.uleb128 0x13
+ 1280 0315 04       		.byte	0x4
+ 1281 0316 0F030000 		.4byte	0x30f
+ 1282 031a 0D       		.uleb128 0xd
+ 1283 031b 25000000 		.4byte	0x25
+ 1284 031f 2A030000 		.4byte	0x32a
+ 1285 0323 0E       		.uleb128 0xe
+ 1286 0324 49000000 		.4byte	0x49
+ 1287 0328 11       		.byte	0x11
+ 1288 0329 00       		.byte	0
+ 1289 032a 0D       		.uleb128 0xd
+ 1290 032b 25000000 		.4byte	0x25
+ 1291 032f 3A030000 		.4byte	0x33a
+ 1292 0333 0E       		.uleb128 0xe
+ 1293 0334 49000000 		.4byte	0x49
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 28
 
 
- 1330 00b4 00       		.byte	0
- 1331 00b5 49       		.uleb128 0x49
- 1332 00b6 13       		.uleb128 0x13
- 1333 00b7 2F       		.uleb128 0x2f
- 1334 00b8 0B       		.uleb128 0xb
- 1335 00b9 00       		.byte	0
- 1336 00ba 00       		.byte	0
- 1337 00bb 0F       		.uleb128 0xf
- 1338 00bc 2E       		.uleb128 0x2e
- 1339 00bd 01       		.byte	0x1
- 1340 00be 3F       		.uleb128 0x3f
- 1341 00bf 0C       		.uleb128 0xc
- 1342 00c0 03       		.uleb128 0x3
- 1343 00c1 0E       		.uleb128 0xe
- 1344 00c2 3A       		.uleb128 0x3a
- 1345 00c3 0B       		.uleb128 0xb
- 1346 00c4 3B       		.uleb128 0x3b
- 1347 00c5 0B       		.uleb128 0xb
- 1348 00c6 27       		.uleb128 0x27
- 1349 00c7 0C       		.uleb128 0xc
- 1350 00c8 49       		.uleb128 0x49
- 1351 00c9 13       		.uleb128 0x13
- 1352 00ca 11       		.uleb128 0x11
- 1353 00cb 01       		.uleb128 0x1
- 1354 00cc 12       		.uleb128 0x12
- 1355 00cd 01       		.uleb128 0x1
- 1356 00ce 40       		.uleb128 0x40
- 1357 00cf 06       		.uleb128 0x6
- 1358 00d0 9642     		.uleb128 0x2116
- 1359 00d2 0C       		.uleb128 0xc
- 1360 00d3 01       		.uleb128 0x1
- 1361 00d4 13       		.uleb128 0x13
- 1362 00d5 00       		.byte	0
- 1363 00d6 00       		.byte	0
- 1364 00d7 10       		.uleb128 0x10
- 1365 00d8 2E       		.uleb128 0x2e
- 1366 00d9 01       		.byte	0x1
- 1367 00da 3F       		.uleb128 0x3f
- 1368 00db 0C       		.uleb128 0xc
- 1369 00dc 03       		.uleb128 0x3
- 1370 00dd 0E       		.uleb128 0xe
- 1371 00de 3A       		.uleb128 0x3a
- 1372 00df 0B       		.uleb128 0xb
- 1373 00e0 3B       		.uleb128 0x3b
- 1374 00e1 0B       		.uleb128 0xb
- 1375 00e2 27       		.uleb128 0x27
- 1376 00e3 0C       		.uleb128 0xc
- 1377 00e4 49       		.uleb128 0x49
- 1378 00e5 13       		.uleb128 0x13
- 1379 00e6 3C       		.uleb128 0x3c
- 1380 00e7 0C       		.uleb128 0xc
- 1381 00e8 00       		.byte	0
- 1382 00e9 00       		.byte	0
- 1383 00ea 11       		.uleb128 0x11
- 1384 00eb 05       		.uleb128 0x5
- 1385 00ec 00       		.byte	0
- 1386 00ed 49       		.uleb128 0x49
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 29
+ 1294 0338 12       		.byte	0x12
+ 1295 0339 00       		.byte	0
+ 1296 033a 15       		.uleb128 0x15
+ 1297 033b 25000000 		.4byte	0x25
+ 1298 033f 0E       		.uleb128 0xe
+ 1299 0340 49000000 		.4byte	0x49
+ 1300 0344 6D       		.byte	0x6d
+ 1301 0345 00       		.byte	0
+ 1302 0346 00       		.byte	0
+ 1303              		.section	.debug_abbrev,"",%progbits
+ 1304              	.Ldebug_abbrev0:
+ 1305 0000 01       		.uleb128 0x1
+ 1306 0001 11       		.uleb128 0x11
+ 1307 0002 01       		.byte	0x1
+ 1308 0003 25       		.uleb128 0x25
+ 1309 0004 0E       		.uleb128 0xe
+ 1310 0005 13       		.uleb128 0x13
+ 1311 0006 0B       		.uleb128 0xb
+ 1312 0007 03       		.uleb128 0x3
+ 1313 0008 0E       		.uleb128 0xe
+ 1314 0009 1B       		.uleb128 0x1b
+ 1315 000a 0E       		.uleb128 0xe
+ 1316 000b 11       		.uleb128 0x11
+ 1317 000c 01       		.uleb128 0x1
+ 1318 000d 12       		.uleb128 0x12
+ 1319 000e 01       		.uleb128 0x1
+ 1320 000f 10       		.uleb128 0x10
+ 1321 0010 06       		.uleb128 0x6
+ 1322 0011 00       		.byte	0
+ 1323 0012 00       		.byte	0
+ 1324 0013 02       		.uleb128 0x2
+ 1325 0014 16       		.uleb128 0x16
+ 1326 0015 00       		.byte	0
+ 1327 0016 03       		.uleb128 0x3
+ 1328 0017 08       		.uleb128 0x8
+ 1329 0018 3A       		.uleb128 0x3a
+ 1330 0019 0B       		.uleb128 0xb
+ 1331 001a 3B       		.uleb128 0x3b
+ 1332 001b 0B       		.uleb128 0xb
+ 1333 001c 49       		.uleb128 0x49
+ 1334 001d 13       		.uleb128 0x13
+ 1335 001e 00       		.byte	0
+ 1336 001f 00       		.byte	0
+ 1337 0020 03       		.uleb128 0x3
+ 1338 0021 24       		.uleb128 0x24
+ 1339 0022 00       		.byte	0
+ 1340 0023 0B       		.uleb128 0xb
+ 1341 0024 0B       		.uleb128 0xb
+ 1342 0025 3E       		.uleb128 0x3e
+ 1343 0026 0B       		.uleb128 0xb
+ 1344 0027 03       		.uleb128 0x3
+ 1345 0028 0E       		.uleb128 0xe
+ 1346 0029 00       		.byte	0
+ 1347 002a 00       		.byte	0
+ 1348 002b 04       		.uleb128 0x4
+ 1349 002c 16       		.uleb128 0x16
+ 1350 002d 00       		.byte	0
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 29
 
 
- 1387 00ee 13       		.uleb128 0x13
- 1388 00ef 00       		.byte	0
- 1389 00f0 00       		.byte	0
- 1390 00f1 12       		.uleb128 0x12
- 1391 00f2 18       		.uleb128 0x18
- 1392 00f3 00       		.byte	0
- 1393 00f4 00       		.byte	0
- 1394 00f5 00       		.byte	0
- 1395 00f6 13       		.uleb128 0x13
- 1396 00f7 0F       		.uleb128 0xf
- 1397 00f8 00       		.byte	0
- 1398 00f9 0B       		.uleb128 0xb
- 1399 00fa 0B       		.uleb128 0xb
- 1400 00fb 49       		.uleb128 0x49
- 1401 00fc 13       		.uleb128 0x13
- 1402 00fd 00       		.byte	0
- 1403 00fe 00       		.byte	0
- 1404 00ff 14       		.uleb128 0x14
- 1405 0100 26       		.uleb128 0x26
- 1406 0101 00       		.byte	0
- 1407 0102 49       		.uleb128 0x49
- 1408 0103 13       		.uleb128 0x13
- 1409 0104 00       		.byte	0
- 1410 0105 00       		.byte	0
- 1411 0106 15       		.uleb128 0x15
- 1412 0107 01       		.uleb128 0x1
- 1413 0108 01       		.byte	0x1
- 1414 0109 49       		.uleb128 0x49
- 1415 010a 13       		.uleb128 0x13
- 1416 010b 00       		.byte	0
- 1417 010c 00       		.byte	0
- 1418 010d 00       		.byte	0
- 1419              		.section	.debug_loc,"",%progbits
- 1420              	.Ldebug_loc0:
- 1421              	.LLST1:
- 1422 0000 B4020000 		.4byte	.LFB1-.Ltext0
- 1423 0004 B6020000 		.4byte	.LCFI3-.Ltext0
- 1424 0008 0200     		.2byte	0x2
- 1425 000a 7D       		.byte	0x7d
- 1426 000b 00       		.sleb128 0
- 1427 000c B6020000 		.4byte	.LCFI3-.Ltext0
- 1428 0010 B8020000 		.4byte	.LCFI4-.Ltext0
- 1429 0014 0200     		.2byte	0x2
- 1430 0016 7D       		.byte	0x7d
- 1431 0017 08       		.sleb128 8
- 1432 0018 B8020000 		.4byte	.LCFI4-.Ltext0
- 1433 001c BA020000 		.4byte	.LCFI5-.Ltext0
- 1434 0020 0200     		.2byte	0x2
- 1435 0022 7D       		.byte	0x7d
- 1436 0023 18       		.sleb128 24
- 1437 0024 BA020000 		.4byte	.LCFI5-.Ltext0
- 1438 0028 80040000 		.4byte	.LFE1-.Ltext0
- 1439 002c 0200     		.2byte	0x2
- 1440 002e 77       		.byte	0x77
- 1441 002f 18       		.sleb128 24
- 1442 0030 00000000 		.4byte	0
- 1443 0034 00000000 		.4byte	0
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 30
+ 1351 002e 03       		.uleb128 0x3
+ 1352 002f 0E       		.uleb128 0xe
+ 1353 0030 3A       		.uleb128 0x3a
+ 1354 0031 0B       		.uleb128 0xb
+ 1355 0032 3B       		.uleb128 0x3b
+ 1356 0033 0B       		.uleb128 0xb
+ 1357 0034 49       		.uleb128 0x49
+ 1358 0035 13       		.uleb128 0x13
+ 1359 0036 00       		.byte	0
+ 1360 0037 00       		.byte	0
+ 1361 0038 05       		.uleb128 0x5
+ 1362 0039 24       		.uleb128 0x24
+ 1363 003a 00       		.byte	0
+ 1364 003b 0B       		.uleb128 0xb
+ 1365 003c 0B       		.uleb128 0xb
+ 1366 003d 3E       		.uleb128 0x3e
+ 1367 003e 0B       		.uleb128 0xb
+ 1368 003f 03       		.uleb128 0x3
+ 1369 0040 08       		.uleb128 0x8
+ 1370 0041 00       		.byte	0
+ 1371 0042 00       		.byte	0
+ 1372 0043 06       		.uleb128 0x6
+ 1373 0044 04       		.uleb128 0x4
+ 1374 0045 01       		.byte	0x1
+ 1375 0046 3E       		.uleb128 0x3e
+ 1376 0047 0B       		.uleb128 0xb
+ 1377 0048 0B       		.uleb128 0xb
+ 1378 0049 0B       		.uleb128 0xb
+ 1379 004a 49       		.uleb128 0x49
+ 1380 004b 13       		.uleb128 0x13
+ 1381 004c 3A       		.uleb128 0x3a
+ 1382 004d 0B       		.uleb128 0xb
+ 1383 004e 3B       		.uleb128 0x3b
+ 1384 004f 0B       		.uleb128 0xb
+ 1385 0050 01       		.uleb128 0x1
+ 1386 0051 13       		.uleb128 0x13
+ 1387 0052 00       		.byte	0
+ 1388 0053 00       		.byte	0
+ 1389 0054 07       		.uleb128 0x7
+ 1390 0055 28       		.uleb128 0x28
+ 1391 0056 00       		.byte	0
+ 1392 0057 03       		.uleb128 0x3
+ 1393 0058 0E       		.uleb128 0xe
+ 1394 0059 1C       		.uleb128 0x1c
+ 1395 005a 0B       		.uleb128 0xb
+ 1396 005b 00       		.byte	0
+ 1397 005c 00       		.byte	0
+ 1398 005d 08       		.uleb128 0x8
+ 1399 005e 2E       		.uleb128 0x2e
+ 1400 005f 01       		.byte	0x1
+ 1401 0060 3F       		.uleb128 0x3f
+ 1402 0061 0C       		.uleb128 0xc
+ 1403 0062 03       		.uleb128 0x3
+ 1404 0063 0E       		.uleb128 0xe
+ 1405 0064 3A       		.uleb128 0x3a
+ 1406 0065 0B       		.uleb128 0xb
+ 1407 0066 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 30
 
 
- 1444              	.LLST0:
- 1445 0038 00000000 		.4byte	.LFB0-.Ltext0
- 1446 003c 02000000 		.4byte	.LCFI0-.Ltext0
- 1447 0040 0200     		.2byte	0x2
- 1448 0042 7D       		.byte	0x7d
- 1449 0043 00       		.sleb128 0
- 1450 0044 02000000 		.4byte	.LCFI0-.Ltext0
- 1451 0048 04000000 		.4byte	.LCFI1-.Ltext0
- 1452 004c 0200     		.2byte	0x2
- 1453 004e 7D       		.byte	0x7d
- 1454 004f 10       		.sleb128 16
- 1455 0050 04000000 		.4byte	.LCFI1-.Ltext0
- 1456 0054 06000000 		.4byte	.LCFI2-.Ltext0
- 1457 0058 0300     		.2byte	0x3
- 1458 005a 7D       		.byte	0x7d
- 1459 005b 9002     		.sleb128 272
- 1460 005d 06000000 		.4byte	.LCFI2-.Ltext0
- 1461 0061 B4020000 		.4byte	.LFE0-.Ltext0
- 1462 0065 0300     		.2byte	0x3
- 1463 0067 77       		.byte	0x77
- 1464 0068 9002     		.sleb128 272
- 1465 006a 00000000 		.4byte	0
- 1466 006e 00000000 		.4byte	0
- 1467              		.section	.debug_aranges,"",%progbits
- 1468 0000 1C000000 		.4byte	0x1c
- 1469 0004 0200     		.2byte	0x2
- 1470 0006 00000000 		.4byte	.Ldebug_info0
- 1471 000a 04       		.byte	0x4
- 1472 000b 00       		.byte	0
- 1473 000c 0000     		.2byte	0
- 1474 000e 0000     		.2byte	0
- 1475 0010 00000000 		.4byte	.Ltext0
- 1476 0014 80040000 		.4byte	.Letext0-.Ltext0
- 1477 0018 00000000 		.4byte	0
- 1478 001c 00000000 		.4byte	0
- 1479              		.section	.debug_line,"",%progbits
- 1480              	.Ldebug_line0:
- 1481 0000 B5000000 		.section	.debug_str,"MS",%progbits,1
- 1481      02003800 
- 1481      00000201 
- 1481      FB0E0D00 
- 1481      01010101 
- 1482              	.LASF9:
- 1483 0000 6C6F6E67 		.ascii	"long long int\000"
- 1483      206C6F6E 
- 1483      6720696E 
- 1483      7400
- 1484              	.LASF12:
- 1485 000e 66756C6C 		.ascii	"fullHourTable\000"
- 1485      486F7572 
- 1485      5461626C 
- 1485      6500
- 1486              	.LASF3:
- 1487 001c 756E7369 		.ascii	"unsigned int\000"
- 1487      676E6564 
- 1487      20696E74 
- 1487      00
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 31
+ 1408 0067 0B       		.uleb128 0xb
+ 1409 0068 27       		.uleb128 0x27
+ 1410 0069 0C       		.uleb128 0xc
+ 1411 006a 11       		.uleb128 0x11
+ 1412 006b 01       		.uleb128 0x1
+ 1413 006c 12       		.uleb128 0x12
+ 1414 006d 01       		.uleb128 0x1
+ 1415 006e 40       		.uleb128 0x40
+ 1416 006f 06       		.uleb128 0x6
+ 1417 0070 9642     		.uleb128 0x2116
+ 1418 0072 0C       		.uleb128 0xc
+ 1419 0073 01       		.uleb128 0x1
+ 1420 0074 13       		.uleb128 0x13
+ 1421 0075 00       		.byte	0
+ 1422 0076 00       		.byte	0
+ 1423 0077 09       		.uleb128 0x9
+ 1424 0078 34       		.uleb128 0x34
+ 1425 0079 00       		.byte	0
+ 1426 007a 03       		.uleb128 0x3
+ 1427 007b 0E       		.uleb128 0xe
+ 1428 007c 3A       		.uleb128 0x3a
+ 1429 007d 0B       		.uleb128 0xb
+ 1430 007e 3B       		.uleb128 0x3b
+ 1431 007f 0B       		.uleb128 0xb
+ 1432 0080 49       		.uleb128 0x49
+ 1433 0081 13       		.uleb128 0x13
+ 1434 0082 02       		.uleb128 0x2
+ 1435 0083 0A       		.uleb128 0xa
+ 1436 0084 00       		.byte	0
+ 1437 0085 00       		.byte	0
+ 1438 0086 0A       		.uleb128 0xa
+ 1439 0087 0B       		.uleb128 0xb
+ 1440 0088 01       		.byte	0x1
+ 1441 0089 11       		.uleb128 0x11
+ 1442 008a 01       		.uleb128 0x1
+ 1443 008b 12       		.uleb128 0x12
+ 1444 008c 01       		.uleb128 0x1
+ 1445 008d 01       		.uleb128 0x1
+ 1446 008e 13       		.uleb128 0x13
+ 1447 008f 00       		.byte	0
+ 1448 0090 00       		.byte	0
+ 1449 0091 0B       		.uleb128 0xb
+ 1450 0092 34       		.uleb128 0x34
+ 1451 0093 00       		.byte	0
+ 1452 0094 03       		.uleb128 0x3
+ 1453 0095 08       		.uleb128 0x8
+ 1454 0096 3A       		.uleb128 0x3a
+ 1455 0097 0B       		.uleb128 0xb
+ 1456 0098 3B       		.uleb128 0x3b
+ 1457 0099 0B       		.uleb128 0xb
+ 1458 009a 49       		.uleb128 0x49
+ 1459 009b 13       		.uleb128 0x13
+ 1460 009c 02       		.uleb128 0x2
+ 1461 009d 0A       		.uleb128 0xa
+ 1462 009e 00       		.byte	0
+ 1463 009f 00       		.byte	0
+ 1464 00a0 0C       		.uleb128 0xc
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 31
 
 
- 1488              	.LASF18:
- 1489 0029 74657874 		.ascii	"textToBeWritten\000"
- 1489      546F4265 
- 1489      57726974 
- 1489      74656E00 
- 1490              	.LASF25:
- 1491 0039 6D61696E 		.ascii	"main.c\000"
- 1491      2E6300
- 1492              	.LASF19:
- 1493 0040 68756D69 		.ascii	"humidityValue\000"
- 1493      64697479 
- 1493      56616C75 
- 1493      6500
- 1494              	.LASF13:
- 1495 004e 72657443 		.ascii	"retCode\000"
- 1495      6F646500 
- 1496              	.LASF21:
- 1497 0056 73707269 		.ascii	"sprintf\000"
- 1497      6E746600 
- 1498              	.LASF10:
- 1499 005e 46414C53 		.ascii	"FALSE\000"
- 1499      4500
- 1500              	.LASF4:
- 1501 0064 74553634 		.ascii	"tU64\000"
- 1501      00
- 1502              	.LASF16:
- 1503 0069 616D6F75 		.ascii	"amountOfLettersCopied\000"
- 1503      6E744F66 
- 1503      4C657474 
- 1503      65727343 
- 1503      6F706965 
- 1504              	.LASF27:
- 1505 007f 7072696E 		.ascii	"printCurrentTime\000"
- 1505      74437572 
- 1505      72656E74 
- 1505      54696D65 
- 1505      00
- 1506              	.LASF5:
- 1507 0090 6C6F6E67 		.ascii	"long long unsigned int\000"
- 1507      206C6F6E 
- 1507      6720756E 
- 1507      7369676E 
- 1507      65642069 
- 1508              	.LASF1:
- 1509 00a7 756E7369 		.ascii	"unsigned char\000"
- 1509      676E6564 
- 1509      20636861 
- 1509      7200
- 1510              	.LASF11:
- 1511 00b5 54525545 		.ascii	"TRUE\000"
- 1511      00
- 1512              	.LASF28:
- 1513 00ba 6D61696E 		.ascii	"main\000"
- 1513      00
- 1514              	.LASF14:
- 1515 00bf 70636139 		.ascii	"pca9532Present\000"
- 1515      35333250 
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 32
+ 1465 00a1 0B       		.uleb128 0xb
+ 1466 00a2 01       		.byte	0x1
+ 1467 00a3 11       		.uleb128 0x11
+ 1468 00a4 01       		.uleb128 0x1
+ 1469 00a5 12       		.uleb128 0x12
+ 1470 00a6 01       		.uleb128 0x1
+ 1471 00a7 00       		.byte	0
+ 1472 00a8 00       		.byte	0
+ 1473 00a9 0D       		.uleb128 0xd
+ 1474 00aa 01       		.uleb128 0x1
+ 1475 00ab 01       		.byte	0x1
+ 1476 00ac 49       		.uleb128 0x49
+ 1477 00ad 13       		.uleb128 0x13
+ 1478 00ae 01       		.uleb128 0x1
+ 1479 00af 13       		.uleb128 0x13
+ 1480 00b0 00       		.byte	0
+ 1481 00b1 00       		.byte	0
+ 1482 00b2 0E       		.uleb128 0xe
+ 1483 00b3 21       		.uleb128 0x21
+ 1484 00b4 00       		.byte	0
+ 1485 00b5 49       		.uleb128 0x49
+ 1486 00b6 13       		.uleb128 0x13
+ 1487 00b7 2F       		.uleb128 0x2f
+ 1488 00b8 0B       		.uleb128 0xb
+ 1489 00b9 00       		.byte	0
+ 1490 00ba 00       		.byte	0
+ 1491 00bb 0F       		.uleb128 0xf
+ 1492 00bc 2E       		.uleb128 0x2e
+ 1493 00bd 01       		.byte	0x1
+ 1494 00be 3F       		.uleb128 0x3f
+ 1495 00bf 0C       		.uleb128 0xc
+ 1496 00c0 03       		.uleb128 0x3
+ 1497 00c1 0E       		.uleb128 0xe
+ 1498 00c2 3A       		.uleb128 0x3a
+ 1499 00c3 0B       		.uleb128 0xb
+ 1500 00c4 3B       		.uleb128 0x3b
+ 1501 00c5 0B       		.uleb128 0xb
+ 1502 00c6 27       		.uleb128 0x27
+ 1503 00c7 0C       		.uleb128 0xc
+ 1504 00c8 49       		.uleb128 0x49
+ 1505 00c9 13       		.uleb128 0x13
+ 1506 00ca 11       		.uleb128 0x11
+ 1507 00cb 01       		.uleb128 0x1
+ 1508 00cc 12       		.uleb128 0x12
+ 1509 00cd 01       		.uleb128 0x1
+ 1510 00ce 40       		.uleb128 0x40
+ 1511 00cf 06       		.uleb128 0x6
+ 1512 00d0 9642     		.uleb128 0x2116
+ 1513 00d2 0C       		.uleb128 0xc
+ 1514 00d3 01       		.uleb128 0x1
+ 1515 00d4 13       		.uleb128 0x13
+ 1516 00d5 00       		.byte	0
+ 1517 00d6 00       		.byte	0
+ 1518 00d7 10       		.uleb128 0x10
+ 1519 00d8 2E       		.uleb128 0x2e
+ 1520 00d9 01       		.byte	0x1
+ 1521 00da 3F       		.uleb128 0x3f
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 32
 
 
- 1515      72657365 
- 1515      6E7400
- 1516              	.LASF24:
- 1517 00ce 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
- 1517      43313120 
- 1517      372E332E 
- 1517      31203230 
- 1517      31383036 
- 1518 0101 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb -mthum"
- 1518      20726576 
- 1518      6973696F 
- 1518      6E203236 
- 1518      31393037 
- 1519 0134 622D696E 		.ascii	"b-interwork -gdwarf-2 -O0\000"
- 1519      74657277 
- 1519      6F726B20 
- 1519      2D676477 
- 1519      6172662D 
- 1520              	.LASF8:
- 1521 014e 74533634 		.ascii	"tS64\000"
- 1521      00
- 1522              	.LASF17:
- 1523 0153 68656C70 		.ascii	"helperValue\000"
- 1523      65725661 
- 1523      6C756500 
- 1524              	.LASF20:
- 1525 015f 62726967 		.ascii	"brightnessValue\000"
- 1525      68746E65 
- 1525      73735661 
- 1525      6C756500 
- 1526              	.LASF26:
- 1527 016f 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
- 1527      6D626564 
- 1527      6465645C 
- 1527      32313338 
- 1527      4D696E69 
- 1528              	.LASF2:
- 1529 018d 73686F72 		.ascii	"short unsigned int\000"
- 1529      7420756E 
- 1529      7369676E 
- 1529      65642069 
- 1529      6E7400
- 1530              	.LASF6:
- 1531 01a0 7369676E 		.ascii	"signed char\000"
- 1531      65642063 
- 1531      68617200 
- 1532              	.LASF15:
- 1533 01ac 63686172 		.ascii	"charArray\000"
- 1533      41727261 
- 1533      7900
- 1534              	.LASF22:
- 1535 01b6 70726573 		.ascii	"pressureValue\000"
- 1535      73757265 
- 1535      56616C75 
- 1535      6500
- 1536              	.LASF0:
- 1537 01c4 74553136 		.ascii	"tU16\000"
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 33
+ 1522 00db 0C       		.uleb128 0xc
+ 1523 00dc 03       		.uleb128 0x3
+ 1524 00dd 0E       		.uleb128 0xe
+ 1525 00de 3A       		.uleb128 0x3a
+ 1526 00df 0B       		.uleb128 0xb
+ 1527 00e0 3B       		.uleb128 0x3b
+ 1528 00e1 0B       		.uleb128 0xb
+ 1529 00e2 27       		.uleb128 0x27
+ 1530 00e3 0C       		.uleb128 0xc
+ 1531 00e4 49       		.uleb128 0x49
+ 1532 00e5 13       		.uleb128 0x13
+ 1533 00e6 3C       		.uleb128 0x3c
+ 1534 00e7 0C       		.uleb128 0xc
+ 1535 00e8 00       		.byte	0
+ 1536 00e9 00       		.byte	0
+ 1537 00ea 11       		.uleb128 0x11
+ 1538 00eb 05       		.uleb128 0x5
+ 1539 00ec 00       		.byte	0
+ 1540 00ed 49       		.uleb128 0x49
+ 1541 00ee 13       		.uleb128 0x13
+ 1542 00ef 00       		.byte	0
+ 1543 00f0 00       		.byte	0
+ 1544 00f1 12       		.uleb128 0x12
+ 1545 00f2 18       		.uleb128 0x18
+ 1546 00f3 00       		.byte	0
+ 1547 00f4 00       		.byte	0
+ 1548 00f5 00       		.byte	0
+ 1549 00f6 13       		.uleb128 0x13
+ 1550 00f7 0F       		.uleb128 0xf
+ 1551 00f8 00       		.byte	0
+ 1552 00f9 0B       		.uleb128 0xb
+ 1553 00fa 0B       		.uleb128 0xb
+ 1554 00fb 49       		.uleb128 0x49
+ 1555 00fc 13       		.uleb128 0x13
+ 1556 00fd 00       		.byte	0
+ 1557 00fe 00       		.byte	0
+ 1558 00ff 14       		.uleb128 0x14
+ 1559 0100 26       		.uleb128 0x26
+ 1560 0101 00       		.byte	0
+ 1561 0102 49       		.uleb128 0x49
+ 1562 0103 13       		.uleb128 0x13
+ 1563 0104 00       		.byte	0
+ 1564 0105 00       		.byte	0
+ 1565 0106 15       		.uleb128 0x15
+ 1566 0107 01       		.uleb128 0x1
+ 1567 0108 01       		.byte	0x1
+ 1568 0109 49       		.uleb128 0x49
+ 1569 010a 13       		.uleb128 0x13
+ 1570 010b 00       		.byte	0
+ 1571 010c 00       		.byte	0
+ 1572 010d 00       		.byte	0
+ 1573              		.section	.debug_loc,"",%progbits
+ 1574              	.Ldebug_loc0:
+ 1575              	.LLST1:
+ 1576 0000 B0030000 		.4byte	.LFB1-.Ltext0
+ 1577 0004 B2030000 		.4byte	.LCFI3-.Ltext0
+ 1578 0008 0200     		.2byte	0x2
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 33
 
 
- 1537      00
- 1538              	.LASF7:
- 1539 01c9 73686F72 		.ascii	"short int\000"
- 1539      7420696E 
- 1539      7400
- 1540              	.LASF23:
- 1541 01d3 63686172 		.ascii	"char\000"
- 1541      00
- 1542              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
-ARM GAS  C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s 			page 34
+ 1579 000a 7D       		.byte	0x7d
+ 1580 000b 00       		.sleb128 0
+ 1581 000c B2030000 		.4byte	.LCFI3-.Ltext0
+ 1582 0010 B4030000 		.4byte	.LCFI4-.Ltext0
+ 1583 0014 0200     		.2byte	0x2
+ 1584 0016 7D       		.byte	0x7d
+ 1585 0017 08       		.sleb128 8
+ 1586 0018 B4030000 		.4byte	.LCFI4-.Ltext0
+ 1587 001c B6030000 		.4byte	.LCFI5-.Ltext0
+ 1588 0020 0200     		.2byte	0x2
+ 1589 0022 7D       		.byte	0x7d
+ 1590 0023 18       		.sleb128 24
+ 1591 0024 B6030000 		.4byte	.LCFI5-.Ltext0
+ 1592 0028 7C050000 		.4byte	.LFE1-.Ltext0
+ 1593 002c 0200     		.2byte	0x2
+ 1594 002e 77       		.byte	0x77
+ 1595 002f 18       		.sleb128 24
+ 1596 0030 00000000 		.4byte	0
+ 1597 0034 00000000 		.4byte	0
+ 1598              	.LLST0:
+ 1599 0038 00000000 		.4byte	.LFB0-.Ltext0
+ 1600 003c 02000000 		.4byte	.LCFI0-.Ltext0
+ 1601 0040 0200     		.2byte	0x2
+ 1602 0042 7D       		.byte	0x7d
+ 1603 0043 00       		.sleb128 0
+ 1604 0044 02000000 		.4byte	.LCFI0-.Ltext0
+ 1605 0048 04000000 		.4byte	.LCFI1-.Ltext0
+ 1606 004c 0200     		.2byte	0x2
+ 1607 004e 7D       		.byte	0x7d
+ 1608 004f 10       		.sleb128 16
+ 1609 0050 04000000 		.4byte	.LCFI1-.Ltext0
+ 1610 0054 06000000 		.4byte	.LCFI2-.Ltext0
+ 1611 0058 0300     		.2byte	0x3
+ 1612 005a 7D       		.byte	0x7d
+ 1613 005b 9802     		.sleb128 280
+ 1614 005d 06000000 		.4byte	.LCFI2-.Ltext0
+ 1615 0061 B0030000 		.4byte	.LFE0-.Ltext0
+ 1616 0065 0300     		.2byte	0x3
+ 1617 0067 77       		.byte	0x77
+ 1618 0068 9802     		.sleb128 280
+ 1619 006a 00000000 		.4byte	0
+ 1620 006e 00000000 		.4byte	0
+ 1621              		.section	.debug_aranges,"",%progbits
+ 1622 0000 1C000000 		.4byte	0x1c
+ 1623 0004 0200     		.2byte	0x2
+ 1624 0006 00000000 		.4byte	.Ldebug_info0
+ 1625 000a 04       		.byte	0x4
+ 1626 000b 00       		.byte	0
+ 1627 000c 0000     		.2byte	0
+ 1628 000e 0000     		.2byte	0
+ 1629 0010 00000000 		.4byte	.Ltext0
+ 1630 0014 7C050000 		.4byte	.Letext0-.Ltext0
+ 1631 0018 00000000 		.4byte	0
+ 1632 001c 00000000 		.4byte	0
+ 1633              		.section	.debug_line,"",%progbits
+ 1634              	.Ldebug_line0:
+ 1635 0000 B3010000 		.section	.debug_str,"MS",%progbits,1
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 34
+
+
+ 1635      02003800 
+ 1635      00000201 
+ 1635      FB0E0D00 
+ 1635      01010101 
+ 1636              	.LASF9:
+ 1637 0000 6C6F6E67 		.ascii	"long long int\000"
+ 1637      206C6F6E 
+ 1637      6720696E 
+ 1637      7400
+ 1638              	.LASF12:
+ 1639 000e 66756C6C 		.ascii	"fullHourTable\000"
+ 1639      486F7572 
+ 1639      5461626C 
+ 1639      6500
+ 1640              	.LASF3:
+ 1641 001c 756E7369 		.ascii	"unsigned int\000"
+ 1641      676E6564 
+ 1641      20696E74 
+ 1641      00
+ 1642              	.LASF18:
+ 1643 0029 74657874 		.ascii	"textToBeWritten\000"
+ 1643      546F4265 
+ 1643      57726974 
+ 1643      74656E00 
+ 1644              	.LASF25:
+ 1645 0039 6D61696E 		.ascii	"main.c\000"
+ 1645      2E6300
+ 1646              	.LASF19:
+ 1647 0040 68756D69 		.ascii	"humidityValue\000"
+ 1647      64697479 
+ 1647      56616C75 
+ 1647      6500
+ 1648              	.LASF13:
+ 1649 004e 72657443 		.ascii	"retCode\000"
+ 1649      6F646500 
+ 1650              	.LASF21:
+ 1651 0056 73707269 		.ascii	"sprintf\000"
+ 1651      6E746600 
+ 1652              	.LASF10:
+ 1653 005e 46414C53 		.ascii	"FALSE\000"
+ 1653      4500
+ 1654              	.LASF4:
+ 1655 0064 74553634 		.ascii	"tU64\000"
+ 1655      00
+ 1656              	.LASF15:
+ 1657 0069 616D6F75 		.ascii	"amountOfLettersCopied\000"
+ 1657      6E744F66 
+ 1657      4C657474 
+ 1657      65727343 
+ 1657      6F706965 
+ 1658              	.LASF27:
+ 1659 007f 7072696E 		.ascii	"printCurrentTime\000"
+ 1659      74437572 
+ 1659      72656E74 
+ 1659      54696D65 
+ 1659      00
+ 1660              	.LASF5:
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 35
+
+
+ 1661 0090 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1661      206C6F6E 
+ 1661      6720756E 
+ 1661      7369676E 
+ 1661      65642069 
+ 1662              	.LASF1:
+ 1663 00a7 756E7369 		.ascii	"unsigned char\000"
+ 1663      676E6564 
+ 1663      20636861 
+ 1663      7200
+ 1664              	.LASF11:
+ 1665 00b5 54525545 		.ascii	"TRUE\000"
+ 1665      00
+ 1666              	.LASF28:
+ 1667 00ba 6D61696E 		.ascii	"main\000"
+ 1667      00
+ 1668              	.LASF14:
+ 1669 00bf 70636139 		.ascii	"pca9532Present\000"
+ 1669      35333250 
+ 1669      72657365 
+ 1669      6E7400
+ 1670              	.LASF24:
+ 1671 00ce 474E5520 		.ascii	"GNU C11 7.3.1 20180622 (release) [ARM/embedded-7-br"
+ 1671      43313120 
+ 1671      372E332E 
+ 1671      31203230 
+ 1671      31383036 
+ 1672 0101 616E6368 		.ascii	"anch revision 261907] -mcpu=arm7tdmi -mthumb -mthum"
+ 1672      20726576 
+ 1672      6973696F 
+ 1672      6E203236 
+ 1672      31393037 
+ 1673 0134 622D696E 		.ascii	"b-interwork -gdwarf-2 -O0\000"
+ 1673      74657277 
+ 1673      6F726B20 
+ 1673      2D676477 
+ 1673      6172662D 
+ 1674              	.LASF8:
+ 1675 014e 74533634 		.ascii	"tS64\000"
+ 1675      00
+ 1676              	.LASF20:
+ 1677 0153 62726967 		.ascii	"brightnessValue\000"
+ 1677      68746E65 
+ 1677      73735661 
+ 1677      6C756500 
+ 1678              	.LASF26:
+ 1679 0163 433A5C45 		.ascii	"C:\\Embedded\\2138MiniDemo\\2138\000"
+ 1679      6D626564 
+ 1679      6465645C 
+ 1679      32313338 
+ 1679      4D696E69 
+ 1680              	.LASF2:
+ 1681 0181 73686F72 		.ascii	"short unsigned int\000"
+ 1681      7420756E 
+ 1681      7369676E 
+ 1681      65642069 
+ 1681      6E7400
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 36
+
+
+ 1682              	.LASF6:
+ 1683 0194 7369676E 		.ascii	"signed char\000"
+ 1683      65642063 
+ 1683      68617200 
+ 1684              	.LASF16:
+ 1685 01a0 68656C70 		.ascii	"helperValue\000"
+ 1685      65725661 
+ 1685      6C756500 
+ 1686              	.LASF22:
+ 1687 01ac 70726573 		.ascii	"pressureValue\000"
+ 1687      73757265 
+ 1687      56616C75 
+ 1687      6500
+ 1688              	.LASF17:
+ 1689 01ba 63686172 		.ascii	"charArray\000"
+ 1689      41727261 
+ 1689      7900
+ 1690              	.LASF0:
+ 1691 01c4 74553136 		.ascii	"tU16\000"
+ 1691      00
+ 1692              	.LASF7:
+ 1693 01c9 73686F72 		.ascii	"short int\000"
+ 1693      7420696E 
+ 1693      7400
+ 1694              	.LASF23:
+ 1695 01d3 63686172 		.ascii	"char\000"
+ 1695      00
+ 1696              		.ident	"GCC: (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [AR
+ARM GAS  C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s 			page 37
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s:16     .rodata:00000000 $d
-C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s:47     .text:00000000 main
-C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s:55     .text:00000000 $t
-C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s:460    .text:000002b4 printCurrentTime
-C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s:441    .text:00000294 $d
-C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s:453    .text:000002b4 $t
-C:\Users\embedded\AppData\Local\Temp\ccnMo3mE.s:732    .text:00000464 $d
+C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s:16     .rodata:00000000 $d
+C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s:53     .text:00000000 main
+C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s:61     .text:00000000 $t
+C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s:610    .text:000003b0 printCurrentTime
+C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s:583    .text:00000370 $d
+C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s:603    .text:000003b0 $t
+C:\Users\embedded\AppData\Local\Temp\cc0YBWCk.s:882    .text:00000560 $d
 
 UNDEFINED SYMBOLS
 i2cInit

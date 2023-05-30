@@ -45,12 +45,17 @@ void mdelay(tU32 delayInMs)
    * Setup timer #1 for delay
    */
 
-  T1TCR = 0x02;                     // 0x02 = 0b 10 -> Timer counter and Prescle counter are synchronously reset.
-  // TC is incremented every (CORE_FREQ / 1000) - 1 + 1 = (CORE_FREQ / 1000) PCLK. 
-  T1PR  = (CORE_FREQ / 1000) - 1;   // Set prescaler to zero.
+  T1TCR = 0x02;          // 0x02 = 0b 10 -> Timer counter and Prescle counter are synchronously reset.
+  T1PR  = 0x00;          // Set prescaler to zero.
 
-  // Timer runs as long as value in TC register is different from value in MR0 register;
-  T1MR0 = delayInMs;
+  // Since PCLK = CORE_FREQ:
+  // Basic delay: basic_delay[s] = (1 / CORE_FREQ)[s], then: time_delay [ms] = (delayInMs * (1 / CORE_FREQ)) / 1000; 
+
+  // Maximum delay value that can be achieved by this function:
+  // MAX_DELAY = ((2 ^ 63 - 1) / CORE_FREQ) = 9 2223 372 036 854 775 807 / 58 982 400 = 156 374 987 061
+  // Max value of delayInMs: (2 ^ 32 - 1) = 4 294 967 295
+
+  T1MR0 = (((tU64)delayInMs) * (tU64)CORE_FREQ) / 1000;
 
   T1IR  = 0xFF;          // Reset all interrrupt flags in interrupt register of Timer 1.
   T1MCR = 0x04;          // Stop timer on match, effectively disabling Timer Counter and Prescale Counter (setting 0 to T1TCR[0])
@@ -85,12 +90,14 @@ void sdelay(tU32 delayInS)
    * Setup timer #1 for delay
    */
 
-  T1TCR = 0x02;           // 0x02 = 0b 10 -> Timer counter and Prescle counter are synchronously reset.
-  // TC is incremented every CORE_FREQ - 1 + 1 = CORE_FREQ PCLK.
-  T1PR = CORE_FREQ - 1;   // Set prescaler to zero.
+  T1TCR = 0x02;          // 0x02 = 0b 10 -> Timer counter and Prescle counter are synchronously reset.
+  T1PR  = 0x00;          // Set prescaler to zero.
 
-  // Timer runs as long as value in TC register is different from value in MR0 register;
-  T1MR0 = delayInS;
+  // Maximum delay value that can be achieved by this function:
+  // MAX_DELAY = ((2 ^ 63 - 1) / CORE_FREQ) = 9 2223 372 036 854 775 807 / 58 982 400 = 156 374 987 061
+  // Max value of delayInS: (2 ^ 32 - 1) = 4 294 967 295
+
+  T1MR0 = (((tU64)delayInS) * (tU64)CORE_FREQ);
 
   T1IR  = 0xFF;          // Reset all interrrupt flags in interrupt register of Timer 1.
   T1MCR = 0x04;          // Stop timer on match, effectively disabling Timer Counter and Prescale Counter (setting 0 to T1TCR[0])
