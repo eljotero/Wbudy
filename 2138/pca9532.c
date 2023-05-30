@@ -126,23 +126,32 @@ tBool pca9532Init(void)
 
 void setPca9532Pin(tU8 pinNum, tU8 value)
 {
+	tS8 returnValue = 0;
 	tU8 command[] =
 	{ 0x00, 0x00 };
 	tU8 regValue;
 	tU8 mask;
 
-	if (pinNum < 4)
+	if (pinNum < (tU8)4)
+	{
 		command[0] = 0x06;
-	else if (pinNum < 8)
+	}
+	else if (pinNum < (tU8)8)
+	{
 		command[0] = 0x07;
-	else if (pinNum < 12)
+	}
+	else if (pinNum < (tU8)12)
+	{
 		command[0] = 0x08;
-	else
+	}
+	else 
+	{
 		command[0] = 0x09;
+	}
 
-	pca9532(command, 1, &regValue, 1);
+	returnValue = pca9532(command, 1, &regValue, 1);
 
-	mask = (3 << 2 * (pinNum % 4));
+	mask = (tU8)((tU8)3 << ((tU8)2 * (pinNum % (tU8)4)));
 
 	regValue &= ~mask;
 
@@ -167,11 +176,11 @@ void setPca9532Pin(tU8 pinNum, tU8 value)
 		command[1] = 0x00;
 	}
 
-	command[1] <<= 2 * (pinNum % 4);
+	command[1] = command[1] << (tU8)((tU8)2 * (pinNum % (tU8)4));
 
 	command[1] |= regValue;
 
-	pca9532(command, sizeof(command), NULL, 0);
+	returnValue = pca9532(command, sizeof(command), NULL, 0);
 }
 
 /*****************************************************************************
@@ -239,7 +248,7 @@ void manageLED(tU8 pca9532Present)
 	{
 		tU8 i = 0;
 		tU8 j = 0;
-		for (j = 0; j < 3; j++)
+		for (j = 0; j < (tU8)3; j = j + (tU8)1)
 		{
 			for (i = (tU8)0; i < (tU8)NUM_OF_LEDS; i = i + (tU8)1)
 			{

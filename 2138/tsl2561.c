@@ -143,12 +143,12 @@ tU64 calculateBrightness(tU16 channel0, tU16 channel1, tU8 integTime, tU8 gainVa
 {
     tU64 chScale = 0;
 
-    if (integTime == LOW_INTEG_TIME)
+    if (integTime == (tU8)LOW_INTEG_TIME)
     {
         // 13.7 ms integration time
         chScale = CHSCALE_TINT0;
     }
-    else if (integTime = MED_INTEG_TIME)
+    else if (integTime == (tU8)MED_INTEG_TIME)
     {
         // 101 ms integration time
         chScale = CHSCALE_TINT1;
@@ -159,7 +159,7 @@ tU64 calculateBrightness(tU16 channel0, tU16 channel1, tU8 integTime, tU8 gainVa
         chScale = ((tU64)1 << CH_SCALE);
     }
 
-    if (gainValue != 0x01)
+    if (gainValue != (tU8)0x01)
     {
         chScale = chScale << 4;
     }
@@ -337,11 +337,11 @@ tU64 measureBrightness(void)
 
     retCode = i2cWrite(tsl2561WriteAddressFloat, command, 2);
 
-    if (integTime == LOW_INTEG_TIME)
+    if (integTime == (tU8)LOW_INTEG_TIME)
     {
         mdelay(14);  // Waiting for 14 ms, since it takes 13.7 ms for both channels to integrate
     }
-    else if (integTime == MED_INTEG_TIME)
+    else if (integTime == (tU8)MED_INTEG_TIME)
     {
         mdelay(102); // Waiting for 102 ms, since it takes 101 ms for both channels to integrate
     }
