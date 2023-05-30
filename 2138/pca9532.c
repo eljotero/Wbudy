@@ -104,6 +104,18 @@ tBool pca9532Init(void)
 	//                                                         04 = LCD_RST# low
 	//                                                         10 = BT_RST# low
 
+	// Init Command:
+
+	// 0x12 -> Address for PSC0 register.
+	// 0x97 -> Value that will be written PSC0 register.
+	// 0x80 -> Value that will be written PWM0 register.
+	// 0x00 -> Value that will be written PSC1 register.
+	// 0x40 -> Value that will be written PWM1 register.
+	// 0x00 -> Value that will be written LS0 register.
+	// 0x00 -> Value that will be written LS1 register.
+	// 0x00 -> Value that will be written LS2 register.
+	// 0x00 -> Value that will be written LS3 register.
+
 	tBool result;
 
 	// Initialize PCA9532
